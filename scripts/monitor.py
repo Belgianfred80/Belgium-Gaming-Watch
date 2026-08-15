@@ -39,7 +39,6 @@ SEARCH_TERMS = ['ladbrokes', 'entain', 'bwin', 'jeux de hasard']
 SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
-    {
         # App Nuxt/Vuetify — 1 requête par terme, sélecteur CSS sur les cartes de résultats
         # no_kw_filter : le moteur de recherche a déjà filtré
         # Le fallback exclut les URLs /search/ (menu de navigation)
@@ -102,7 +101,6 @@ SOURCES = [
         'url': 'https://www.gamingcommission.be/fr/commission-des-jeux-de-hasard/controle-et-sanctions',
     },
     {
-    {
         # Résultats GET — exp={term}, timeout étendu à 90s car le site est lent
         # no_kw_filter : les titres ne contiennent pas les mots-clés cherchés
         'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
@@ -121,7 +119,6 @@ SOURCES = [
     #     'url': 'https://www.raadvst-consetat.be/fr/jurisprudence/recherche?query={term}',
     #     'search_terms': SEARCH_TERMS,
     # },
-    {
     {
         # Drupal — résultats dans .view-content, attendre le chargement JS
         # URL filtrée sur content_type:decision pour éviter le bruit
