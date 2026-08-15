@@ -17,6 +17,7 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
@@ -42,12 +43,14 @@ SOURCES = [
     {
         'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
+        'js': True,
         'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=/flwb/recent&language=fr&cfm=/site/wwwcfm/flwb/LastDocument.cfm',
     },
     {
         'id': 'senat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Sénat de Belgique', 'color': '#1a6640',
-        'url': 'https://www.senate.be/www/?MIval=/index_senate&lang=fr',
+        'js': True,
+        'url': 'https://www.senate.be/www/webdriver?MIval=publications/viewPubList&LANG=fr&PUBTYPE=&TREFWOORDEN=jeux+de+hasard',
     },
     {
         'id': 'cjh', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
@@ -62,22 +65,26 @@ SOURCES = [
     {
         'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Moniteur Belge', 'color': '#2c3e50',
+        'js': True,
         'url': 'https://www.ejustice.just.fgov.be/cgi/summary.pl?language=fr',
     },
     {
         'id': 'consetat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': "Conseil d'État", 'color': '#2c3e50',
-        'url': 'https://www.raadvst-consetat.be/fr',
+        'js': True,
+        'url': 'https://www.raadvst-consetat.be/fr/actualites',
     },
     {
         'id': 'abc', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
+        'js': True,
         'url': 'https://www.abc-bma.be/fr/news',
     },
     {
         'id': 'spfjust', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'SPF Justice', 'color': '#2c3e50',
-        'url': 'https://justice.belgium.be/fr/news',
+        'type': 'rss',
+        'url': 'https://justice.belgium.be/fr/news/rss',
     },
 
     # ── Presse belge francophone ───────────────────────────────────────────────
@@ -309,9 +316,78 @@ def fetch_rss(src: dict) -> dict:
         return {'status': 'error', 'message': str(e)[:80]}
 
 
+def fetch_with_browser(src: dict) -> dict:
+    """Scrape une page JS-rendue via Playwright (Chromium headless)."""
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            page = browser.new_page(
+                user_agent=(
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                    'AppleWebKit/537.36 (KHTML, like Gecko) '
+                    'Chrome/124.0.0.0 Safari/537.36'
+                )
+            )
+            page.goto(src['url'], wait_until='networkidle', timeout=45_000)
+            html = page.content()
+            browser.close()
+
+        kw_set = src.get('kw_set', 'institutional')
+        soup = BeautifulSoup(html, 'lxml')
+        for tag in soup.find_all(['nav', 'footer', 'script', 'style', 'header']):
+            tag.decompose()
+
+        seen_texts = set()
+        matches = []
+
+        for a in soup.find_all('a', href=True):
+            text = a.get_text(' ', strip=True)
+            if not text or len(text) < 10 or len(text) > 350:
+                continue
+            if text in seen_texts:
+                continue
+            seen_texts.add(text)
+
+            href = a['href'].strip()
+            if not href or href.startswith('javascript') or href in ('#', ''):
+                continue
+
+            full_url = href if href.startswith('http') else urljoin(src['url'], href)
+
+            block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
+            ctx = block.get_text(' ', strip=True)[:280] if block else text
+
+            kws = find_keywords(text + ' ' + ctx, kw_set)
+            if not kws:
+                continue
+
+            date_obj = extract_date(ctx) or extract_date(text)
+            date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
+
+            matches.append({
+                'text': text,
+                'url': full_url,
+                'keywords': kws,
+                'context': ctx if ctx != text else '',
+                'date': date_str,
+            })
+
+            if len(matches) >= MAX_MATCHES_PER_SOURCE:
+                break
+
+        return {'status': 'ok', 'matches': matches}
+
+    except PWTimeout:
+        return {'status': 'error', 'message': 'Délai dépassé (Playwright 45s)'}
+    except Exception as e:
+        return {'status': 'error', 'message': f'Playwright : {str(e)[:80]}'}
+
+
 def fetch_source(src: dict) -> dict:
     if src.get('type') == 'rss':
         return fetch_rss(src)
+    if src.get('js'):
+        return fetch_with_browser(src)
     kw_set = src.get('kw_set', 'institutional')
     try:
         resp = requests.get(
