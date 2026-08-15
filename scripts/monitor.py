@@ -28,12 +28,12 @@ SOURCES = [
     {
         'id': 'cour', 'group': 'Institutionnel belge',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
-        'url': 'https://fr.const-court.be/communication/communiques-de-presse',
+        'url': 'https://fr.const-court.be',
     },
     {
         'id': 'chambre', 'group': 'Institutionnel belge',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
-        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=news.cfm',
+        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=/flwb/recent&language=fr&cfm=/site/wwwcfm/flwb/LastDocument.cfm',
     },
     {
         'id': 'senat', 'group': 'Institutionnel belge',
@@ -42,8 +42,13 @@ SOURCES = [
     },
     {
         'id': 'cjh', 'group': 'Institutionnel belge',
-        'name': 'Gaming Commission (CJH)', 'color': '#7d3c98',
-        'url': 'https://www.gamingcommission.be/fr/news',
+        'name': 'Gaming Commission (CJH) — Nouvelles', 'color': '#7d3c98',
+        'url': 'https://www.gamingcommission.be/fr/nouvelles',
+    },
+    {
+        'id': 'cjh-sanctions', 'group': 'Institutionnel belge',
+        'name': 'Gaming Commission (CJH) — Contrôle & Sanctions', 'color': '#7d3c98',
+        'url': 'https://www.gamingcommission.be/fr/commission-des-jeux-de-hasard/controle-et-sanctions',
     },
     {
         'id': 'moniteur', 'group': 'Institutionnel belge',
@@ -53,7 +58,7 @@ SOURCES = [
     {
         'id': 'consetat', 'group': 'Institutionnel belge',
         'name': "Conseil d'État", 'color': '#2c3e50',
-        'url': 'https://www.raadvst-consetat.be/dbx/fr/actualites',
+        'url': 'https://www.raadvst-consetat.be/fr',
     },
     {
         'id': 'abc', 'group': 'Institutionnel belge',
@@ -117,7 +122,7 @@ SOURCES = [
     {
         'id': 'entain', 'group': 'Opérateurs',
         'name': 'Entain Group', 'color': '#c0392b',
-        'url': 'https://www.entaingroup.com/news-and-insights/',
+        'url': 'https://www.entaingroup.com/news-insights/latest-news/',
     },
 
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
