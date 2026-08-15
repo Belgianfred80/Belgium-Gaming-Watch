@@ -1,10 +1,14 @@
 {
   "urls": [
-    "https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&qid=1786818006765&rid=3",
-    "https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&qid=1786818006765&rid=4",
-    "https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&qid=1786818006765&rid=2",
-    "https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&sum_date=2026-08-14&lg_txt=f&caller=sum&s_editie=1&2026202040=32&numac_search=2026202040&view_numac=",
-    "https://www.gamingcommission.be/fr/operateurs/blanchiment"
+    "https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&qid=1786820673809&rid=3",
+    "https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&qid=1786820673809&rid=4",
+    "https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&qid=1786820673809&rid=2",
+    "https://www.gamingcommission.be/fr/actions-de-controle-ete-2024",
+    "https://www.gamingcommission.be/fr/delai-de-traitement-des-licences-plus-long-pendant-les-vacances-dete",
+    "https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite",
+    "https://www.gamingcommission.be/fr/licences-f2-pour-les-librairies",
+    "https://www.gamingcommission.be/fr/operateurs/blanchiment",
+    "https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024"
   ],
-  "last_run": "15/08/2026 à 18:20 UTC"
+  "last_run": "15/08/2026 à 19:04 UTC"
 }
