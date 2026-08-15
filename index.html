@@ -62,6 +62,9 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .btn-read{flex-shrink:0;font-size:10px;font-weight:600;background:rgba(46,204,113,.12);color:#27ae60;border:none;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;margin-top:2px}
 [data-theme=dark] .btn-read{color:#3fb950;background:rgba(63,185,80,.12)}
 .btn-read:hover{opacity:.75}
+.btn-unread{flex-shrink:0;font-size:10px;font-weight:600;background:rgba(52,152,219,.12);color:#2980b9;border:none;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;margin-top:2px}
+[data-theme=dark] .btn-unread{color:#58a6ff;background:rgba(88,166,255,.12)}
+.btn-unread:hover{opacity:.75}
 .result{padding:8px 0;border-bottom:1px solid var(--border);line-height:1.45}
 .result:last-child{border-bottom:none}
 .result a{font-size:12.5px;font-weight:600;color:var(--link);text-decoration:none;display:block}
@@ -93,7 +96,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
 <header>
   <button id="theme-btn" onclick="toggleTheme()">🌙 Sombre</button>
   <h1>🇧🇪 Veille — Jeux d'Argent Belgique</h1>
-  <div id="ts">Dernière vérification : 15/08/2026 à 20:47 UTC — 20 alertes au total — <strong style="color:#e74c3c">9 nouvelles depuis hier</strong></div>
+  <div id="ts">Dernière vérification : 15/08/2026 à 20:59 UTC — 20 alertes au total — <strong style="color:#e74c3c">3 nouvelles depuis hier</strong></div>
   <div class="kw-row"><span class="kw-label">Institutionnel :</span><span class="kw-chip">entaingroup</span><span class="kw-chip active">ladbrokes <span class="n">3</span></span><span class="kw-chip active">controle <span class="n">4</span></span><span class="kw-chip active">contrôle <span class="n">4</span></span><span class="kw-chip">sanctions</span><span class="kw-chip">agences</span><span class="kw-chip active">licences <span class="n">2</span></span><span class="kw-chip">entain</span><span class="kw-chip">bwin</span><span class="kw-chip active">jeux de hasard <span class="n">7</span></span><span class="kw-label kw-label-press">Presse :</span><span class="kw-chip">bwin</span><span class="kw-chip">entain</span><span class="kw-chip active">ladbrokes <span class="n">3</span></span><span class="kw-chip active">jeux de hasard <span class="n">7</span></span></div>
 </header>
 
@@ -104,7 +107,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="card-title">🔔 Résumé des alertes — 20 résultats</div>
     <span class="badge badge-match" id="summary-badge">20 alertes</span>
   </div>
-  <div class="card-body" id="summary-body"><div class="alert-row" id="ar0">
+  <div class="card-body" id="summary-body"><div class="alert-row" id="ar0" data-url="https://www.gamingcommission.be/fr/alerte-concernant-des-e-mails-frauduleux-au-nom-de-la-commission-des-jeux-de-hasard">
   <div class="alert-row-main">
     <span class="alert-date">27/07/2026</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -112,7 +115,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/alerte-concernant-des-e-mails-frauduleux-au-nom-de-la-commission-des-jeux-de-hasard&quot;,&quot;Alerte concernant des e-mails frauduleux au nom de la Commission des jeux de hasard&quot;,&quot;27/07/2026&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar0')">✓ Lu</button>
-</div><div class="alert-row" id="ar1">
+</div><div class="alert-row" id="ar1" data-url="https://www.gamingcommission.be/fr/delai-de-traitement-des-licences-plus-long-pendant-les-vacances-dete">
   <div class="alert-row-main">
     <span class="alert-date">23/06/2026</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -120,7 +123,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">licences</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/delai-de-traitement-des-licences-plus-long-pendant-les-vacances-dete&quot;,&quot;D\u00e9lai de traitement des licences plus long pendant les vacances d'\u00e9t\u00e9&quot;,&quot;23/06/2026&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar1')">✓ Lu</button>
-</div><div class="alert-row" id="ar2">
+</div><div class="alert-row" id="ar2" data-url="https://www.gamingcommission.be/fr/licences-f2-pour-les-librairies">
   <div class="alert-row-main">
     <span class="alert-date">28/01/2026</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -128,15 +131,15 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">licences</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/licences-f2-pour-les-librairies&quot;,&quot;Licences F2 pour les librairies&quot;,&quot;28/01/2026&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar2')">✓ Lu</button>
-</div><div class="alert-row" id="ar3">
+</div><div class="alert-row" id="ar3" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786827576165&amp;rid=3">
   <div class="alert-row-main">
     <span class="alert-date">03/09/2025</span>
     <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
-    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786826833196&amp;rid=3" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786827576165&amp;rid=3" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786826833196&amp;rid=3&quot;,&quot;Commission Decision (EU) 2025/1765 of 11\u00a0April 2025 on the measure State aid SA.53630\u00a0(2020/C) \u2013 (ex\u00a02019/FC) \u2013 Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)&quot;,&quot;03/09/2025&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar3')">✓ Lu</button>
-</div><div class="alert-row" id="ar4">
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786827576165&amp;rid=3&quot;,&quot;Commission Decision (EU) 2025/1765 of 11\u00a0April 2025 on the measure State aid SA.53630\u00a0(2020/C) \u2013 (ex\u00a02019/FC) \u2013 Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)&quot;,&quot;03/09/2025&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar3')">✓ Lu</button>
+</div><div class="alert-row" id="ar4" data-url="https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis">
   <div class="alert-row-main">
     <span class="alert-date">06/06/2025</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -144,7 +147,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis&quot;,&quot;Sondage DataSynergy : Les jeunes et les jeux de hasard/paris&quot;,&quot;06/06/2025&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar4')">✓ Lu</button>
-</div><div class="alert-row" id="ar5">
+</div><div class="alert-row" id="ar5" data-url="https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux">
   <div class="alert-row-main">
     <span class="alert-date">17/12/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -152,7 +155,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux&quot;,&quot;Invitation session d'information 17/12/2024 - Nouvelle proc\u00e9dure de blocage des jeux de hasard ill\u00e9gaux&quot;,&quot;17/12/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar5')">✓ Lu</button>
-</div><div class="alert-row" id="ar6">
+</div><div class="alert-row" id="ar6" data-url="https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1">
   <div class="alert-row-main">
     <span class="alert-date">02/09/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -160,7 +163,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1&quot;,&quot;Modification de la Loi sur les jeux de hasard&quot;,&quot;02/09/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar6')">✓ Lu</button>
-</div><div class="alert-row" id="ar7">
+</div><div class="alert-row" id="ar7" data-url="https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe">
   <div class="alert-row-main">
     <span class="alert-date">01/08/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -168,7 +171,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe&quot;,&quot;Publication Moniteur belge - V\u00e9rification de l'\u00e2ge dans les \u00e9tablissements de jeux de hasard de classe III&quot;,&quot;01/08/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar7')">✓ Lu</button>
-</div><div class="alert-row" id="ar8">
+</div><div class="alert-row" id="ar8" data-url="https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii">
   <div class="alert-row-main">
     <span class="alert-date">18/07/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -176,7 +179,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii&quot;,&quot;Note directrice relative aux \u00e9tablissements de jeux de hasard de classe III&quot;,&quot;18/07/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar8')">✓ Lu</button>
-</div><div class="alert-row" id="ar9">
+</div><div class="alert-row" id="ar9" data-url="https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024">
   <div class="alert-row-main">
     <span class="alert-date">20/06/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -184,7 +187,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024&quot;,&quot;Update actions de contr\u00f4le \u00e9t\u00e9 2024&quot;,&quot;20/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar9')">✓ Lu</button>
-</div><div class="alert-row" id="ar10">
+</div><div class="alert-row" id="ar10" data-url="https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite">
   <div class="alert-row-main">
     <span class="alert-date">19/06/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -192,7 +195,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite&quot;,&quot;Documents \u00e0 des fins de contr\u00f4le de la solvabilit\u00e9&quot;,&quot;19/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar10')">✓ Lu</button>
-</div><div class="alert-row" id="ar11">
+</div><div class="alert-row" id="ar11" data-url="https://www.gamingcommission.be/fr/actions-de-controle-ete-2024">
   <div class="alert-row-main">
     <span class="alert-date">11/06/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -200,7 +203,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/actions-de-controle-ete-2024&quot;,&quot;Actions de contr\u00f4le Et\u00e9 2024&quot;,&quot;11/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar11')">✓ Lu</button>
-</div><div class="alert-row" id="ar12">
+</div><div class="alert-row" id="ar12" data-url="https://www.gamingcommission.be/fr/operateurs/blanchiment">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Contrôle &amp; Sanctions</span>
@@ -208,22 +211,22 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/operateurs/blanchiment&quot;,&quot;blanchiment d'argent&quot;,&quot;&quot;,&quot;Gaming Commission (CJH) \u2014 Contr\u00f4le &amp; Sanctions&quot;,'ar12')">✓ Lu</button>
-</div><div class="alert-row" id="ar13">
+</div><div class="alert-row" id="ar13" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786827576165&amp;rid=2">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
-    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786826833196&amp;rid=2" target="_blank">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union</a>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786827576165&amp;rid=2" target="_blank">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786826833196&amp;rid=2&quot;,&quot;STATE AID \u2013 BELGIUM\u00a0\u2013 State aid SA.53630\u00a0(2019/FC) \u2013 Belgium\u00a0\u2013 Alleged aid granted to Ladbrokes in relation to virtual betting\u00a0\u2013 Invitation to submit comments pursuant to Article\u00a0108(2) of the Treaty on the Functioning of the European Union&quot;,&quot;&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar13')">✓ Lu</button>
-</div><div class="alert-row" id="ar14">
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786827576165&amp;rid=2&quot;,&quot;STATE AID \u2013 BELGIUM\u00a0\u2013 State aid SA.53630\u00a0(2019/FC) \u2013 Belgium\u00a0\u2013 Alleged aid granted to Ladbrokes in relation to virtual betting\u00a0\u2013 Invitation to submit comments pursuant to Article\u00a0108(2) of the Treaty on the Functioning of the European Union&quot;,&quot;&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar13')">✓ Lu</button>
+</div><div class="alert-row" id="ar14" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&amp;qid=1786827576165&amp;rid=4">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
-    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&amp;qid=1786826833196&amp;rid=4" target="_blank">State aid — Belgium — State aid SA.53630 (2019/FC) — Alleged aid granted to Ladbrokes in relation to virtual betting — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European UnionText with EEA relevance.</a>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&amp;qid=1786827576165&amp;rid=4" target="_blank">State aid — Belgium — State aid SA.53630 (2019/FC) — Alleged aid granted to Ladbrokes in relation to virtual betting — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European UnionText with EEA relevance.</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&amp;qid=1786826833196&amp;rid=4&quot;,&quot;State aid \u2014 Belgium \u2014 State aid SA.53630 (2019/FC) \u2014 Alleged aid granted to Ladbrokes in relation to virtual betting \u2014 Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European UnionText with EEA relevance.&quot;,&quot;&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar14')">✓ Lu</button>
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&amp;qid=1786827576165&amp;rid=4&quot;,&quot;State aid \u2014 Belgium \u2014 State aid SA.53630 (2019/FC) \u2014 Alleged aid granted to Ladbrokes in relation to virtual betting \u2014 Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European UnionText with EEA relevance.&quot;,&quot;&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar14')">✓ Lu</button>
 </div></div>
 </div>
 
@@ -293,12 +296,12 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
 </div><div class="card" style="border-left-color:#2c3e50">
   <div class="card-head">
     <div>
-      <div class="card-title"><span class="dot err"></span> Autorité belge de la Concurrence</div>
+      <div class="card-title"><span class="dot ok"></span> Autorité belge de la Concurrence</div>
       <a class="card-url" href="https://www.abc-bma.be/fr/news" target="_blank">https://www.abc-bma.be/fr/news</a>
     </div>
-    <span class="badge badge-err">Erreur</span>
+    <span class="badge badge-none">0 alerte</span>
   </div>
-  <div class="card-body"><div class="err-msg">⚠️ Délai dépassé (Playwright 45s)</div></div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
 </div><div class="card" style="border-left-color:#2c3e50">
   <div class="card-head">
     <div>
@@ -433,7 +436,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     </div>
     <span class="badge badge-match">🔴 3 alertes</span>
   </div>
-  <div class="card-body"><div class="result"><a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786826833196&amp;rid=2" target="_blank">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union</a><div class="ctx">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning o…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">03/09/2025</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786826833196&amp;rid=3" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a><div class="ctx">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 217…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&amp;qid=1786826833196&amp;rid=4" target="_blank">State aid — Belgium — State aid SA.53630 (2019/FC) — Alleged aid granted to Ladbrokes in relation to virtual betting — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European UnionText with EEA relevance.</a><div class="ctx">State aid — Belgium — State aid SA.53630 (2019/FC) — Alleged aid granted to Ladbrokes in relation to virtual betting — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the Euro…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div></div>
+  <div class="card-body"><div class="result"><a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786827576165&amp;rid=2" target="_blank">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union</a><div class="ctx">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning o…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">03/09/2025</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786827576165&amp;rid=3" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a><div class="ctx">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 217…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52020AS53630&amp;qid=1786827576165&amp;rid=4" target="_blank">State aid — Belgium — State aid SA.53630 (2019/FC) — Alleged aid granted to Ladbrokes in relation to virtual betting — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European UnionText with EEA relevance.</a><div class="ctx">State aid — Belgium — State aid SA.53630 (2019/FC) — Alleged aid granted to Ladbrokes in relation to virtual betting — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the Euro…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div></div>
 </div>
 
 <div class="card archive-card">
@@ -464,6 +467,9 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
 const KEY_THEME = 'bgw_theme';
 const KEY_READ  = 'bgw_read';
 
+// ── Utilitaire HTML-escape (pour renderArchive) ────────────────────────────────
+function eh(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 // ── Thème ──────────────────────────────────────────────────────────────────────
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
@@ -480,12 +486,24 @@ function toggleTheme(){
 function markRead(url, title, date, src, rowId){
   const items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
   if(!items.find(i=>i.url===url)){
-    items.unshift({url, title, date, src,
-      readAt: new Date().toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})});
+    // On stocke uniquement la date de publication (pas la date du clic)
+    items.unshift({url, title, date, src});
     localStorage.setItem(KEY_READ, JSON.stringify(items.slice(0,300)));
   }
   const row = document.getElementById(rowId);
-  if(row){ row.style.opacity='0'; row.style.transition='opacity .3s'; setTimeout(()=>row.remove(),300); }
+  if(row){ row.style.opacity='0'; row.style.transition='opacity .3s'; setTimeout(()=>{ row.style.display='none'; row.style.opacity='1'; }, 300); }
+  renderArchive();
+}
+
+// ── Remettre comme non lu ──────────────────────────────────────────────────────
+function unmarkRead(url){
+  let items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
+  items = items.filter(i=>i.url!==url);
+  localStorage.setItem(KEY_READ, JSON.stringify(items));
+  // Réafficher la ligne correspondante dans le résumé
+  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
+    if(row.dataset.url===url) row.style.display='';
+  });
   renderArchive();
 }
 
@@ -501,10 +519,11 @@ function renderArchive(){
     return;
   }
   body.innerHTML = items.map(i=>`
-    <div class="archive-row">
-      <span class="archive-date">${i.date||i.readAt||'—'}</span>
-      <span class="archive-src" style="color:#888">${i.src}</span>
-      <a href="${i.url}" target="_blank">${i.title}</a>
+    <div class="archive-row" data-url="${eh(i.url)}">
+      <span class="archive-date">${eh(i.date||'—')}</span>
+      <span class="archive-src" style="color:#888">${eh(i.src)}</span>
+      <a href="${eh(i.url)}" target="_blank">${eh(i.title)}</a>
+      <button class="btn-unread" onclick="unmarkRead(this.closest('.archive-row').dataset.url)">↩ Non lu</button>
     </div>`).join('');
 }
 
@@ -516,9 +535,13 @@ function toggleAbout(){
   body.classList.toggle('open');
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ── Init : cacher les alertes déjà lues au chargement ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
   applyTheme(localStorage.getItem(KEY_THEME)||'light');
+  const readUrls = new Set((JSON.parse(localStorage.getItem(KEY_READ)||'[]')).map(i=>i.url));
+  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
+    if(readUrls.has(row.dataset.url)) row.style.display='none';
+  });
   renderArchive();
 });
 </script>
