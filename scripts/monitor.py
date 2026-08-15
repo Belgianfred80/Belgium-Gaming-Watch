@@ -40,25 +40,36 @@ SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
         # App Nuxt/Vuetify — 1 requête par terme, sélecteur CSS sur les cartes de résultats
+        # no_kw_filter : le moteur de recherche a déjà filtré, on collecte tous les résultats
         'id': 'cour', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
         'js': True,
+        'no_kw_filter': True,
         'url': 'https://fr.const-court.be/search/full-text-judgment?search={term}',
         'search_terms': SEARCH_TERMS,
         'wait_selector': '.fulltext-judgment-card',
         'eval_extract': (
-            "() => Array.from(document.querySelectorAll('.fulltext-judgment-card')).map(card => {"
-            "  const a = card.querySelector('a[href]');"
-            "  return { href: a ? a.href : '', text: card.innerText.trim().slice(0,300) };"
-            "}).filter(x => x.href)"
+            "() => {"
+            "  const cards = document.querySelectorAll('.fulltext-judgment-card');"
+            "  if (cards.length) return Array.from(cards).map(c => {"
+            "    const a = c.querySelector('a[href]');"
+            "    return { href: a ? a.href : '', text: c.innerText.trim().slice(0,300) };"
+            "  }).filter(x => x.href);"
+            "  const main = document.querySelector('main') || document.body;"
+            "  return Array.from(main.querySelectorAll('a[href]'))"
+            "    .filter(a => a.href.includes('const-court') && a.innerText.trim().length > 15)"
+            "    .map(a => ({ href: a.href, text: a.innerText.trim().slice(0,300) }));"
+            "}"
         ),
     },
     {
-        # ColdFusion AJAX — 1 soumission formulaire par terme → résultats dans #callback
+        # ColdFusion AJAX — Search1={term} passé dans l'URL, résultats dans #callback
+        # no_kw_filter : résultats déjà filtrés par le moteur de recherche
         'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
         'js': True,
-        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall',
+        'no_kw_filter': True,
+        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall&Search1={term}',
         'search_terms': SEARCH_TERMS,
         'wait_selector': '#callback a[href]',
         'eval_extract': (
@@ -87,9 +98,11 @@ SOURCES = [
     },
     {
         # Résultats GET — exp={term}, Playwright pour contourner le blocage requests
+        # no_kw_filter : les titres du Moniteur ne contiennent pas les mots-clés cherchés
         'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Moniteur Belge', 'color': '#2c3e50',
         'js': True,
+        'no_kw_filter': True,
         'url': 'https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&choix1=et&choix2=et&exp={term}&fr=f&nl=n&du=d&trier=promulgation&caller=list&page=1',
         'search_terms': SEARCH_TERMS,
     },
@@ -105,6 +118,7 @@ SOURCES = [
         'id': 'abc', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'js': True,
+        'no_kw_filter': True,
         'url': 'https://www.abc-bma.be/fr/search?search_api_fulltext={term}',
         'search_terms': SEARCH_TERMS,
     },
@@ -135,8 +149,8 @@ SOURCES = [
     {
         'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Soir', 'color': '#1565c0',
-        'js': True,
-        'url': 'https://www.lesoir.be/actus',
+        'type': 'rss',
+        'url': 'https://www.lesoir.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
         'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
@@ -154,49 +168,63 @@ SOURCES = [
         'id': 'rtlinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTL Info', 'color': '#ff6f00',
         'js': True,
-        'url': 'https://www.rtl.be/info',
+        'no_kw_filter': True,
+        'url': 'https://www.rtl.be/info/recherche?q={term}',
+        'search_terms': SEARCH_TERMS,
     },
     {
         'id': 'levif', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Vif', 'color': '#6a1b9a',
         'js': True,
-        'url': 'https://www.levif.be/',
+        'no_kw_filter': True,
+        'url': 'https://www.levif.be/recherche/?q={term}',
+        'search_terms': SEARCH_TERMS,
     },
     {
         'id': 'sudinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Sud Info', 'color': '#e65100',
         'js': True,
-        'url': 'https://www.sudinfo.be/',
+        'no_kw_filter': True,
+        'url': 'https://www.sudinfo.be/recherche?q={term}',
+        'search_terms': SEARCH_TERMS,
     },
 
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
     {
+        # Déjà filtré par tag Belgium — no_kw_filter pour garder tous les articles
         'id': 'sbc', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'SBC News — Belgique', 'color': '#2471a3',
         'js': True,
+        'no_kw_filter': True,
         'url': 'https://sbcnews.co.uk/tag/belgium/',
     },
     {
+        # Déjà filtré par recherche Belgium
         'id': 'igaming', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'iGaming Business', 'color': '#2471a3',
         'js': True,
+        'no_kw_filter': True,
         'url': 'https://igamingbusiness.com/?s=belgium',
     },
     {
+        # Déjà filtré par recherche Belgium
         'id': 'casinobeats', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'CasinoBeats', 'color': '#2471a3',
         'js': True,
+        'no_kw_filter': True,
         'url': 'https://casinobeats.com/?s=belgium',
     },
     {
         'id': 'egba', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'EGBA (European Gaming & Betting Assoc.)', 'color': '#1565c0',
         'js': True,
-        'url': 'https://www.egba.eu/news/',
+        'no_kw_filter': True,
+        'url': 'https://egba.eu/news/',
     },
     {
         'id': 'eurlex', 'group': 'Presse spécialisée & Europe', 'kw_set': 'institutional',
         'name': 'EUR-Lex (législation UE)', 'color': '#1565c0',
+        'no_kw_filter': True,
         'url': 'https://eur-lex.europa.eu/search.html?text={term}+belgique&scope=EURLEX&type=quick&lang=fr',
         'search_terms': SEARCH_TERMS,
     },
@@ -365,10 +393,11 @@ def fetch_with_browser(src: dict) -> dict:
         'button:has-text("Search"), button:has-text("Zoeken")'
     )
 
-    kw_set   = src.get('kw_set', 'institutional')
-    wait_sel = src.get('wait_selector')
-    eval_js  = src.get('eval_extract')
-    base_url = src['url']
+    kw_set    = src.get('kw_set', 'institutional')
+    wait_sel  = src.get('wait_selector')
+    eval_js   = src.get('eval_extract')
+    base_url  = src['url']
+    no_kw     = src.get('no_kw_filter', False)
 
     # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
     terms = (src.get('search_terms')
@@ -458,7 +487,9 @@ def fetch_with_browser(src: dict) -> dict:
                         full_url = href if href.startswith('http') else urljoin(nav_url, href)
                         kws = find_keywords(text, kw_set)
                         if not kws:
-                            continue
+                            if not no_kw:
+                                continue
+                            kws = [term] if term else ['résultat']
                         seen_urls.add(href)
                         date_obj = extract_date(text)
                         date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
@@ -509,7 +540,9 @@ def fetch_with_browser(src: dict) -> dict:
 
                         kws = find_keywords(text + ' ' + ctx, kw_set)
                         if not kws:
-                            continue
+                            if not no_kw:
+                                continue
+                            kws = [term] if term else ['résultat']
 
                         seen_urls.add(full_url)
                         date_obj = extract_date(ctx) or extract_date(text)
@@ -549,6 +582,7 @@ def fetch_source(src: dict) -> dict:
     kw_set   = src.get('kw_set', 'institutional')
     base_url = src['url']
     terms    = src.get('search_terms') or [None]
+    no_kw    = src.get('no_kw_filter', False)
 
     all_matches: list = []
     seen_urls:   set  = set()
@@ -581,7 +615,9 @@ def fetch_source(src: dict) -> dict:
 
                 kws = find_keywords(text + ' ' + ctx, kw_set)
                 if not kws:
-                    continue
+                    if not no_kw:
+                        continue
+                    kws = [term] if term else ['résultat']
 
                 seen_urls.add(full_url)
                 date_obj = extract_date(ctx) or extract_date(text)
