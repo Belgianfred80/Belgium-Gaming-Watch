@@ -1,0 +1,40 @@
+name: Veille Jeux d'Argent Belgique
+
+on:
+  schedule:
+    - cron: '30 5 * * *'   # 7h30 heure belge été (UTC+2) — 6h30 en hiver
+  workflow_dispatch:         # Déclenchement manuel depuis l'onglet Actions
+
+permissions:
+  contents: write   # pour committer index.html et data/
+  issues: write     # pour créer des issues d'alerte
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: Lancer la veille
+        run: python scripts/monitor.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Committer et pousser les résultats
+        run: |
+          git config user.name  "GitHub Actions — Veille"
+          git config user.email "actions@github.com"
+          git add index.html data/last_results.json
+          git diff --staged --quiet || git commit -m "🔍 Veille du $(TZ='Europe/Brussels' date '+%d/%m/%Y %H:%M')"
+          git push
