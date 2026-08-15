@@ -11,6 +11,7 @@ import re
 import time
 import unicodedata
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -84,39 +85,46 @@ SOURCES = [
         'url': 'https://medor.coop/nos-coups/',
     },
     {
-        'id': 'soir', 'group': 'Presse belge francophone',
-        'name': 'Le Soir', 'color': '#1565c0',
-        'url': 'https://www.lesoir.be/recherche?q=jeux+hasard+ladbrokes+entain',
-    },
-    {
         'id': 'rtbf', 'group': 'Presse belge francophone',
         'name': 'RTBF Info', 'color': '#e53935',
-        'url': 'https://www.rtbf.be/recherche?q=jeux+hasard+ladbrokes+entain',
+        'type': 'rss',
+        'url': 'https://rss.rtbf.be/article/rss/highlight_rtbf_info.xml',
+    },
+    {
+        'id': 'soir', 'group': 'Presse belge francophone',
+        'name': 'Le Soir', 'color': '#1565c0',
+        'type': 'rss',
+        'url': 'https://www.lesoir.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
         'id': 'lalibre', 'group': 'Presse belge francophone',
         'name': 'La Libre Belgique', 'color': '#0d47a1',
-        'url': 'https://www.lalibre.be/recherche?q=jeux+hasard+ladbrokes+entain',
+        'type': 'rss',
+        'url': 'https://www.lalibre.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
         'id': 'dhnet', 'group': 'Presse belge francophone',
         'name': 'La Dernière Heure', 'color': '#b71c1c',
-        'url': 'https://www.dhnet.be/recherche?q=jeux+hasard+ladbrokes+entain',
+        'type': 'rss',
+        'url': 'https://www.dhnet.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
         'id': 'rtlinfo', 'group': 'Presse belge francophone',
         'name': 'RTL Info', 'color': '#ff6f00',
-        'url': 'https://www.rtl.be/info/recherche?q=jeux+hasard+ladbrokes',
+        'type': 'rss',
+        'url': 'https://feeds.rtl.be/rtlinfo_fr',
     },
     {
         'id': 'levif', 'group': 'Presse belge francophone',
         'name': 'Le Vif', 'color': '#6a1b9a',
-        'url': 'https://www.levif.be/recherche/?q=jeux+hasard+ladbrokes',
+        'type': 'rss',
+        'url': 'https://www.levif.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
         'id': 'sudinfo', 'group': 'Presse belge francophone',
         'name': 'Sud Info', 'color': '#e65100',
-        'url': 'https://www.sudinfo.be/recherche?q=jeux+hasard+ladbrokes',
+        'type': 'rss',
+        'url': 'https://www.sudinfo.be/arc/outboundfeeds/rss/?outputType=xml',
     },
 
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
@@ -217,7 +225,79 @@ def extract_date(text: str):
 
 # ── Scraping ───────────────────────────────────────────────────────────────────
 
+def fetch_rss(src: dict) -> dict:
+    """Récupère un flux RSS/Atom et filtre les entrées par mots-clés."""
+    try:
+        resp = requests.get(src['url'], headers=HEADERS, timeout=REQUEST_TIMEOUT, allow_redirects=True)
+        resp.raise_for_status()
+
+        soup = BeautifulSoup(resp.content, 'xml')
+        matches = []
+
+        for item in soup.find_all('item'):
+            title_tag = item.find('title')
+            title = title_tag.get_text(strip=True) if title_tag else ''
+            if not title:
+                continue
+
+            # URL : guid permalink en priorité, sinon link
+            guid_tag = item.find('guid')
+            link_tag = item.find('link')
+            link = ''
+            if guid_tag and guid_tag.get('isPermaLink', 'true').lower() != 'false':
+                link = guid_tag.get_text(strip=True)
+            if not link and link_tag:
+                link = link_tag.get_text(strip=True)
+            if not link:
+                continue
+
+            # Description — nettoyer le HTML éventuel
+            desc_tag = item.find('description')
+            desc = ''
+            if desc_tag:
+                raw = desc_tag.get_text(strip=True)
+                desc = BeautifulSoup(raw, 'html.parser').get_text(' ', strip=True)
+
+            # Date de publication
+            pub_tag = item.find('pubDate')
+            date_str = ''
+            if pub_tag:
+                try:
+                    dt = parsedate_to_datetime(pub_tag.get_text(strip=True))
+                    date_str = dt.strftime('%d/%m/%Y')
+                except Exception:
+                    pass
+
+            kws = find_keywords(title + ' ' + desc)
+            if not kws:
+                continue
+
+            matches.append({
+                'text': title,
+                'url': link,
+                'keywords': kws,
+                'context': desc[:220] if desc else '',
+                'date': date_str,
+            })
+
+            if len(matches) >= MAX_MATCHES_PER_SOURCE:
+                break
+
+        return {'status': 'ok', 'matches': matches}
+
+    except requests.exceptions.Timeout:
+        return {'status': 'error', 'message': f'Délai dépassé ({REQUEST_TIMEOUT}s)'}
+    except requests.exceptions.ConnectionError as e:
+        return {'status': 'error', 'message': f'Connexion impossible : {str(e)[:60]}'}
+    except requests.exceptions.HTTPError as e:
+        return {'status': 'error', 'message': f'HTTP {e.response.status_code}'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)[:80]}
+
+
 def fetch_source(src: dict) -> dict:
+    if src.get('type') == 'rss':
+        return fetch_rss(src)
     try:
         resp = requests.get(
             src['url'], headers=HEADERS,
