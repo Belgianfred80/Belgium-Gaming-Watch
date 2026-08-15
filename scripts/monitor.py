@@ -38,19 +38,23 @@ SOURCES = [
     {
         'id': 'cour', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
-        'url': 'https://fr.const-court.be',
+        'js': True,
+        'search_query': 'ladbrokes OR entain OR bwin OR "jeux de hasard"',
+        'url': 'https://fr.const-court.be/search/full-text-judgment',
     },
     {
         'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
         'js': True,
-        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=/flwb/recent&language=fr&cfm=/site/wwwcfm/flwb/LastDocument.cfm',
+        'search_query': 'ladbrokes entain bwin "jeux de hasard"',
+        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall',
     },
     {
         'id': 'senat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Sénat de Belgique', 'color': '#1a6640',
         'js': True,
-        'url': 'https://www.senate.be/www/webdriver?MIval=publications/viewPubList&LANG=fr&PUBTYPE=&TREFWOORDEN=jeux+de+hasard',
+        'search_query': 'ladbrokes OR entain OR bwin OR "jeux de hasard"',
+        'url': 'https://www.senate.be/www/webdriver?MIval=publications/recherchePublications&LANG=fr',
     },
     {
         'id': 'cjh', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
@@ -317,7 +321,9 @@ def fetch_rss(src: dict) -> dict:
 
 
 def fetch_with_browser(src: dict) -> dict:
-    """Scrape une page JS-rendue via Playwright (Chromium headless)."""
+    """Scrape une page JS-rendue via Playwright (Chromium headless).
+    Si 'search_query' est défini, remplit le formulaire de recherche et soumet.
+    """
     try:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
@@ -329,6 +335,35 @@ def fetch_with_browser(src: dict) -> dict:
                 )
             )
             page.goto(src['url'], wait_until='networkidle', timeout=45_000)
+
+            # Si une requête de recherche est définie, remplir et soumettre le formulaire
+            search_query = src.get('search_query')
+            if search_query:
+                # Trouver la première zone de texte visible (champ de recherche)
+                input_sel = ('input[type="text"]:visible, '
+                             'input[type="search"]:visible, '
+                             'textarea:visible')
+                try:
+                    page.wait_for_selector(input_sel, timeout=10_000)
+                    page.locator(input_sel).first.fill(search_query)
+                except Exception:
+                    pass
+
+                # Soumettre : bouton submit ou touche Entrée
+                submit_sel = ('button[type="submit"], input[type="submit"], '
+                              'button:text-matches("soumettre|rechercher|search|zoek", "i")')
+                try:
+                    page.locator(submit_sel).first.click(timeout=8_000)
+                except Exception:
+                    # Fallback : Entrée dans le champ de recherche
+                    try:
+                        page.locator(input_sel).first.press('Enter')
+                    except Exception:
+                        pass
+
+                # Attendre que les résultats se chargent
+                page.wait_for_load_state('networkidle', timeout=30_000)
+
             html = page.content()
             browser.close()
 
