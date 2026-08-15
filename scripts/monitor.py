@@ -499,10 +499,10 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
                 if a.get('date') else '<span class="alert-date no-date">date ?</span>'
             )
             row_id = f'ar{idx}'
-            js_url   = json.dumps(a['url'])
-            js_title = json.dumps(a['text'])
-            js_date  = json.dumps(a.get('date', ''))
-            js_src   = json.dumps(a['source_name'])
+            js_url   = esc(json.dumps(a['url']))
+            js_title = esc(json.dumps(a['text']))
+            js_date  = esc(json.dumps(a.get('date', '')))
+            js_src   = esc(json.dumps(a['source_name']))
             rows += f'''<div class="alert-row" id="{row_id}">
   <div class="alert-row-main">
     {date_badge}
