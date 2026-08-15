@@ -39,8 +39,10 @@ SEARCH_TERMS = ['ladbrokes', 'entain', 'bwin', 'jeux de hasard']
 SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
+    {
         # App Nuxt/Vuetify — 1 requête par terme, sélecteur CSS sur les cartes de résultats
-        # no_kw_filter : le moteur de recherche a déjà filtré, on collecte tous les résultats
+        # no_kw_filter : le moteur de recherche a déjà filtré
+        # Le fallback exclut les URLs /search/ (menu de navigation)
         'id': 'cour', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
         'js': True,
@@ -57,7 +59,10 @@ SOURCES = [
             "  }).filter(x => x.href);"
             "  const main = document.querySelector('main') || document.body;"
             "  return Array.from(main.querySelectorAll('a[href]'))"
-            "    .filter(a => a.href.includes('const-court') && a.innerText.trim().length > 15)"
+            "    .filter(a => a.href.includes('const-court')"
+            "               && !a.href.includes('/search/')"
+            "               && !a.href.includes('#')"
+            "               && a.innerText.trim().length > 25)"
             "    .map(a => ({ href: a.href, text: a.innerText.trim().slice(0,300) }));"
             "}"
         ),
@@ -97,12 +102,14 @@ SOURCES = [
         'url': 'https://www.gamingcommission.be/fr/commission-des-jeux-de-hasard/controle-et-sanctions',
     },
     {
-        # Résultats GET — exp={term}, Playwright pour contourner le blocage requests
-        # no_kw_filter : les titres du Moniteur ne contiennent pas les mots-clés cherchés
+    {
+        # Résultats GET — exp={term}, timeout étendu à 90s car le site est lent
+        # no_kw_filter : les titres ne contiennent pas les mots-clés cherchés
         'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Moniteur Belge', 'color': '#2c3e50',
         'js': True,
         'no_kw_filter': True,
+        'playwright_timeout': 90_000,
         'url': 'https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&choix1=et&choix2=et&exp={term}&fr=f&nl=n&du=d&trier=promulgation&caller=list&page=1',
         'search_terms': SEARCH_TERMS,
     },
@@ -115,12 +122,24 @@ SOURCES = [
     #     'search_terms': SEARCH_TERMS,
     # },
     {
+    {
+        # Drupal — résultats dans .view-content, attendre le chargement JS
+        # URL filtrée sur content_type:decision pour éviter le bruit
         'id': 'abc', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'js': True,
         'no_kw_filter': True,
-        'url': 'https://www.abc-bma.be/fr/search?search_api_fulltext={term}',
+        'url': 'https://www.abc-bma.be/fr/search?search_api_fulltext={term}&f%5B0%5D=content_type%3Adecision',
         'search_terms': SEARCH_TERMS,
+        'wait_selector': '.view-content a, h2 a, h3 a, .views-row a',
+        'eval_extract': (
+            "() => {"
+            "  const sel = '.view-content a[href], h2 a[href], h3 a[href], article a[href]';"
+            "  return Array.from(document.querySelectorAll(sel))"
+            "    .filter(a => a.href.includes('abc-bma') && a.innerText.trim().length > 15)"
+            "    .map(a => ({ href: a.href, text: a.innerText.trim().slice(0,300) }));"
+            "}"
+        ),
     },
     {
         'id': 'spfjust', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
@@ -146,12 +165,13 @@ SOURCES = [
         'type': 'rss',
         'url': 'https://rss.rtbf.be/article/rss/highlight_rtbf_info.xml',
     },
-    {
-        'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
-        'name': 'Le Soir', 'color': '#1565c0',
-        'type': 'rss',
-        'url': 'https://www.lesoir.be/arc/outboundfeeds/rss/?outputType=xml',
-    },
+    # Le Soir — RSS Arc retourne 403, site JS anti-bot → commenté temporairement
+    # {
+    #     'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
+    #     'name': 'Le Soir', 'color': '#1565c0',
+    #     'type': 'rss',
+    #     'url': 'https://www.lesoir.be/arc/outboundfeeds/rss/?outputType=xml',
+    # },
     {
         'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Libre Belgique', 'color': '#0d47a1',
@@ -190,14 +210,13 @@ SOURCES = [
     },
 
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
-    {
-        # Déjà filtré par tag Belgium — no_kw_filter pour garder tous les articles
-        'id': 'sbc', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
-        'name': 'SBC News — Belgique', 'color': '#2471a3',
-        'js': True,
-        'no_kw_filter': True,
-        'url': 'https://sbcnews.co.uk/tag/belgium/',
-    },
+    # SBC News — bloqué par Cloudflare WAF
+    # {
+    #     'id': 'sbc', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
+    #     'name': 'SBC News — Belgique', 'color': '#2471a3',
+    #     'js': True,
+    #     'url': 'https://sbcnews.co.uk/tag/belgium/',
+    # },
     {
         # Déjà filtré par recherche Belgium
         'id': 'igaming', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
@@ -214,19 +233,30 @@ SOURCES = [
         'no_kw_filter': True,
         'url': 'https://casinobeats.com/?s=belgium',
     },
+    # EGBA — domaine mort (ERR_NAME_NOT_RESOLVED sur www.egba.eu et egba.eu)
+    # {
+    #     'id': 'egba', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
+    #     'name': 'EGBA (European Gaming & Betting Assoc.)', 'color': '#1565c0',
+    #     'js': True,
+    #     'url': 'https://egba.eu/news/',
+    # },
     {
-        'id': 'egba', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
-        'name': 'EGBA (European Gaming & Betting Assoc.)', 'color': '#1565c0',
-        'js': True,
-        'no_kw_filter': True,
-        'url': 'https://egba.eu/news/',
-    },
-    {
+        # eval_extract ciblé : uniquement les liens vers des documents CELEX
         'id': 'eurlex', 'group': 'Presse spécialisée & Europe', 'kw_set': 'institutional',
         'name': 'EUR-Lex (législation UE)', 'color': '#1565c0',
         'no_kw_filter': True,
         'url': 'https://eur-lex.europa.eu/search.html?text={term}+belgique&scope=EURLEX&type=quick&lang=fr',
         'search_terms': SEARCH_TERMS,
+        'eval_extract': (
+            "() => Array.from(document.querySelectorAll("
+            "  'a[href*=\"uri=CELEX\"], a[href*=\"/legal-content/AUTO/\"], a[href*=\"data.europa.eu/eli\"]'"
+            "))"
+            ".filter(a => {"
+            "  const t = a.innerText.trim();"
+            "  return t.length > 15 && !/^\\s*(pdf|html|Print|xml)\\s*$/i.test(t);"
+            "})"
+            ".map(a => ({ href: a.href, text: a.innerText.trim().slice(0,300) }))"
+        ),
     },
 ]
 
@@ -256,6 +286,19 @@ def normalize(text: str) -> str:
     )
     return text
 
+
+# Textes boilerplate à ignorer pour les sources no_kw_filter
+_BOILERPLATE = frozenset([
+    'skip to main content', 'aller au contenu', 'aller au menu',
+    'politique des cookies', 'politique en matière de cookies',
+    'enable javascript', 'how to enable javascript', 'activer javascript',
+    'link is external', 'lien externe', 'lien interne',
+    'advanced search', 'recherche avancée',
+    'export selection', 'export all', 'clear selection',
+    'customise shown information',
+    'ray id', 'performance and security by cloudflare',
+    'www.belgium.be', 'other information and services',
+])
 
 # Patterns compilés une seule fois — mot entier uniquement (évite "contrôleurs" → "controle")
 _KW_PATTERNS = {
@@ -398,6 +441,7 @@ def fetch_with_browser(src: dict) -> dict:
     eval_js   = src.get('eval_extract')
     base_url  = src['url']
     no_kw     = src.get('no_kw_filter', False)
+    pw_timeout = src.get('playwright_timeout', 45_000)
 
     # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
     terms = (src.get('search_terms')
@@ -422,7 +466,7 @@ def fetch_with_browser(src: dict) -> dict:
                 is_template = term and '{term}' in base_url
                 nav_url = base_url.replace('{term}', quote_plus(term)) if is_template else base_url
 
-                page.goto(nav_url, wait_until='domcontentloaded', timeout=45_000)
+                page.goto(nav_url, wait_until='domcontentloaded', timeout=pw_timeout)
                 page.wait_for_timeout(2000)
 
                 # ── Remplissage formulaire (sources sans template URL) ─────
@@ -542,6 +586,12 @@ def fetch_with_browser(src: dict) -> dict:
                         if not kws:
                             if not no_kw:
                                 continue
+                            # Filtrer le bruit (boilerplate, liens trop courts)
+                            if len(text) < 20:
+                                continue
+                            tl = text.lower()
+                            if any(b in tl for b in _BOILERPLATE):
+                                continue
                             kws = [term] if term else ['résultat']
 
                         seen_urls.add(full_url)
@@ -616,6 +666,11 @@ def fetch_source(src: dict) -> dict:
                 kws = find_keywords(text + ' ' + ctx, kw_set)
                 if not kws:
                     if not no_kw:
+                        continue
+                    if len(text) < 20:
+                        continue
+                    tl = text.lower()
+                    if any(b in tl for b in _BOILERPLATE):
                         continue
                     kws = [term] if term else ['résultat']
 
