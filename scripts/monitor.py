@@ -392,7 +392,7 @@ def _parse_date(date_str: str):
 
 
 def generate_html(results: dict, run_time: str, new_count: int) -> str:
-    # Comptage global par mot-clé (sur tous les mots-clés uniques)
+    # Comptage global par mot-clé
     kw_counts = {kw: 0 for kw in _ALL_KEYWORDS}
     for result in results.values():
         for m in result.get('matches', []):
@@ -416,25 +416,32 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
 
     if all_alerts:
         rows = ''
-        for a in all_alerts:
+        for idx, a in enumerate(all_alerts):
             tags = ''.join(f'<span class="tag">{esc(kw)}</span>' for kw in a['keywords'])
             date_badge = (
                 f'<span class="alert-date">{esc(a["date"])}</span>'
-                if a.get('date')
-                else '<span class="alert-date no-date">date ?</span>'
+                if a.get('date') else '<span class="alert-date no-date">date ?</span>'
             )
-            rows += f'''<div class="alert-row">
-  {date_badge}
-  <span class="alert-src" style="color:{a["source_color"]}">{esc(a["source_name"])}</span>
-  <a href="{esc(a["url"])}" target="_blank">{esc(a["text"])}</a>
-  <div class="tag-row">{tags}</div>
+            row_id = f'ar{idx}'
+            js_url   = json.dumps(a['url'])
+            js_title = json.dumps(a['text'])
+            js_date  = json.dumps(a.get('date', ''))
+            js_src   = json.dumps(a['source_name'])
+            rows += f'''<div class="alert-row" id="{row_id}">
+  <div class="alert-row-main">
+    {date_badge}
+    <span class="alert-src" style="color:{a["source_color"]}">{esc(a["source_name"])}</span>
+    <a href="{esc(a["url"])}" target="_blank">{esc(a["text"])}</a>
+    <div class="tag-row">{tags}</div>
+  </div>
+  <button class="btn-read" onclick="markRead({js_url},{js_title},{js_date},{js_src},'{row_id}')">✓ Lu</button>
 </div>'''
         summary_card = f'''<div class="card summary-card">
   <div class="card-head">
-    <div class="card-title">🔔 Résumé des alertes — {total_alerts} résultat{"s" if total_alerts != 1 else ""}, toutes sources</div>
-    <span class="badge badge-match">{total_alerts} alerte{"s" if total_alerts != 1 else ""}</span>
+    <div class="card-title">🔔 Résumé des alertes — {total_alerts} résultat{"s" if total_alerts != 1 else ""}</div>
+    <span class="badge badge-match" id="summary-badge">{total_alerts} alerte{"s" if total_alerts != 1 else ""}</span>
   </div>
-  <div class="card-body">{rows}</div>
+  <div class="card-body" id="summary-body">{rows}</div>
 </div>'''
     else:
         summary_card = '''<div class="card summary-card">
@@ -442,23 +449,17 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
   <div class="card-body"><div class="empty">Aucune alerte pour cette vérification.</div></div>
 </div>'''
 
-    # Chips mots-clés (header) — deux groupes visuellement séparés
+    # Chips mots-clés
     kw_chips = '<span class="kw-label">Institutionnel :</span>'
     for kw in KEYWORDS_INSTITUTIONAL:
         cnt = kw_counts.get(kw, 0)
-        if cnt:
-            kw_chips += (f'<span class="kw-chip active">{esc(kw)} '
-                         f'<span class="n">{cnt}</span></span>')
-        else:
-            kw_chips += f'<span class="kw-chip">{esc(kw)}</span>'
+        kw_chips += (f'<span class="kw-chip active">{esc(kw)} <span class="n">{cnt}</span></span>'
+                     if cnt else f'<span class="kw-chip">{esc(kw)}</span>')
     kw_chips += '<span class="kw-label kw-label-press">Presse :</span>'
     for kw in KEYWORDS_PRESS:
         cnt = kw_counts.get(kw, 0)
-        if cnt:
-            kw_chips += (f'<span class="kw-chip active">{esc(kw)} '
-                         f'<span class="n">{cnt}</span></span>')
-        else:
-            kw_chips += f'<span class="kw-chip">{esc(kw)}</span>'
+        kw_chips += (f'<span class="kw-chip active">{esc(kw)} <span class="n">{cnt}</span></span>'
+                     if cnt else f'<span class="kw-chip">{esc(kw)}</span>')
 
     # ── Cartes par source ──────────────────────────────────────────────────────
     cards_html = ''
@@ -501,12 +502,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
                           f'</div>')
             body = items
 
-        new_badge = (f' — <strong style="color:#e74c3c">'
-                     f'{new_count} nouvelle{"s" if new_count != 1 else ""} '
-                     f'depuis hier</strong>') if new_count else ''
-
-        cards_html += f'''
-<div class="card" style="border-left-color:{src["color"]}">
+        cards_html += f'''<div class="card" style="border-left-color:{src["color"]}">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot {dot}"></span> {esc(src["name"])}</div>
@@ -522,55 +518,155 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
                         ) if new_count else ''
 
     css = """
-:root{color-scheme:light}
+:root{
+  --bg:#eef0f4;--fg:#1a1a2e;--card:#fff;--border:#f2f3f5;--shadow:rgba(0,0,0,.08);
+  --grp:#9aa;--grp-line:#dde0e8;--url:#b0b4bc;--empty:#c0c4cc;--ctx:#888;
+  --date-bg:#eef0f4;--date-fg:#555;--item-date:#aaa;
+  --tag-bg:#fff8dc;--tag-fg:#7d5a00;--foot:#bbb;
+  --badge-none-bg:#eef0f4;--badge-none-fg:#999;
+  --err:#d35400;--link:#1a5276;
+}
+[data-theme=dark]{
+  --bg:#0d1117;--fg:#c9d1d9;--card:#161b22;--border:#21262d;--shadow:rgba(0,0,0,.4);
+  --grp:#58a6ff;--grp-line:#21262d;--url:#484f58;--empty:#484f58;--ctx:#6e7681;
+  --date-bg:#21262d;--date-fg:#8b949e;--item-date:#6e7681;
+  --tag-bg:#2d2a1f;--tag-fg:#d4a843;--foot:#484f58;
+  --badge-none-bg:#21262d;--badge-none-fg:#6e7681;
+  --err:#f85149;--link:#58a6ff;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#eef0f4;color:#1a1a2e;font-size:14px}
-header{background:linear-gradient(135deg,#0d1b2a,#1b3a5c);color:#fff;padding:16px 20px 12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--fg);font-size:14px;transition:background .2s,color .2s}
+header{background:linear-gradient(135deg,#0d1b2a,#1b3a5c);color:#fff;padding:16px 20px 12px;position:relative}
+[data-theme=dark] header{background:linear-gradient(135deg,#010409,#0d1b2a)}
 header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 #ts{font-size:11px;color:rgba(255,255,255,.55)}
-.kw-row{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
+.kw-row{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 .kw-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-right:4px}
 .kw-label-press{margin-left:10px}
 .kw-chip{font-size:10px;font-weight:600;background:rgba(255,255,255,.12);border-radius:4px;padding:2px 8px;color:rgba(255,255,255,.8)}
 .kw-chip.active{background:rgba(231,76,60,.3)}
 .kw-chip .n{display:inline-block;background:#e74c3c;color:#fff;border-radius:8px;padding:0 4px;margin-left:5px;font-size:9px}
+#theme-btn{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:6px;padding:5px 11px;font-size:11px;cursor:pointer;transition:background .2s}
+#theme-btn:hover{background:rgba(255,255,255,.22)}
 .page{padding:14px;display:flex;flex-direction:column;gap:10px}
-.group-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:#9aa;padding:6px 2px 2px;border-bottom:1px solid #dde0e8;margin-bottom:2px}
-.card{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:4px solid #ccc;overflow:hidden}
+.group-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--grp);padding:6px 2px 2px;border-bottom:1px solid var(--grp-line);margin-bottom:2px}
+.card{background:var(--card);border-radius:8px;box-shadow:0 1px 3px var(--shadow);border-left:4px solid #ccc;overflow:hidden;transition:background .2s}
 .summary-card{border-left:6px solid #e74c3c}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #f2f3f5;gap:10px}
+.archive-card{border-left:4px solid #666}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--border);gap:10px}
 .card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0;display:inline-block}
 .dot.ok{background:#2ecc71}.dot.err{background:#e67e22}
-.card-url{font-size:10px;color:#b0b4bc;margin-top:1px;text-decoration:none;display:block}
+.card-url{font-size:10px;color:var(--url);margin-top:1px;text-decoration:none;display:block}
 .card-url:hover{color:#3498db}
 .badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap}
 .badge-match{background:#fde8e8;color:#c0392b}
-.badge-none{background:#eef0f4;color:#999}
-.badge-err{background:#fff3e6;color:#d35400}
+.badge-none{background:var(--badge-none-bg);color:var(--badge-none-fg)}
+.badge-err{background:#fff3e6;color:var(--err)}
 .card-body{padding:10px 14px 12px}
-.alert-row{padding:8px 0;border-bottom:1px solid #f5f6fa;line-height:1.6}
+.alert-row{padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px}
 .alert-row:last-child{border-bottom:none}
-.alert-row a{font-size:12.5px;font-weight:600;color:#1a5276;text-decoration:none}
-.alert-row a:hover{color:#2980b9;text-decoration:underline}
-.alert-date{font-size:10px;font-weight:700;background:#eef0f4;color:#555;border-radius:3px;padding:1px 7px;margin-right:6px;white-space:nowrap}
-.alert-date.no-date{color:#ccc}
+.alert-row-main{flex:1;min-width:0;line-height:1.6}
+.alert-row a{font-size:12.5px;font-weight:600;color:var(--link);text-decoration:none}
+.alert-row a:hover{text-decoration:underline}
+.alert-date{font-size:10px;font-weight:700;background:var(--date-bg);color:var(--date-fg);border-radius:3px;padding:1px 7px;margin-right:6px;white-space:nowrap}
+.alert-date.no-date{color:var(--empty)}
 .alert-src{font-size:10px;font-weight:700;margin-right:8px}
-.result{padding:8px 0;border-bottom:1px solid #f5f6fa;line-height:1.45}
+.btn-read{flex-shrink:0;font-size:10px;font-weight:600;background:rgba(46,204,113,.12);color:#27ae60;border:none;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;margin-top:2px}
+[data-theme=dark] .btn-read{color:#3fb950;background:rgba(63,185,80,.12)}
+.btn-read:hover{opacity:.75}
+.result{padding:8px 0;border-bottom:1px solid var(--border);line-height:1.45}
 .result:last-child{border-bottom:none}
-.result a{font-size:12.5px;font-weight:600;color:#1a5276;text-decoration:none;display:block}
-.result a:hover{color:#2980b9;text-decoration:underline}
-.item-date{font-size:10px;color:#aaa;margin-right:6px}
-.ctx{font-size:11px;color:#888;margin-top:3px;line-height:1.4}
+.result a{font-size:12.5px;font-weight:600;color:var(--link);text-decoration:none;display:block}
+.result a:hover{text-decoration:underline}
+.item-date{font-size:10px;color:var(--item-date);margin-right:6px}
+.ctx{font-size:11px;color:var(--ctx);margin-top:3px;line-height:1.4}
 .tag-row{margin-top:4px;display:flex;gap:4px;flex-wrap:wrap}
-.tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:3px;background:#fff8dc;color:#7d5a00}
-.empty{font-size:11.5px;color:#c0c4cc;padding:4px 0;font-style:italic}
-.err-msg{font-size:11.5px;color:#d35400;padding:4px 0}
-footer{text-align:center;font-size:10px;color:#bbb;padding:10px 16px 20px}
+.tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:3px;background:var(--tag-bg);color:var(--tag-fg)}
+.empty{font-size:11.5px;color:var(--empty);padding:4px 0;font-style:italic}
+.err-msg{font-size:11.5px;color:var(--err);padding:4px 0}
+.archive-row{padding:5px 0;border-bottom:1px solid var(--border);font-size:11.5px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.archive-row:last-child{border-bottom:none}
+.archive-row a{color:var(--ctx);text-decoration:none}
+.archive-row a:hover{text-decoration:underline}
+.archive-date{font-size:10px;color:var(--date-fg);background:var(--date-bg);border-radius:3px;padding:1px 6px;white-space:nowrap;flex-shrink:0}
+.archive-src{font-size:10px;font-weight:700;flex-shrink:0}
+.about-section{background:var(--card);border-radius:8px;border:1px solid var(--border);overflow:hidden}
+.about-toggle{width:100%;background:none;border:none;padding:12px 14px;text-align:left;font-size:12px;font-weight:700;color:var(--fg);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.about-chevron{font-size:10px;transition:transform .2s;color:var(--url)}
+.about-toggle.open .about-chevron{transform:rotate(180deg)}
+.about-body{display:none;padding:4px 14px 14px;font-size:12px;line-height:1.8;color:var(--ctx)}
+.about-body.open{display:block}
+.about-body p{margin-top:8px}
+.about-body strong{color:var(--fg)}
+footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px}
+"""
+
+    js = """
+const KEY_THEME = 'bgw_theme';
+const KEY_READ  = 'bgw_read';
+
+// ── Thème ──────────────────────────────────────────────────────────────────────
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  const btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = t==='dark' ? '☀️ Clair' : '🌙 Sombre';
+}
+function toggleTheme(){
+  const t = document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+  localStorage.setItem(KEY_THEME, t);
+  applyTheme(t);
+}
+
+// ── Marquer comme lu ───────────────────────────────────────────────────────────
+function markRead(url, title, date, src, rowId){
+  const items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
+  if(!items.find(i=>i.url===url)){
+    items.unshift({url, title, date, src,
+      readAt: new Date().toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})});
+    localStorage.setItem(KEY_READ, JSON.stringify(items.slice(0,300)));
+  }
+  const row = document.getElementById(rowId);
+  if(row){ row.style.opacity='0'; row.style.transition='opacity .3s'; setTimeout(()=>row.remove(),300); }
+  renderArchive();
+}
+
+// ── Archive ────────────────────────────────────────────────────────────────────
+function renderArchive(){
+  const items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
+  const body  = document.getElementById('archive-body');
+  const badge = document.getElementById('archive-badge');
+  if(!body) return;
+  if(badge) badge.textContent = items.length ? items.length+' élément'+(items.length>1?'s':'') : 'vide';
+  if(!items.length){
+    body.innerHTML = '<div class="empty">Aucun élément archivé.</div>';
+    return;
+  }
+  body.innerHTML = items.map(i=>`
+    <div class="archive-row">
+      <span class="archive-date">${i.date||i.readAt||'—'}</span>
+      <span class="archive-src" style="color:#888">${i.src}</span>
+      <a href="${i.url}" target="_blank">${i.title}</a>
+    </div>`).join('');
+}
+
+// ── Section À propos ──────────────────────────────────────────────────────────
+function toggleAbout(){
+  const btn  = document.getElementById('about-btn');
+  const body = document.getElementById('about-body');
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  applyTheme(localStorage.getItem(KEY_THEME)||'light');
+  renderArchive();
+});
 """
 
     return f"""<!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -579,15 +675,43 @@ footer{text-align:center;font-size:10px;color:#bbb;padding:10px 16px 20px}
 </head>
 <body>
 <header>
+  <button id="theme-btn" onclick="toggleTheme()">🌙 Sombre</button>
   <h1>🇧🇪 Veille — Jeux d'Argent Belgique</h1>
   <div id="ts">Dernière vérification : {esc(run_time)} — {total_alerts} alerte{"s" if total_alerts != 1 else ""} au total{new_badge_header}</div>
   <div class="kw-row">{kw_chips}</div>
 </header>
+
 <div class="page">
+
 {summary_card}
+
 {cards_html}
+
+<div class="card archive-card">
+  <div class="card-head">
+    <div class="card-title">📁 Alertes déjà lues</div>
+    <span class="badge badge-none" id="archive-badge">vide</span>
+  </div>
+  <div class="card-body" id="archive-body"><div class="empty">Aucun élément archivé.</div></div>
+</div>
+
+<div class="about-section">
+  <button class="about-toggle" id="about-btn" onclick="toggleAbout()">
+    ℹ️ Comment fonctionne cette page ?
+    <span class="about-chevron">▼</span>
+  </button>
+  <div class="about-body" id="about-body">
+    <p>Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
+    <p><strong>Sources institutionnelles</strong> (Cour Constitutionnelle, La Chambre, Sénat, Gaming Commission, Moniteur Belge, Conseil d'État, ABC, SPF Justice, EUR-Lex) : surveillance des mots-clés <em>entain, entaingroup, ladbrokes, bwin, controle, sanctions, agences, licences</em>.</p>
+    <p><strong>Sources presse</strong> (RTBF, Le Soir, La Libre, DH, RTL Info, Le Vif, Sud Info, Médor, SBC News, iGaming Business, CasinoBeats, EGBA) : surveillance via flux RSS des mots-clés <em>bwin, entain, ladbrokes, jeux de hasard</em>.</p>
+    <p>Le bouton <strong>✓ Lu</strong> sur chaque alerte la déplace dans la carte « Alertes déjà lues » ci-dessus. Ces données sont stockées localement dans votre navigateur.</p>
+    <p>Infrastructure : <strong>GitHub Actions</strong> exécute le script Python · <strong>GitHub Pages</strong> héberge cette page · LANCELLE 2026.</p>
+  </div>
+</div>
+
 </div>
 <footer>Veille Jeux d'Argent Belgique · LANCELLE 2026 · Généré automatiquement par GitHub Actions</footer>
+<script>{js}</script>
 </body>
 </html>"""
 
