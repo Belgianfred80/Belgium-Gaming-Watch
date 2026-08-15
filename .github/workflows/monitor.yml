@@ -38,6 +38,6 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add index.html status.md data/last_results.json
+          git add index.html status.md data/
           git diff --staged --quiet || git commit -m "Veille du $(TZ='Europe/Brussels' date '+%d/%m/%Y %H:%M')"
           git push
