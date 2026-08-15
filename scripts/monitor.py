@@ -644,7 +644,7 @@ def main() -> None:
         except Exception:
             pass
 
-    print(f'🔍 Veille démarrée — {len(SOURCES)} sources, mots-clés : {", ".join(KEYWORDS)}\n')
+    print(f'🔍 Veille démarrée — {len(SOURCES)} sources, mots-clés : {", ".join(_ALL_KEYWORDS)}\n')
 
     results: dict = {}
     current_urls: set = set()
