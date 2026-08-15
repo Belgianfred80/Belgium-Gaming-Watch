@@ -20,55 +20,62 @@ from bs4 import BeautifulSoup
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
-KEYWORDS = [
+KEYWORDS_INSTITUTIONAL = [
     'entaingroup', 'ladbrokes', 'controle', 'contrôle',
-    'sanctions', 'agences', 'licences',
+    'sanctions', 'agences', 'licences', 'entain', 'bwin',
 ]
+
+KEYWORDS_PRESS = [
+    'bwin', 'entain', 'ladbrokes', 'jeux de hasard',
+]
+
+# Union ordonnée pour affichage et compilation des patterns
+_ALL_KEYWORDS = list(dict.fromkeys(KEYWORDS_INSTITUTIONAL + KEYWORDS_PRESS))
 
 SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
-        'id': 'cour', 'group': 'Institutionnel belge',
+        'id': 'cour', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
         'url': 'https://fr.const-court.be',
     },
     {
-        'id': 'chambre', 'group': 'Institutionnel belge',
+        'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
         'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=/flwb/recent&language=fr&cfm=/site/wwwcfm/flwb/LastDocument.cfm',
     },
     {
-        'id': 'senat', 'group': 'Institutionnel belge',
+        'id': 'senat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Sénat de Belgique', 'color': '#1a6640',
         'url': 'https://www.senate.be/www/?MIval=/index_senate&lang=fr',
     },
     {
-        'id': 'cjh', 'group': 'Institutionnel belge',
+        'id': 'cjh', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Gaming Commission (CJH) — Nouvelles', 'color': '#7d3c98',
         'url': 'https://www.gamingcommission.be/fr/nouvelles/nouvelles-recentes',
     },
     {
-        'id': 'cjh-sanctions', 'group': 'Institutionnel belge',
+        'id': 'cjh-sanctions', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Gaming Commission (CJH) — Contrôle & Sanctions', 'color': '#7d3c98',
         'url': 'https://www.gamingcommission.be/fr/commission-des-jeux-de-hasard/controle-et-sanctions',
     },
     {
-        'id': 'moniteur', 'group': 'Institutionnel belge',
+        'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Moniteur Belge', 'color': '#2c3e50',
         'url': 'https://www.ejustice.just.fgov.be/cgi/summary.pl?language=fr',
     },
     {
-        'id': 'consetat', 'group': 'Institutionnel belge',
+        'id': 'consetat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': "Conseil d'État", 'color': '#2c3e50',
         'url': 'https://www.raadvst-consetat.be/fr',
     },
     {
-        'id': 'abc', 'group': 'Institutionnel belge',
+        'id': 'abc', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'url': 'https://www.abc-bma.be/fr/news',
     },
     {
-        'id': 'spfjust', 'group': 'Institutionnel belge',
+        'id': 'spfjust', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'SPF Justice', 'color': '#2c3e50',
         'url': 'https://justice.belgium.be/fr/news',
     },
@@ -77,51 +84,51 @@ SOURCES = [
     {
         'id': 'jeuarg', 'group': 'Presse belge francophone',
         'name': 'Jeu-Argent.be', 'color': '#e67e22',
-        'url': 'https://www.jeu-argent.be',
+        'kw_set': 'press', 'url': 'https://www.jeu-argent.be',
     },
     {
-        'id': 'medor', 'group': 'Presse belge francophone',
+        'id': 'medor', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Médor (investigation)', 'color': '#c0392b',
         'url': 'https://medor.coop/nos-coups/',
     },
     {
-        'id': 'rtbf', 'group': 'Presse belge francophone',
+        'id': 'rtbf', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTBF Info', 'color': '#e53935',
         'type': 'rss',
         'url': 'https://rss.rtbf.be/article/rss/highlight_rtbf_info.xml',
     },
     {
-        'id': 'soir', 'group': 'Presse belge francophone',
+        'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Soir', 'color': '#1565c0',
         'type': 'rss',
         'url': 'https://www.lesoir.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
-        'id': 'lalibre', 'group': 'Presse belge francophone',
+        'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Libre Belgique', 'color': '#0d47a1',
         'type': 'rss',
         'url': 'https://www.lalibre.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
-        'id': 'dhnet', 'group': 'Presse belge francophone',
+        'id': 'dhnet', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Dernière Heure', 'color': '#b71c1c',
         'type': 'rss',
         'url': 'https://www.dhnet.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
-        'id': 'rtlinfo', 'group': 'Presse belge francophone',
+        'id': 'rtlinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTL Info', 'color': '#ff6f00',
         'type': 'rss',
         'url': 'https://feeds.rtl.be/rtlinfo_fr',
     },
     {
-        'id': 'levif', 'group': 'Presse belge francophone',
+        'id': 'levif', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Vif', 'color': '#6a1b9a',
         'type': 'rss',
         'url': 'https://www.levif.be/arc/outboundfeeds/rss/?outputType=xml',
     },
     {
-        'id': 'sudinfo', 'group': 'Presse belge francophone',
+        'id': 'sudinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Sud Info', 'color': '#e65100',
         'type': 'rss',
         'url': 'https://www.sudinfo.be/arc/outboundfeeds/rss/?outputType=xml',
@@ -129,27 +136,27 @@ SOURCES = [
 
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
     {
-        'id': 'sbc', 'group': 'Presse spécialisée & Europe',
+        'id': 'sbc', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'SBC News — Belgique', 'color': '#2471a3',
         'url': 'https://sbcnews.co.uk/tag/belgium/',
     },
     {
-        'id': 'igaming', 'group': 'Presse spécialisée & Europe',
+        'id': 'igaming', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'iGaming Business', 'color': '#2471a3',
         'url': 'https://igamingbusiness.com/?s=belgium',
     },
     {
-        'id': 'casinobeats', 'group': 'Presse spécialisée & Europe',
+        'id': 'casinobeats', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'CasinoBeats', 'color': '#2471a3',
         'url': 'https://casinobeats.com/?s=belgium',
     },
     {
-        'id': 'egba', 'group': 'Presse spécialisée & Europe',
+        'id': 'egba', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'EGBA (European Gaming & Betting Assoc.)', 'color': '#1565c0',
         'url': 'https://www.egba.eu/news/',
     },
     {
-        'id': 'eurlex', 'group': 'Presse spécialisée & Europe',
+        'id': 'eurlex', 'group': 'Presse spécialisée & Europe', 'kw_set': 'institutional',
         'name': 'EUR-Lex (législation UE)', 'color': '#1565c0',
         'url': 'https://eur-lex.europa.eu/search.html?text=jeux+hasard+belgique&scope=EURLEX&type=quick&lang=fr',
     },
@@ -185,13 +192,19 @@ def normalize(text: str) -> str:
 # Patterns compilés une seule fois — mot entier uniquement (évite "contrôleurs" → "controle")
 _KW_PATTERNS = {
     kw: re.compile(r'\b' + re.escape(normalize(kw)) + r'\b')
-    for kw in KEYWORDS
+    for kw in _ALL_KEYWORDS
+}
+
+_KW_MAP = {
+    'institutional': KEYWORDS_INSTITUTIONAL,
+    'press': KEYWORDS_PRESS,
 }
 
 
-def find_keywords(text: str) -> list:
+def find_keywords(text: str, kw_set: str = 'institutional') -> list:
     n = normalize(text)
-    return [kw for kw in KEYWORDS if _KW_PATTERNS[kw].search(n)]
+    keywords = _KW_MAP.get(kw_set, KEYWORDS_INSTITUTIONAL)
+    return [kw for kw in keywords if _KW_PATTERNS[kw].search(n)]
 
 
 # Extraction de dates
@@ -232,6 +245,7 @@ def fetch_rss(src: dict) -> dict:
         resp.raise_for_status()
 
         soup = BeautifulSoup(resp.content, 'xml')
+        kw_set = src.get('kw_set', 'institutional')
         matches = []
 
         for item in soup.find_all('item'):
@@ -268,7 +282,7 @@ def fetch_rss(src: dict) -> dict:
                 except Exception:
                     pass
 
-            kws = find_keywords(title + ' ' + desc)
+            kws = find_keywords(title + ' ' + desc, kw_set)
             if not kws:
                 continue
 
@@ -298,6 +312,7 @@ def fetch_rss(src: dict) -> dict:
 def fetch_source(src: dict) -> dict:
     if src.get('type') == 'rss':
         return fetch_rss(src)
+    kw_set = src.get('kw_set', 'institutional')
     try:
         resp = requests.get(
             src['url'], headers=HEADERS,
@@ -330,7 +345,7 @@ def fetch_source(src: dict) -> dict:
             block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
             ctx = block.get_text(' ', strip=True)[:280] if block else text
 
-            kws = find_keywords(text + ' ' + ctx)
+            kws = find_keywords(text + ' ' + ctx, kw_set)
             if not kws:
                 continue
 
@@ -377,8 +392,8 @@ def _parse_date(date_str: str):
 
 
 def generate_html(results: dict, run_time: str, new_count: int) -> str:
-    # Comptage global par mot-clé
-    kw_counts = {kw: 0 for kw in KEYWORDS}
+    # Comptage global par mot-clé (sur tous les mots-clés uniques)
+    kw_counts = {kw: 0 for kw in _ALL_KEYWORDS}
     for result in results.values():
         for m in result.get('matches', []):
             for kw in m.get('keywords', []):
@@ -427,9 +442,18 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
   <div class="card-body"><div class="empty">Aucune alerte pour cette vérification.</div></div>
 </div>'''
 
-    # Chips mots-clés (header)
-    kw_chips = ''
-    for kw, cnt in kw_counts.items():
+    # Chips mots-clés (header) — deux groupes visuellement séparés
+    kw_chips = '<span class="kw-label">Institutionnel :</span>'
+    for kw in KEYWORDS_INSTITUTIONAL:
+        cnt = kw_counts.get(kw, 0)
+        if cnt:
+            kw_chips += (f'<span class="kw-chip active">{esc(kw)} '
+                         f'<span class="n">{cnt}</span></span>')
+        else:
+            kw_chips += f'<span class="kw-chip">{esc(kw)}</span>'
+    kw_chips += '<span class="kw-label kw-label-press">Presse :</span>'
+    for kw in KEYWORDS_PRESS:
+        cnt = kw_counts.get(kw, 0)
         if cnt:
             kw_chips += (f'<span class="kw-chip active">{esc(kw)} '
                          f'<span class="n">{cnt}</span></span>')
@@ -505,6 +529,8 @@ header{background:linear-gradient(135deg,#0d1b2a,#1b3a5c);color:#fff;padding:16p
 header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 #ts{font-size:11px;color:rgba(255,255,255,.55)}
 .kw-row{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
+.kw-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-right:4px}
+.kw-label-press{margin-left:10px}
 .kw-chip{font-size:10px;font-weight:600;background:rgba(255,255,255,.12);border-radius:4px;padding:2px 8px;color:rgba(255,255,255,.8)}
 .kw-chip.active{background:rgba(231,76,60,.3)}
 .kw-chip .n{display:inline-block;background:#e74c3c;color:#fff;border-radius:8px;padding:0 4px;margin-left:5px;font-size:9px}
