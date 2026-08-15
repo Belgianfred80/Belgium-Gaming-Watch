@@ -13,6 +13,7 @@ import unicodedata
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urljoin, quote_plus
 
 import requests
@@ -107,7 +108,7 @@ SOURCES = [
         'name': 'Moniteur Belge', 'color': '#2c3e50',
         'js': True,
         'no_kw_filter': True,
-        'playwright_timeout': 90_000,
+        'playwright_timeout': 20_000,
         'url': 'https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&choix1=et&choix2=et&exp={term}&fr=f&nl=n&du=d&trier=promulgation&caller=list&page=1',
         'search_terms': SEARCH_TERMS,
     },
@@ -267,9 +268,11 @@ HEADERS = {
     'Accept-Language': 'fr-BE,fr;q=0.9,en;q=0.8',
 }
 
+MIN_YEAR = 2024          # Rejeter les résultats antérieurs à cette année
 MAX_MATCHES_PER_SOURCE = 15
-REQUEST_TIMEOUT = 25
-DELAY_BETWEEN_REQUESTS = 1.5
+REQUEST_TIMEOUT = 15
+DELAY_BETWEEN_REQUESTS = 0.3   # entre les termes d'une même source
+MAX_WORKERS = 8                # sources traitées en parallèle
 
 
 # ── Utilitaires ────────────────────────────────────────────────────────────────
@@ -323,6 +326,15 @@ _MONTHS_FR = {
     'septembre': 9, 'octobre': 10, 'novembre': 11, 'decembre': 12,
 }
 _MONTH_NAME_RE = re.compile(r'\b(\d{1,2})\s+(\w+)\s+(\d{4})\b')
+
+
+def is_too_old(text: str) -> bool:
+    """True si le texte contient une année antérieure à MIN_YEAR.
+    Sans année détectée → False (on garde, on ne peut pas juger)."""
+    years = [int(y) for y in re.findall(r'\b(19\d{2}|20\d{2})\b', text)]
+    if not years:
+        return False
+    return max(years) < MIN_YEAR
 
 
 def extract_date(text: str):
@@ -438,7 +450,7 @@ def fetch_with_browser(src: dict) -> dict:
     eval_js   = src.get('eval_extract')
     base_url  = src['url']
     no_kw     = src.get('no_kw_filter', False)
-    pw_timeout = src.get('playwright_timeout', 45_000)
+    pw_timeout = src.get('playwright_timeout', 25_000)
 
     # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
     terms = (src.get('search_terms')
@@ -464,24 +476,24 @@ def fetch_with_browser(src: dict) -> dict:
                 nav_url = base_url.replace('{term}', quote_plus(term)) if is_template else base_url
 
                 page.goto(nav_url, wait_until='domcontentloaded', timeout=pw_timeout)
-                page.wait_for_timeout(2000)
+                page.wait_for_timeout(400)
 
                 # ── Remplissage formulaire (sources sans template URL) ─────
                 inp = None
                 if term and not is_template:
                     try:
-                        page.wait_for_selector(_INPUT_SEL, timeout=12_000)
+                        page.wait_for_selector(_INPUT_SEL, timeout=4_000)
                         inp = page.locator(_INPUT_SEL).first
                         inp.click()
                         inp.fill('')
-                        inp.type(term, delay=50)
+                        inp.type(term, delay=10)
                         print(f'    [browser] {src["name"]}: champ rempli "{term}"', flush=True)
                     except Exception as e:
                         print(f'    [browser] {src["name"]}: champ introuvable — {e}', flush=True)
 
                     submitted = False
                     try:
-                        page.locator(_SUBMIT_SEL).first.click(timeout=6_000)
+                        page.locator(_SUBMIT_SEL).first.click(timeout=2_500)
                         submitted = True
                     except Exception:
                         pass
@@ -493,29 +505,33 @@ def fetch_with_browser(src: dict) -> dict:
                             pass
 
                     try:
-                        page.wait_for_load_state('networkidle', timeout=20_000)
+                        page.wait_for_load_state('networkidle', timeout=6_000)
                     except Exception:
                         pass
-                    page.wait_for_timeout(3000)
+                    page.wait_for_timeout(600)
 
-                # ── Attendre disparition des spinners ─────────────────────
-                try:
-                    page.wait_for_function(
-                        """() => !document.body.innerText.includes('Chargement') &&
-                                 !document.body.innerText.includes('Loading') &&
-                                 !document.body.innerText.includes('laden')""",
-                        timeout=15_000
-                    )
-                except Exception:
-                    pass
-                page.wait_for_timeout(2000)
-
-                # ── Attendre sélecteur résultats ──────────────────────────
+                # ── Attendre le sélecteur de résultats (chemin rapide) ────
+                # Si le sélecteur apparaît, on n'attend pas plus longtemps.
+                found = False
                 if wait_sel:
                     try:
-                        page.wait_for_selector(wait_sel, timeout=10_000)
+                        page.wait_for_selector(wait_sel, timeout=6_000)
+                        found = True
                     except Exception:
-                        pass  # pas de résultats pour ce terme
+                        pass
+
+                if not found:
+                    # Pas de sélecteur (ou non trouvé) : attendre la fin des spinners
+                    try:
+                        page.wait_for_function(
+                            """() => !document.body.innerText.includes('Chargement') &&
+                                     !document.body.innerText.includes('Loading') &&
+                                     !document.body.innerText.includes('laden')""",
+                            timeout=4_000
+                        )
+                    except Exception:
+                        pass
+                    page.wait_for_timeout(500)
 
                 # ── Extraction ciblée via evaluate() ─────────────────────
                 if eval_js:
@@ -526,6 +542,13 @@ def fetch_with_browser(src: dict) -> dict:
                         if not href or not text or href in seen_urls:
                             continue
                         full_url = href if href.startswith('http') else urljoin(nav_url, href)
+
+                        tl = text.lower()
+                        if any(b in tl for b in _BOILERPLATE):
+                            continue
+                        if is_too_old(text):
+                            continue
+
                         kws = find_keywords(text, kw_set)
                         if not kws:
                             if not no_kw:
@@ -579,15 +602,16 @@ def fetch_with_browser(src: dict) -> dict:
                                     break
                         ctx = block.get_text(' ', strip=True)[:400]
 
+                        # Filtres boilerplate + année (inconditionnels)
+                        tl = text.lower()
+                        if any(b in tl for b in _BOILERPLATE):
+                            continue
+                        if is_too_old(text + ' ' + ctx):
+                            continue
+
                         kws = find_keywords(text + ' ' + ctx, kw_set)
                         if not kws:
-                            if not no_kw:
-                                continue
-                            # Filtrer le bruit (boilerplate, liens trop courts)
-                            if len(text) < 20:
-                                continue
-                            tl = text.lower()
-                            if any(b in tl for b in _BOILERPLATE):
+                            if not no_kw or len(text) < 20:
                                 continue
                             kws = [term] if term else ['résultat']
 
@@ -615,7 +639,7 @@ def fetch_with_browser(src: dict) -> dict:
         return {'status': 'ok', 'matches': all_matches}
 
     except PWTimeout:
-        return {'status': 'error', 'message': 'Délai dépassé (Playwright 45s)'}
+        return {'status': 'error', 'message': f'Délai dépassé (Playwright {pw_timeout // 1000}s)'}
     except Exception as e:
         return {'status': 'error', 'message': f'Playwright : {str(e)[:80]}'}
 
@@ -660,14 +684,16 @@ def fetch_source(src: dict) -> dict:
                 block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
                 ctx = block.get_text(' ', strip=True)[:280] if block else text
 
+                # Filtres boilerplate + année (inconditionnels)
+                tl = text.lower()
+                if any(b in tl for b in _BOILERPLATE):
+                    continue
+                if is_too_old(text + ' ' + ctx):
+                    continue
+
                 kws = find_keywords(text + ' ' + ctx, kw_set)
                 if not kws:
-                    if not no_kw:
-                        continue
-                    if len(text) < 20:
-                        continue
-                    tl = text.lower()
-                    if any(b in tl for b in _BOILERPLATE):
+                    if not no_kw or len(text) < 20:
                         continue
                     kws = [term] if term else ['résultat']
 
@@ -1126,25 +1152,31 @@ def main() -> None:
     current_urls: set = set()
     new_matches_by_src: dict = {}
 
-    for src in SOURCES:
-        print(f'  → {src["name"]} … ', end='', flush=True)
-        result = fetch_source(src)
-        results[src['id']] = result
+    t0 = time.time()
 
-        if result['status'] == 'ok':
-            n = len(result['matches'])
-            print(f'✅ {n} correspondance{"s" if n != 1 else ""}')
-            new_for_src = []
-            for m in result['matches']:
-                current_urls.add(m['url'])
-                if m['url'] not in prev_urls:
-                    new_for_src.append(m)
-            if new_for_src:
-                new_matches_by_src[src['name']] = new_for_src
-        else:
-            print(f'❌ {result["message"]}')
+    def _run(src):
+        try:
+            return src, fetch_source(src)
+        except Exception as e:
+            return src, {'status': 'error', 'message': str(e)[:80]}
 
-        time.sleep(DELAY_BETWEEN_REQUESTS)
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
+        for src, result in pool.map(_run, SOURCES):
+            results[src['id']] = result
+            if result['status'] == 'ok':
+                n = len(result['matches'])
+                print(f'  → {src["name"]} … ✅ {n} correspondance{"s" if n != 1 else ""}', flush=True)
+                new_for_src = []
+                for m in result['matches']:
+                    current_urls.add(m['url'])
+                    if m['url'] not in prev_urls:
+                        new_for_src.append(m)
+                if new_for_src:
+                    new_matches_by_src[src['name']] = new_for_src
+            else:
+                print(f'  → {src["name"]} … ❌ {result["message"]}', flush=True)
+
+    print(f'\n⏱️  Scraping terminé en {time.time() - t0:.1f}s')
 
     run_time = datetime.now(timezone.utc).strftime('%d/%m/%Y à %H:%M UTC')
     new_count = sum(len(v) for v in new_matches_by_src.values())
