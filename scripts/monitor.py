@@ -23,7 +23,7 @@ from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
 KEYWORDS_INSTITUTIONAL = [
     'entaingroup', 'ladbrokes', 'controle', 'contrôle',
-    'sanctions', 'agences', 'licences', 'entain', 'bwin',
+    'sanctions', 'agences', 'licences', 'entain', 'bwin', 'jeux de hasard',
 ]
 
 KEYWORDS_PRESS = [
