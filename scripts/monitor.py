@@ -36,25 +36,25 @@ _ALL_KEYWORDS = list(dict.fromkeys(KEYWORDS_INSTITUTIONAL + KEYWORDS_PRESS))
 SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
+        # Recherche plein texte — le paramètre GET "search" pré-remplit le champ
         'id': 'cour', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
         'js': True,
-        'search_query': 'ladbrokes OR entain OR bwin OR "jeux de hasard"',
-        'url': 'https://fr.const-court.be/search/full-text-judgment',
+        'url': 'https://fr.const-court.be/search/full-text-judgment?search=ladbrokes+OR+entain+OR+bwin',
     },
     {
+        # Recherche CFM — Search1 est le paramètre GET du moteur interne
         'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
         'js': True,
-        'search_query': 'ladbrokes entain bwin "jeux de hasard"',
-        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall',
+        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall&Search1=ladbrokes+entain+bwin',
     },
     {
+        # Recherche Sénat — TREFWOORDEN est le paramètre GET de leur moteur
         'id': 'senat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Sénat de Belgique', 'color': '#1a6640',
         'js': True,
-        'search_query': 'ladbrokes OR entain OR bwin OR "jeux de hasard"',
-        'url': 'https://www.senate.be/www/webdriver?MIval=publications/recherchePublications&LANG=fr',
+        'url': 'https://www.senate.be/www/webdriver?MIval=publications/recherchePublications&LANG=fr&TREFWOORDEN=ladbrokes+entain+bwin',
     },
     {
         'id': 'cjh', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
@@ -67,22 +67,22 @@ SOURCES = [
         'url': 'https://www.gamingcommission.be/fr/commission-des-jeux-de-hasard/controle-et-sanctions',
     },
     {
+        # CGI plain-HTML — pas besoin de JS, la recherche est dans l'URL
         'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Moniteur Belge', 'color': '#2c3e50',
-        'js': True,
-        'url': 'https://www.ejustice.just.fgov.be/cgi/summary.pl?language=fr',
+        'url': 'https://www.ejustice.just.fgov.be/cgi/summary_search.pl?language=fr&word=jeux+hasard+ladbrokes+entain+bwin',
     },
     {
         'id': 'consetat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': "Conseil d'État", 'color': '#2c3e50',
         'js': True,
-        'url': 'https://www.raadvst-consetat.be/fr/actualites',
+        'url': 'https://www.raadvst-consetat.be/fr/jurisprudence/recherche?query=ladbrokes+entain+bwin',
     },
     {
         'id': 'abc', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'js': True,
-        'url': 'https://www.abc-bma.be/fr/news',
+        'url': 'https://www.abc-bma.be/fr/search?q=jeux+de+hasard+ladbrokes',
     },
     {
         'id': 'spfjust', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
