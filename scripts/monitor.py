@@ -7,6 +7,7 @@ crée une issue GitHub en cas de nouvelles correspondances.
 
 import json
 import os
+import re
 import time
 import unicodedata
 from datetime import datetime, timezone
@@ -43,7 +44,7 @@ SOURCES = [
     {
         'id': 'cjh', 'group': 'Institutionnel belge',
         'name': 'Gaming Commission (CJH) — Nouvelles', 'color': '#7d3c98',
-        'url': 'https://www.gamingcommission.be/fr/nouvelles',
+        'url': 'https://www.gamingcommission.be/fr/nouvelles/nouvelles-recentes',
     },
     {
         'id': 'cjh-sanctions', 'group': 'Institutionnel belge',
@@ -118,13 +119,6 @@ SOURCES = [
         'url': 'https://www.sudinfo.be/recherche?q=jeux+hasard+ladbrokes',
     },
 
-    # ── Opérateurs ────────────────────────────────────────────────────────────
-    {
-        'id': 'entain', 'group': 'Opérateurs',
-        'name': 'Entain Group', 'color': '#c0392b',
-        'url': 'https://www.entaingroup.com/news-insights/latest-news/',
-    },
-
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
     {
         'id': 'sbc', 'group': 'Presse spécialisée & Europe',
@@ -165,7 +159,7 @@ HEADERS = {
 
 MAX_MATCHES_PER_SOURCE = 15
 REQUEST_TIMEOUT = 25
-DELAY_BETWEEN_REQUESTS = 1.5   # secondes
+DELAY_BETWEEN_REQUESTS = 1.5
 
 
 # ── Utilitaires ────────────────────────────────────────────────────────────────
@@ -180,13 +174,45 @@ def normalize(text: str) -> str:
     return text
 
 
+# Patterns compilés une seule fois — mot entier uniquement (évite "contrôleurs" → "controle")
+_KW_PATTERNS = {
+    kw: re.compile(r'\b' + re.escape(normalize(kw)) + r'\b')
+    for kw in KEYWORDS
+}
+
+
 def find_keywords(text: str) -> list:
     n = normalize(text)
-    found = []
-    for kw in KEYWORDS:
-        if normalize(kw) in n and kw not in found:
-            found.append(kw)
-    return found
+    return [kw for kw in KEYWORDS if _KW_PATTERNS[kw].search(n)]
+
+
+# Extraction de dates
+_DATE_RE = re.compile(r'\b(\d{1,2})[/\-\.](\d{1,2})[/\-\.](\d{4})\b')
+_MONTHS_FR = {
+    'janvier': 1, 'fevrier': 2, 'mars': 3, 'avril': 4,
+    'mai': 5, 'juin': 6, 'juillet': 7, 'aout': 8,
+    'septembre': 9, 'octobre': 10, 'novembre': 11, 'decembre': 12,
+}
+_MONTH_NAME_RE = re.compile(r'\b(\d{1,2})\s+(\w+)\s+(\d{4})\b')
+
+
+def extract_date(text: str):
+    """Retourne un objet datetime ou None."""
+    m = _DATE_RE.search(text)
+    if m:
+        try:
+            return datetime(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+        except Exception:
+            pass
+    m = _MONTH_NAME_RE.search(normalize(text))
+    if m:
+        month = _MONTHS_FR.get(m.group(2))
+        if month:
+            try:
+                return datetime(int(m.group(3)), month, int(m.group(1)))
+            except Exception:
+                pass
+    return None
 
 
 # ── Scraping ───────────────────────────────────────────────────────────────────
@@ -221,7 +247,6 @@ def fetch_source(src: dict) -> dict:
 
             full_url = href if href.startswith('http') else urljoin(src['url'], href)
 
-            # Contexte : bloc parent le plus proche porteur de sens
             block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
             ctx = block.get_text(' ', strip=True)[:280] if block else text
 
@@ -229,11 +254,15 @@ def fetch_source(src: dict) -> dict:
             if not kws:
                 continue
 
+            date_obj = extract_date(ctx) or extract_date(text)
+            date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
+
             matches.append({
                 'text': text,
                 'url': full_url,
                 'keywords': kws,
                 'context': ctx if ctx != text else '',
+                'date': date_str,
             })
 
             if len(matches) >= MAX_MATCHES_PER_SOURCE:
@@ -258,8 +287,17 @@ def esc(s: str) -> str:
              .replace('>', '&gt;').replace('"', '&quot;'))
 
 
+def _parse_date(date_str: str):
+    if not date_str:
+        return datetime.min
+    try:
+        return datetime.strptime(date_str, '%d/%m/%Y')
+    except Exception:
+        return datetime.min
+
+
 def generate_html(results: dict, run_time: str, new_count: int) -> str:
-    # Comptage par mot-clé
+    # Comptage global par mot-clé
     kw_counts = {kw: 0 for kw in KEYWORDS}
     for result in results.values():
         for m in result.get('matches', []):
@@ -269,7 +307,47 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
 
     total_alerts = sum(kw_counts.values())
 
-    # Chips mots-clés
+    # ── Carte résumé — toutes alertes triées par date ──────────────────────────
+    all_alerts = []
+    for src in SOURCES:
+        result = results.get(src['id'], {})
+        for m in result.get('matches', []):
+            all_alerts.append({
+                'source_name': src['name'],
+                'source_color': src['color'],
+                **m,
+            })
+    all_alerts.sort(key=lambda a: _parse_date(a.get('date', '')), reverse=True)
+
+    if all_alerts:
+        rows = ''
+        for a in all_alerts:
+            tags = ''.join(f'<span class="tag">{esc(kw)}</span>' for kw in a['keywords'])
+            date_badge = (
+                f'<span class="alert-date">{esc(a["date"])}</span>'
+                if a.get('date')
+                else '<span class="alert-date no-date">date ?</span>'
+            )
+            rows += f'''<div class="alert-row">
+  {date_badge}
+  <span class="alert-src" style="color:{a["source_color"]}">{esc(a["source_name"])}</span>
+  <a href="{esc(a["url"])}" target="_blank">{esc(a["text"])}</a>
+  <div class="tag-row">{tags}</div>
+</div>'''
+        summary_card = f'''<div class="card summary-card">
+  <div class="card-head">
+    <div class="card-title">🔔 Résumé des alertes — {total_alerts} résultat{"s" if total_alerts != 1 else ""}, toutes sources</div>
+    <span class="badge badge-match">{total_alerts} alerte{"s" if total_alerts != 1 else ""}</span>
+  </div>
+  <div class="card-body">{rows}</div>
+</div>'''
+    else:
+        summary_card = '''<div class="card summary-card">
+  <div class="card-head"><div class="card-title">🔔 Résumé des alertes</div></div>
+  <div class="card-body"><div class="empty">Aucune alerte pour cette vérification.</div></div>
+</div>'''
+
+    # Chips mots-clés (header)
     kw_chips = ''
     for kw, cnt in kw_counts.items():
         if cnt:
@@ -278,7 +356,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
         else:
             kw_chips += f'<span class="kw-chip">{esc(kw)}</span>'
 
-    # Cartes sources
+    # ── Cartes par source ──────────────────────────────────────────────────────
     cards_html = ''
     current_group = ''
     for src in SOURCES:
@@ -293,17 +371,13 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
 
         if status == 'ok':
             dot = 'ok'
-            if matches:
-                n = len(matches)
-                badge = (f'<span class="badge badge-match">'
-                         f'🔴 {n} alerte{"s" if n > 1 else ""}</span>')
-            else:
-                badge = '<span class="badge badge-none">0 alerte</span>'
+            n = len(matches)
+            badge = (f'<span class="badge badge-match">🔴 {n} alerte{"s" if n > 1 else ""}</span>'
+                     if matches else '<span class="badge badge-none">0 alerte</span>')
         else:
             dot = 'err'
             badge = '<span class="badge badge-err">Erreur</span>'
 
-        # Corps de la carte
         if status == 'error':
             body = f'<div class="err-msg">⚠️ {esc(result.get("message", "Erreur inconnue"))}</div>'
         elif not matches:
@@ -311,11 +385,12 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
         else:
             items = ''
             for m in matches:
-                tags = ''.join(f'<span class="tag">{esc(kw)}</span>'
-                               for kw in m['keywords'])
+                tags = ''.join(f'<span class="tag">{esc(kw)}</span>' for kw in m['keywords'])
+                date_html = f'<span class="item-date">{esc(m["date"])}</span> ' if m.get('date') else ''
                 ctx_html = (f'<div class="ctx">{esc(m["context"][:220])}…</div>'
                             if m.get('context') else '')
                 items += (f'<div class="result">'
+                          f'{date_html}'
                           f'<a href="{esc(m["url"])}" target="_blank">{esc(m["text"])}</a>'
                           f'{ctx_html}'
                           f'<div class="tag-row">{tags}</div>'
@@ -324,7 +399,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
 
         new_badge = (f' — <strong style="color:#e74c3c">'
                      f'{new_count} nouvelle{"s" if new_count != 1 else ""} '
-                     f'depuis la dernière vérification</strong>') if new_count else ''
+                     f'depuis hier</strong>') if new_count else ''
 
         cards_html += f'''
 <div class="card" style="border-left-color:{src["color"]}">
@@ -337,6 +412,10 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
   </div>
   <div class="card-body">{body}</div>
 </div>'''
+
+    new_badge_header = (f' — <strong style="color:#e74c3c">'
+                        f'{new_count} nouvelle{"s" if new_count != 1 else ""} depuis hier</strong>'
+                        ) if new_count else ''
 
     css = """
 :root{color-scheme:light}
@@ -352,6 +431,7 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .page{padding:14px;display:flex;flex-direction:column;gap:10px}
 .group-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:#9aa;padding:6px 2px 2px;border-bottom:1px solid #dde0e8;margin-bottom:2px}
 .card{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:4px solid #ccc;overflow:hidden}
+.summary-card{border-left:6px solid #e74c3c}
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #f2f3f5;gap:10px}
 .card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0;display:inline-block}
@@ -363,10 +443,18 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .badge-none{background:#eef0f4;color:#999}
 .badge-err{background:#fff3e6;color:#d35400}
 .card-body{padding:10px 14px 12px}
+.alert-row{padding:8px 0;border-bottom:1px solid #f5f6fa;line-height:1.6}
+.alert-row:last-child{border-bottom:none}
+.alert-row a{font-size:12.5px;font-weight:600;color:#1a5276;text-decoration:none}
+.alert-row a:hover{color:#2980b9;text-decoration:underline}
+.alert-date{font-size:10px;font-weight:700;background:#eef0f4;color:#555;border-radius:3px;padding:1px 7px;margin-right:6px;white-space:nowrap}
+.alert-date.no-date{color:#ccc}
+.alert-src{font-size:10px;font-weight:700;margin-right:8px}
 .result{padding:8px 0;border-bottom:1px solid #f5f6fa;line-height:1.45}
 .result:last-child{border-bottom:none}
 .result a{font-size:12.5px;font-weight:600;color:#1a5276;text-decoration:none;display:block}
 .result a:hover{color:#2980b9;text-decoration:underline}
+.item-date{font-size:10px;color:#aaa;margin-right:6px}
 .ctx{font-size:11px;color:#888;margin-top:3px;line-height:1.4}
 .tag-row{margin-top:4px;display:flex;gap:4px;flex-wrap:wrap}
 .tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:3px;background:#fff8dc;color:#7d5a00}
@@ -386,10 +474,13 @@ footer{text-align:center;font-size:10px;color:#bbb;padding:10px 16px 20px}
 <body>
 <header>
   <h1>🇧🇪 Veille — Jeux d'Argent Belgique</h1>
-  <div id="ts">Dernière vérification : {esc(run_time)} — {total_alerts} alerte{"s" if total_alerts != 1 else ""} au total{new_badge}</div>
+  <div id="ts">Dernière vérification : {esc(run_time)} — {total_alerts} alerte{"s" if total_alerts != 1 else ""} au total{new_badge_header}</div>
   <div class="kw-row">{kw_chips}</div>
 </header>
-<div class="page">{cards_html}</div>
+<div class="page">
+{summary_card}
+{cards_html}
+</div>
 <footer>Veille Jeux d'Argent Belgique · LANCELLE 2026 · Généré automatiquement par GitHub Actions</footer>
 </body>
 </html>"""
@@ -410,10 +501,12 @@ def create_github_issue(new_matches_by_src: dict, run_time: str) -> None:
         lines.append(f'\n### {src_name}')
         for m in matches:
             kws = ', '.join(f'`{kw}`' for kw in m['keywords'])
-            lines.append(f'- [{m["text"]}]({m["url"]}) — {kws}')
+            date_info = f' ({m["date"]})' if m.get('date') else ''
+            lines.append(f'- [{m["text"]}]({m["url"]}) — {kws}{date_info}')
 
     total = sum(len(v) for v in new_matches_by_src.values())
-    title = f'🔴 {total} nouvelle{"s" if total != 1 else ""} correspondance{"s" if total != 1 else ""} — {run_time}'
+    title = (f'🔴 {total} nouvelle{"s" if total != 1 else ""} '
+             f'correspondance{"s" if total != 1 else ""} — {run_time}')
 
     resp = requests.post(
         f'https://api.github.com/repos/{repo}/issues',
@@ -437,7 +530,6 @@ def main() -> None:
     data_path = Path('data/last_results.json')
     data_path.parent.mkdir(exist_ok=True)
 
-    # Charger les URLs déjà vues
     prev_urls: set = set()
     if data_path.exists():
         try:
@@ -477,12 +569,10 @@ def main() -> None:
 
     print(f'\n📊 Résumé : {new_count} nouvelle{"s" if new_count != 1 else ""} correspondance{"s" if new_count != 1 else ""}')
 
-    # Générer le dashboard HTML
     html = generate_html(results, run_time, new_count)
     Path('index.html').write_text(html, encoding='utf-8')
     print('✅ index.html généré')
 
-    # Sauvegarder l'état pour la prochaine comparaison
     data_path.write_text(
         json.dumps({'urls': sorted(current_urls), 'last_run': run_time},
                    ensure_ascii=False, indent=2),
@@ -490,7 +580,6 @@ def main() -> None:
     )
     print('✅ data/last_results.json mis à jour')
 
-    # Créer une issue si nouvelles correspondances
     if new_matches_by_src:
         print(f'\n🔔 {new_count} nouvelle(s) — création d\'une issue GitHub…')
         create_github_issue(new_matches_by_src, run_time)
