@@ -799,9 +799,48 @@ def main() -> None:
 
     print(f'\n📊 Résumé : {new_count} nouvelle{"s" if new_count != 1 else ""} correspondance{"s" if new_count != 1 else ""}')
 
+    # Comptage total pour le status
+    total_alerts = sum(
+        len(r.get('matches', []))
+        for r in results.values()
+        if r.get('status') == 'ok'
+    )
+
     html = generate_html(results, run_time, new_count)
     Path('index.html').write_text(html, encoding='utf-8')
     print('✅ index.html généré')
+
+    # ── status.md ──────────────────────────────────────────────────────────────
+    status_lines = [
+        '# Statut — Veille Jeux d\'Argent Belgique',
+        '',
+        f'| Champ | Valeur |',
+        f'|---|---|',
+        f'| Dernière vérification | {run_time} |',
+        f'| Alertes totales | {total_alerts} |',
+        f'| Nouvelles depuis la veille | {new_count} |',
+        f'| Sources interrogées | {len(SOURCES)} |',
+        '',
+    ]
+    if new_count:
+        status_lines += ['## Nouvelles alertes', '']
+        for src_name, matches in new_matches_by_src.items():
+            status_lines.append(f'### {src_name}')
+            for m in matches:
+                kws = ', '.join(f'`{kw}`' for kw in m['keywords'])
+                date_info = f' ({m["date"]})' if m.get('date') else ''
+                status_lines.append(f'- [{m["text"]}]({m["url"]}) — {kws}{date_info}')
+            status_lines.append('')
+    else:
+        status_lines.append('*Aucune nouvelle alerte depuis la dernière vérification.*')
+        status_lines.append('')
+
+    status_lines += [
+        '---',
+        f'*Généré automatiquement par GitHub Actions · LANCELLE 2026*',
+    ]
+    Path('status.md').write_text('\n'.join(status_lines), encoding='utf-8')
+    print('✅ status.md généré')
 
     data_path.write_text(
         json.dumps({'urls': sorted(current_urls), 'last_run': run_time},
