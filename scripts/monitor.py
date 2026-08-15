@@ -386,6 +386,18 @@ def fetch_with_browser(src: dict) -> dict:
                     pass
                 page.wait_for_timeout(3000)
 
+            # Attendre que les spinners/loaders disparaissent (résultats JS chargés)
+            try:
+                page.wait_for_function(
+                    """() => !document.body.innerText.includes('Chargement') &&
+                             !document.body.innerText.includes('Loading') &&
+                             !document.body.innerText.includes('laden')""",
+                    timeout=15_000
+                )
+            except Exception:
+                pass
+            page.wait_for_timeout(2000)
+
             html = page.content()
             n_links_total = html.count('<a ')
             print(f'    [browser] {src["name"]}: page capturée — ~{n_links_total} balises <a>', flush=True)
