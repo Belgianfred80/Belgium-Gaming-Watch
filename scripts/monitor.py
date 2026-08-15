@@ -13,7 +13,7 @@ import unicodedata
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, quote_plus
 
 import requests
 from bs4 import BeautifulSoup
@@ -33,29 +33,48 @@ KEYWORDS_PRESS = [
 # Union ordonnée pour affichage et compilation des patterns
 _ALL_KEYWORDS = list(dict.fromkeys(KEYWORDS_INSTITUTIONAL + KEYWORDS_PRESS))
 
+# Termes de recherche envoyés séparément à chaque moteur de recherche
+SEARCH_TERMS = ['ladbrokes', 'entain', 'bwin', 'jeux de hasard']
+
 SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
-        # Recherche plein texte — le paramètre GET "search" pré-remplit le champ
+        # App Nuxt/Vuetify — 1 requête par terme, sélecteur CSS sur les cartes de résultats
         'id': 'cour', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
         'js': True,
-        'url': 'https://fr.const-court.be/search/full-text-judgment?search=ladbrokes+OR+entain+OR+bwin',
+        'url': 'https://fr.const-court.be/search/full-text-judgment?search={term}',
+        'search_terms': SEARCH_TERMS,
+        'wait_selector': '.fulltext-judgment-card',
+        'eval_extract': (
+            "() => Array.from(document.querySelectorAll('.fulltext-judgment-card')).map(card => {"
+            "  const a = card.querySelector('a[href]');"
+            "  return { href: a ? a.href : '', text: card.innerText.trim().slice(0,300) };"
+            "}).filter(x => x.href)"
+        ),
     },
     {
-        # Recherche CFM — Search1 est le paramètre GET du moteur interne
+        # ColdFusion AJAX — 1 soumission formulaire par terme → résultats dans #callback
         'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
         'js': True,
-        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall&Search1=ladbrokes+entain+bwin',
+        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall',
+        'search_terms': SEARCH_TERMS,
+        'wait_selector': '#callback a[href]',
+        'eval_extract': (
+            "() => Array.from(document.querySelectorAll('#callback a[href]')).map(a => ({"
+            "  href: a.href,"
+            "  text: (a.closest('tr') || a.closest('li') || a.closest('div') || a).innerText.trim().slice(0, 300)"
+            "})).filter(x => x.href && !x.href.includes('javascript:'))"
+        ),
     },
-    {
-        # Recherche Sénat — TREFWOORDEN est le paramètre GET de leur moteur
-        'id': 'senat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
-        'name': 'Sénat de Belgique', 'color': '#1a6640',
-        'js': True,
-        'url': 'https://www.senate.be/www/webdriver?MIval=publications/recherchePublications&LANG=fr&TREFWOORDEN=ladbrokes+entain+bwin',
-    },
+    # Sénat de Belgique — bloqué par Cloudflare WAF (même en navigation manuelle)
+    # {
+    #     'id': 'senat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
+    #     'name': 'Sénat de Belgique', 'color': '#1a6640',
+    #     'js': True,
+    #     'url': 'https://www.senate.be/www/webdriver?MIval=publications/recherchePublications&LANG=fr&TREFWOORDEN=ladbrokes+entain+bwin',
+    # },
     {
         'id': 'cjh', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Gaming Commission (CJH) — Nouvelles', 'color': '#7d3c98',
@@ -67,22 +86,27 @@ SOURCES = [
         'url': 'https://www.gamingcommission.be/fr/commission-des-jeux-de-hasard/controle-et-sanctions',
     },
     {
-        # CGI plain-HTML — pas besoin de JS, la recherche est dans l'URL
+        # Résultats GET — exp={term}, Playwright pour contourner le blocage requests
         'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Moniteur Belge', 'color': '#2c3e50',
-        'url': 'https://www.ejustice.just.fgov.be/cgi/summary_search.pl?language=fr&word=jeux+hasard+ladbrokes+entain+bwin',
-    },
-    {
-        'id': 'consetat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
-        'name': "Conseil d'État", 'color': '#2c3e50',
         'js': True,
-        'url': 'https://www.raadvst-consetat.be/fr/jurisprudence/recherche?query=ladbrokes+entain+bwin',
+        'url': 'https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&choix1=et&choix2=et&exp={term}&fr=f&nl=n&du=d&trier=promulgation&caller=list&page=1',
+        'search_terms': SEARCH_TERMS,
     },
+    # Conseil d'État — bloqué par Cloudflare WAF (IP GitHub Actions blacklistée)
+    # {
+    #     'id': 'consetat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
+    #     'name': "Conseil d'État", 'color': '#2c3e50',
+    #     'js': True,
+    #     'url': 'https://www.raadvst-consetat.be/fr/jurisprudence/recherche?query={term}',
+    #     'search_terms': SEARCH_TERMS,
+    # },
     {
         'id': 'abc', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'js': True,
-        'url': 'https://www.abc-bma.be/fr/search?q=jeux+de+hasard+ladbrokes',
+        'url': 'https://www.abc-bma.be/fr/search?search_api_fulltext={term}',
+        'search_terms': SEARCH_TERMS,
     },
     {
         'id': 'spfjust', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
@@ -173,7 +197,8 @@ SOURCES = [
     {
         'id': 'eurlex', 'group': 'Presse spécialisée & Europe', 'kw_set': 'institutional',
         'name': 'EUR-Lex (législation UE)', 'color': '#1565c0',
-        'url': 'https://eur-lex.europa.eu/search.html?text=jeux+hasard+belgique&scope=EURLEX&type=quick&lang=fr',
+        'url': 'https://eur-lex.europa.eu/search.html?text={term}+belgique&scope=EURLEX&type=quick&lang=fr',
+        'search_terms': SEARCH_TERMS,
     },
 ]
 
@@ -326,8 +351,32 @@ def fetch_rss(src: dict) -> dict:
 
 def fetch_with_browser(src: dict) -> dict:
     """Scrape une page JS-rendue via Playwright (Chromium headless).
-    Si 'search_query' est défini, remplit le formulaire de recherche et soumet.
+    Supporte search_terms : 1 navigateur, N navigations successives.
     """
+    _INPUT_SEL = (
+        'input[type="search"], input[type="text"], '
+        'input[name*="search" i], input[name*="zoek" i], '
+        'input[name*="query" i], input[name*="Search" i], '
+        'input[id*="search" i], input[placeholder*="recherch" i]'
+    )
+    _SUBMIT_SEL = (
+        'button[type="submit"], input[type="submit"], '
+        'button:has-text("Soumettre"), button:has-text("Rechercher"), '
+        'button:has-text("Search"), button:has-text("Zoeken")'
+    )
+
+    kw_set   = src.get('kw_set', 'institutional')
+    wait_sel = src.get('wait_selector')
+    eval_js  = src.get('eval_extract')
+    base_url = src['url']
+
+    # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
+    terms = (src.get('search_terms')
+             or ([src['search_query']] if src.get('search_query') else [None]))
+
+    all_matches: list = []
+    seen_urls:   set  = set()
+
     try:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
@@ -338,137 +387,152 @@ def fetch_with_browser(src: dict) -> dict:
                     'Chrome/124.0.0.0 Safari/537.36'
                 )
             )
-            page.goto(src['url'], wait_until='domcontentloaded', timeout=45_000)
-            page.wait_for_timeout(2000)
 
-            search_query = src.get('search_query')
-            if search_query:
-                # Sélecteurs larges pour trouver le champ de recherche
-                input_sel = (
-                    'input[type="search"], input[type="text"], '
-                    'input[name*="search" i], input[name*="zoek" i], '
-                    'input[name*="query" i], input[name*="Search" i], '
-                    'input[id*="search" i], input[placeholder*="recherch" i]'
-                )
+            for term in terms:
+                # ── URL pour ce terme ──────────────────────────────────────
+                is_template = term and '{term}' in base_url
+                nav_url = base_url.replace('{term}', quote_plus(term)) if is_template else base_url
+
+                page.goto(nav_url, wait_until='domcontentloaded', timeout=45_000)
+                page.wait_for_timeout(2000)
+
+                # ── Remplissage formulaire (sources sans template URL) ─────
                 inp = None
-                try:
-                    page.wait_for_selector(input_sel, timeout=12_000)
-                    inp = page.locator(input_sel).first
-                    inp.click()
-                    inp.fill('')
-                    inp.type(search_query, delay=50)
-                    print(f'    [browser] {src["name"]}: champ rempli avec "{search_query}"', flush=True)
-                except Exception as e:
-                    print(f'    [browser] {src["name"]}: champ introuvable — {e}', flush=True)
-
-                # Soumettre via bouton ou Enter
-                submitted = False
-                submit_sel = (
-                    'button[type="submit"], input[type="submit"], '
-                    'button:has-text("Soumettre"), button:has-text("Rechercher"), '
-                    'button:has-text("Search"), button:has-text("Zoeken")'
-                )
-                try:
-                    page.locator(submit_sel).first.click(timeout=6_000)
-                    submitted = True
-                    print(f'    [browser] {src["name"]}: bouton submit cliqué', flush=True)
-                except Exception:
-                    pass
-
-                if not submitted and inp:
+                if term and not is_template:
                     try:
-                        inp.press('Enter')
-                        submitted = True
-                        print(f'    [browser] {src["name"]}: Enter pressé', flush=True)
+                        page.wait_for_selector(_INPUT_SEL, timeout=12_000)
+                        inp = page.locator(_INPUT_SEL).first
+                        inp.click()
+                        inp.fill('')
+                        inp.type(term, delay=50)
+                        print(f'    [browser] {src["name"]}: champ rempli "{term}"', flush=True)
                     except Exception as e:
-                        print(f'    [browser] {src["name"]}: Enter échoué — {e}', flush=True)
+                        print(f'    [browser] {src["name"]}: champ introuvable — {e}', flush=True)
 
-                # Attendre les résultats
+                    submitted = False
+                    try:
+                        page.locator(_SUBMIT_SEL).first.click(timeout=6_000)
+                        submitted = True
+                    except Exception:
+                        pass
+                    if not submitted and inp:
+                        try:
+                            inp.press('Enter')
+                            submitted = True
+                        except Exception:
+                            pass
+
+                    try:
+                        page.wait_for_load_state('networkidle', timeout=20_000)
+                    except Exception:
+                        pass
+                    page.wait_for_timeout(3000)
+
+                # ── Attendre disparition des spinners ─────────────────────
                 try:
-                    page.wait_for_load_state('networkidle', timeout=20_000)
+                    page.wait_for_function(
+                        """() => !document.body.innerText.includes('Chargement') &&
+                                 !document.body.innerText.includes('Loading') &&
+                                 !document.body.innerText.includes('laden')""",
+                        timeout=15_000
+                    )
                 except Exception:
                     pass
-                page.wait_for_timeout(3000)
+                page.wait_for_timeout(2000)
 
-            # Attendre que les spinners/loaders disparaissent (résultats JS chargés)
-            try:
-                page.wait_for_function(
-                    """() => !document.body.innerText.includes('Chargement') &&
-                             !document.body.innerText.includes('Loading') &&
-                             !document.body.innerText.includes('laden')""",
-                    timeout=15_000
-                )
-            except Exception:
-                pass
-            page.wait_for_timeout(2000)
+                # ── Attendre sélecteur résultats ──────────────────────────
+                if wait_sel:
+                    try:
+                        page.wait_for_selector(wait_sel, timeout=10_000)
+                    except Exception:
+                        pass  # pas de résultats pour ce terme
 
-            html = page.content()
-            n_links_total = html.count('<a ')
-            print(f'    [browser] {src["name"]}: page capturée — ~{n_links_total} balises <a>', flush=True)
+                # ── Extraction ciblée via evaluate() ─────────────────────
+                if eval_js:
+                    items = page.evaluate(eval_js)
+                    for item in items:
+                        href = item.get('href', '').strip()
+                        text = item.get('text', '').strip()
+                        if not href or not text or href in seen_urls:
+                            continue
+                        full_url = href if href.startswith('http') else urljoin(nav_url, href)
+                        kws = find_keywords(text, kw_set)
+                        if not kws:
+                            continue
+                        seen_urls.add(href)
+                        date_obj = extract_date(text)
+                        date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
+                        all_matches.append({
+                            'text': text[:300],
+                            'url': full_url,
+                            'keywords': kws,
+                            'context': '',
+                            'date': date_str,
+                        })
+                        if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
+                            break
 
-            # Debug : sauvegarder le HTML brut pour diagnostic
-            debug_path = Path(f'data/debug_{src["id"]}.html')
-            debug_path.parent.mkdir(exist_ok=True)
-            debug_path.write_text(html[:50_000], encoding='utf-8')
+                else:
+                    # ── Extraction HTML générique (fallback) ──────────────
+                    html = page.content()
+                    print(f'    [browser] {src["name"]}: ~{html.count("<a ")} <a> (terme: {term})', flush=True)
+
+                    # Debug dump pour le premier terme uniquement
+                    if term == terms[0]:
+                        debug_path = Path(f'data/debug_{src["id"]}.html')
+                        debug_path.parent.mkdir(exist_ok=True)
+                        debug_path.write_text(html[:50_000], encoding='utf-8')
+
+                    soup = BeautifulSoup(html, 'lxml')
+                    for tag in soup.find_all(['nav', 'footer', 'script', 'style', 'header']):
+                        tag.decompose()
+
+                    for a in soup.find_all('a', href=True):
+                        text = a.get_text(' ', strip=True)
+                        if not text or len(text) < 4 or len(text) > 400:
+                            continue
+                        href = a['href'].strip()
+                        if not href or href.startswith('javascript') or href in ('#', ''):
+                            continue
+                        full_url = href if href.startswith('http') else urljoin(nav_url, href)
+                        if full_url in seen_urls:
+                            continue
+
+                        block = a
+                        for _ in range(3):
+                            parent = block.find_parent(['article', 'li', 'tr', 'div', 'section', 'p'])
+                            if parent:
+                                block = parent
+                                if len(block.get_text(' ', strip=True)) > 80:
+                                    break
+                        ctx = block.get_text(' ', strip=True)[:400]
+
+                        kws = find_keywords(text + ' ' + ctx, kw_set)
+                        if not kws:
+                            continue
+
+                        seen_urls.add(full_url)
+                        date_obj = extract_date(ctx) or extract_date(text)
+                        date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
+                        display_text = text if len(text) >= 15 else ctx[:120]
+
+                        all_matches.append({
+                            'text': display_text,
+                            'url': full_url,
+                            'keywords': kws,
+                            'context': ctx if ctx != display_text else '',
+                            'date': date_str,
+                        })
+                        if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
+                            break
+
+                if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
+                    break
 
             browser.close()
 
-        kw_set = src.get('kw_set', 'institutional')
-        soup = BeautifulSoup(html, 'lxml')
-        for tag in soup.find_all(['nav', 'footer', 'script', 'style', 'header']):
-            tag.decompose()
-
-        seen_texts = set()
-        matches = []
-
-        for a in soup.find_all('a', href=True):
-            text = a.get_text(' ', strip=True)
-            # Seuil plus bas pour les pages de résultats (numéros d'arrêts, etc.)
-            if not text or len(text) < 4 or len(text) > 400:
-                continue
-            if text in seen_texts:
-                continue
-            seen_texts.add(text)
-
-            href = a['href'].strip()
-            if not href or href.startswith('javascript') or href in ('#', ''):
-                continue
-
-            full_url = href if href.startswith('http') else urljoin(src['url'], href)
-
-            # Contexte élargi : remonter jusqu'à 3 niveaux pour capturer l'extrait complet
-            block = a
-            for _ in range(3):
-                parent = block.find_parent(['article', 'li', 'tr', 'div', 'section', 'p'])
-                if parent:
-                    block = parent
-                    if len(block.get_text(' ', strip=True)) > 80:
-                        break
-            ctx = block.get_text(' ', strip=True)[:400]
-
-            kws = find_keywords(text + ' ' + ctx, kw_set)
-            if not kws:
-                continue
-
-            date_obj = extract_date(ctx) or extract_date(text)
-            date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
-
-            # Titre affiché : préférer le texte du contexte si le lien est trop court
-            display_text = text if len(text) >= 15 else ctx[:120]
-
-            matches.append({
-                'text': display_text,
-                'url': full_url,
-                'keywords': kws,
-                'context': ctx if ctx != display_text else '',
-                'date': date_str,
-            })
-
-            if len(matches) >= MAX_MATCHES_PER_SOURCE:
-                break
-
-        print(f'    [browser] {src["name"]}: {len(matches)} correspondance(s) trouvée(s)', flush=True)
-        return {'status': 'ok', 'matches': matches}
+        print(f'    [browser] {src["name"]}: {len(all_matches)} correspondance(s) au total', flush=True)
+        return {'status': 'ok', 'matches': all_matches}
 
     except PWTimeout:
         return {'status': 'error', 'message': 'Délai dépassé (Playwright 45s)'}
@@ -481,67 +545,75 @@ def fetch_source(src: dict) -> dict:
         return fetch_rss(src)
     if src.get('js'):
         return fetch_with_browser(src)
-    kw_set = src.get('kw_set', 'institutional')
-    try:
-        resp = requests.get(
-            src['url'], headers=HEADERS,
-            timeout=REQUEST_TIMEOUT, allow_redirects=True,
-        )
-        resp.raise_for_status()
-        resp.encoding = resp.apparent_encoding or 'utf-8'
 
-        soup = BeautifulSoup(resp.text, 'lxml')
-        for tag in soup.find_all(['nav', 'footer', 'script', 'style', 'header']):
-            tag.decompose()
+    kw_set   = src.get('kw_set', 'institutional')
+    base_url = src['url']
+    terms    = src.get('search_terms') or [None]
 
-        seen_texts = set()
-        matches = []
+    all_matches: list = []
+    seen_urls:   set  = set()
+    last_error:  str  = ''
 
-        for a in soup.find_all('a', href=True):
-            text = a.get_text(' ', strip=True)
-            if not text or len(text) < 10 or len(text) > 350:
-                continue
-            if text in seen_texts:
-                continue
-            seen_texts.add(text)
+    for term in terms:
+        url = base_url.replace('{term}', quote_plus(term)) if (term and '{term}' in base_url) else base_url
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT, allow_redirects=True)
+            resp.raise_for_status()
+            resp.encoding = resp.apparent_encoding or 'utf-8'
 
-            href = a['href'].strip()
-            if not href or href.startswith('javascript') or href in ('#', ''):
-                continue
+            soup = BeautifulSoup(resp.text, 'lxml')
+            for tag in soup.find_all(['nav', 'footer', 'script', 'style', 'header']):
+                tag.decompose()
 
-            full_url = href if href.startswith('http') else urljoin(src['url'], href)
+            for a in soup.find_all('a', href=True):
+                text = a.get_text(' ', strip=True)
+                if not text or len(text) < 10 or len(text) > 350:
+                    continue
+                href = a['href'].strip()
+                if not href or href.startswith('javascript') or href in ('#', ''):
+                    continue
+                full_url = href if href.startswith('http') else urljoin(url, href)
+                if full_url in seen_urls:
+                    continue
 
-            block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
-            ctx = block.get_text(' ', strip=True)[:280] if block else text
+                block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
+                ctx = block.get_text(' ', strip=True)[:280] if block else text
 
-            kws = find_keywords(text + ' ' + ctx, kw_set)
-            if not kws:
-                continue
+                kws = find_keywords(text + ' ' + ctx, kw_set)
+                if not kws:
+                    continue
 
-            date_obj = extract_date(ctx) or extract_date(text)
-            date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
+                seen_urls.add(full_url)
+                date_obj = extract_date(ctx) or extract_date(text)
+                date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
 
-            matches.append({
-                'text': text,
-                'url': full_url,
-                'keywords': kws,
-                'context': ctx if ctx != text else '',
-                'date': date_str,
-            })
+                all_matches.append({
+                    'text': text,
+                    'url': full_url,
+                    'keywords': kws,
+                    'context': ctx if ctx != text else '',
+                    'date': date_str,
+                })
+                if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
+                    break
 
-            if len(matches) >= MAX_MATCHES_PER_SOURCE:
-                break
+        except requests.exceptions.Timeout:
+            last_error = f'Délai dépassé ({REQUEST_TIMEOUT}s)'
+        except requests.exceptions.ConnectionError as e:
+            last_error = f'Connexion impossible : {str(e)[:60]}'
+        except requests.exceptions.HTTPError as e:
+            last_error = f'HTTP {e.response.status_code}'
+        except Exception as e:
+            last_error = str(e)[:80]
 
-        return {'status': 'ok', 'matches': matches}
+        if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
+            break
+        if len(terms) > 1:
+            time.sleep(DELAY_BETWEEN_REQUESTS)
 
-    except requests.exceptions.Timeout:
-        return {'status': 'error', 'message': f'Délai dépassé ({REQUEST_TIMEOUT}s)'}
-    except requests.exceptions.ConnectionError as e:
-        return {'status': 'error', 'message': f'Connexion impossible : {str(e)[:60]}'}
-    except requests.exceptions.HTTPError as e:
-        return {'status': 'error', 'message': f'HTTP {e.response.status_code}'}
-    except Exception as e:
-        return {'status': 'error', 'message': str(e)[:80]}
+    if not all_matches and last_error:
+        return {'status': 'error', 'message': last_error}
+    return {'status': 'ok', 'matches': all_matches}
 
 
 # ── Génération HTML ────────────────────────────────────────────────────────────
