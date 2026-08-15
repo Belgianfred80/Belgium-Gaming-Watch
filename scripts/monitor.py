@@ -334,37 +334,61 @@ def fetch_with_browser(src: dict) -> dict:
                     'Chrome/124.0.0.0 Safari/537.36'
                 )
             )
-            page.goto(src['url'], wait_until='networkidle', timeout=45_000)
+            page.goto(src['url'], wait_until='domcontentloaded', timeout=45_000)
+            page.wait_for_timeout(2000)
 
-            # Si une requête de recherche est définie, remplir et soumettre le formulaire
             search_query = src.get('search_query')
             if search_query:
-                # Trouver la première zone de texte visible (champ de recherche)
-                input_sel = ('input[type="text"]:visible, '
-                             'input[type="search"]:visible, '
-                             'textarea:visible')
+                # Sélecteurs larges pour trouver le champ de recherche
+                input_sel = (
+                    'input[type="search"], input[type="text"], '
+                    'input[name*="search" i], input[name*="zoek" i], '
+                    'input[name*="query" i], input[name*="Search" i], '
+                    'input[id*="search" i], input[placeholder*="recherch" i]'
+                )
+                inp = None
                 try:
-                    page.wait_for_selector(input_sel, timeout=10_000)
-                    page.locator(input_sel).first.fill(search_query)
+                    page.wait_for_selector(input_sel, timeout=12_000)
+                    inp = page.locator(input_sel).first
+                    inp.click()
+                    inp.fill('')
+                    inp.type(search_query, delay=50)
+                    print(f'    [browser] {src["name"]}: champ rempli avec "{search_query}"', flush=True)
+                except Exception as e:
+                    print(f'    [browser] {src["name"]}: champ introuvable — {e}', flush=True)
+
+                # Soumettre via bouton ou Enter
+                submitted = False
+                submit_sel = (
+                    'button[type="submit"], input[type="submit"], '
+                    'button:has-text("Soumettre"), button:has-text("Rechercher"), '
+                    'button:has-text("Search"), button:has-text("Zoeken")'
+                )
+                try:
+                    page.locator(submit_sel).first.click(timeout=6_000)
+                    submitted = True
+                    print(f'    [browser] {src["name"]}: bouton submit cliqué', flush=True)
                 except Exception:
                     pass
 
-                # Soumettre : bouton submit ou touche Entrée
-                submit_sel = ('button[type="submit"], input[type="submit"], '
-                              'button:text-matches("soumettre|rechercher|search|zoek", "i")')
-                try:
-                    page.locator(submit_sel).first.click(timeout=8_000)
-                except Exception:
-                    # Fallback : Entrée dans le champ de recherche
+                if not submitted and inp:
                     try:
-                        page.locator(input_sel).first.press('Enter')
-                    except Exception:
-                        pass
+                        inp.press('Enter')
+                        submitted = True
+                        print(f'    [browser] {src["name"]}: Enter pressé', flush=True)
+                    except Exception as e:
+                        print(f'    [browser] {src["name"]}: Enter échoué — {e}', flush=True)
 
-                # Attendre que les résultats se chargent
-                page.wait_for_load_state('networkidle', timeout=30_000)
+                # Attendre les résultats
+                try:
+                    page.wait_for_load_state('networkidle', timeout=20_000)
+                except Exception:
+                    pass
+                page.wait_for_timeout(3000)
 
             html = page.content()
+            n_links_total = html.count('<a ')
+            print(f'    [browser] {src["name"]}: page capturée — ~{n_links_total} balises <a>', flush=True)
             browser.close()
 
         kw_set = src.get('kw_set', 'institutional')
@@ -377,7 +401,8 @@ def fetch_with_browser(src: dict) -> dict:
 
         for a in soup.find_all('a', href=True):
             text = a.get_text(' ', strip=True)
-            if not text or len(text) < 10 or len(text) > 350:
+            # Seuil plus bas pour les pages de résultats (numéros d'arrêts, etc.)
+            if not text or len(text) < 4 or len(text) > 400:
                 continue
             if text in seen_texts:
                 continue
@@ -389,8 +414,15 @@ def fetch_with_browser(src: dict) -> dict:
 
             full_url = href if href.startswith('http') else urljoin(src['url'], href)
 
-            block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
-            ctx = block.get_text(' ', strip=True)[:280] if block else text
+            # Contexte élargi : remonter jusqu'à 3 niveaux pour capturer l'extrait complet
+            block = a
+            for _ in range(3):
+                parent = block.find_parent(['article', 'li', 'tr', 'div', 'section', 'p'])
+                if parent:
+                    block = parent
+                    if len(block.get_text(' ', strip=True)) > 80:
+                        break
+            ctx = block.get_text(' ', strip=True)[:400]
 
             kws = find_keywords(text + ' ' + ctx, kw_set)
             if not kws:
@@ -399,17 +431,21 @@ def fetch_with_browser(src: dict) -> dict:
             date_obj = extract_date(ctx) or extract_date(text)
             date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
 
+            # Titre affiché : préférer le texte du contexte si le lien est trop court
+            display_text = text if len(text) >= 15 else ctx[:120]
+
             matches.append({
-                'text': text,
+                'text': display_text,
                 'url': full_url,
                 'keywords': kws,
-                'context': ctx if ctx != text else '',
+                'context': ctx if ctx != display_text else '',
                 'date': date_str,
             })
 
             if len(matches) >= MAX_MATCHES_PER_SOURCE:
                 break
 
+        print(f'    [browser] {src["name"]}: {len(matches)} correspondance(s) trouvée(s)', flush=True)
         return {'status': 'ok', 'matches': matches}
 
     except PWTimeout:
@@ -538,7 +574,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
             js_title = esc(json.dumps(a['text']))
             js_date  = esc(json.dumps(a.get('date', '')))
             js_src   = esc(json.dumps(a['source_name']))
-            rows += f'''<div class="alert-row" id="{row_id}">
+            rows += f'''<div class="alert-row" id="{row_id}" data-url="{esc(a['url'])}">
   <div class="alert-row-main">
     {date_badge}
     <span class="alert-src" style="color:{a["source_color"]}">{esc(a["source_name"])}</span>
@@ -686,6 +722,9 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .btn-read{flex-shrink:0;font-size:10px;font-weight:600;background:rgba(46,204,113,.12);color:#27ae60;border:none;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;margin-top:2px}
 [data-theme=dark] .btn-read{color:#3fb950;background:rgba(63,185,80,.12)}
 .btn-read:hover{opacity:.75}
+.btn-unread{flex-shrink:0;font-size:10px;font-weight:600;background:rgba(52,152,219,.12);color:#2980b9;border:none;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;margin-top:2px}
+[data-theme=dark] .btn-unread{color:#58a6ff;background:rgba(88,166,255,.12)}
+.btn-unread:hover{opacity:.75}
 .result{padding:8px 0;border-bottom:1px solid var(--border);line-height:1.45}
 .result:last-child{border-bottom:none}
 .result a{font-size:12.5px;font-weight:600;color:var(--link);text-decoration:none;display:block}
@@ -717,6 +756,9 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
 const KEY_THEME = 'bgw_theme';
 const KEY_READ  = 'bgw_read';
 
+// ── Utilitaire HTML-escape (pour renderArchive) ────────────────────────────────
+function eh(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 // ── Thème ──────────────────────────────────────────────────────────────────────
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
@@ -733,12 +775,24 @@ function toggleTheme(){
 function markRead(url, title, date, src, rowId){
   const items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
   if(!items.find(i=>i.url===url)){
-    items.unshift({url, title, date, src,
-      readAt: new Date().toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})});
+    // On stocke uniquement la date de publication (pas la date du clic)
+    items.unshift({url, title, date, src});
     localStorage.setItem(KEY_READ, JSON.stringify(items.slice(0,300)));
   }
   const row = document.getElementById(rowId);
-  if(row){ row.style.opacity='0'; row.style.transition='opacity .3s'; setTimeout(()=>row.remove(),300); }
+  if(row){ row.style.opacity='0'; row.style.transition='opacity .3s'; setTimeout(()=>{ row.style.display='none'; row.style.opacity='1'; }, 300); }
+  renderArchive();
+}
+
+// ── Remettre comme non lu ──────────────────────────────────────────────────────
+function unmarkRead(url){
+  let items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
+  items = items.filter(i=>i.url!==url);
+  localStorage.setItem(KEY_READ, JSON.stringify(items));
+  // Réafficher la ligne correspondante dans le résumé
+  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
+    if(row.dataset.url===url) row.style.display='';
+  });
   renderArchive();
 }
 
@@ -754,10 +808,11 @@ function renderArchive(){
     return;
   }
   body.innerHTML = items.map(i=>`
-    <div class="archive-row">
-      <span class="archive-date">${i.date||i.readAt||'—'}</span>
-      <span class="archive-src" style="color:#888">${i.src}</span>
-      <a href="${i.url}" target="_blank">${i.title}</a>
+    <div class="archive-row" data-url="${eh(i.url)}">
+      <span class="archive-date">${eh(i.date||'—')}</span>
+      <span class="archive-src" style="color:#888">${eh(i.src)}</span>
+      <a href="${eh(i.url)}" target="_blank">${eh(i.title)}</a>
+      <button class="btn-unread" onclick="unmarkRead(this.closest('.archive-row').dataset.url)">↩ Non lu</button>
     </div>`).join('');
 }
 
@@ -769,9 +824,13 @@ function toggleAbout(){
   body.classList.toggle('open');
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ── Init : cacher les alertes déjà lues au chargement ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
   applyTheme(localStorage.getItem(KEY_THEME)||'light');
+  const readUrls = new Set((JSON.parse(localStorage.getItem(KEY_READ)||'[]')).map(i=>i.url));
+  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
+    if(readUrls.has(row.dataset.url)) row.style.display='none';
+  });
   renderArchive();
 });
 """
