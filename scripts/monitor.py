@@ -111,8 +111,8 @@ SOURCES = [
     {
         'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Soir', 'color': '#1565c0',
-        'type': 'rss',
-        'url': 'https://www.lesoir.be/arc/outboundfeeds/rss/?outputType=xml',
+        'js': True,
+        'url': 'https://www.lesoir.be/actus',
     },
     {
         'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
@@ -129,41 +129,45 @@ SOURCES = [
     {
         'id': 'rtlinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTL Info', 'color': '#ff6f00',
-        'type': 'rss',
-        'url': 'https://feeds.rtl.be/rtlinfo_fr',
+        'js': True,
+        'url': 'https://www.rtl.be/info',
     },
     {
         'id': 'levif', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Vif', 'color': '#6a1b9a',
-        'type': 'rss',
-        'url': 'https://www.levif.be/arc/outboundfeeds/rss/?outputType=xml',
+        'js': True,
+        'url': 'https://www.levif.be/',
     },
     {
         'id': 'sudinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Sud Info', 'color': '#e65100',
-        'type': 'rss',
-        'url': 'https://www.sudinfo.be/arc/outboundfeeds/rss/?outputType=xml',
+        'js': True,
+        'url': 'https://www.sudinfo.be/',
     },
 
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
     {
         'id': 'sbc', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'SBC News — Belgique', 'color': '#2471a3',
+        'js': True,
         'url': 'https://sbcnews.co.uk/tag/belgium/',
     },
     {
         'id': 'igaming', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'iGaming Business', 'color': '#2471a3',
+        'js': True,
         'url': 'https://igamingbusiness.com/?s=belgium',
     },
     {
         'id': 'casinobeats', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'CasinoBeats', 'color': '#2471a3',
+        'js': True,
         'url': 'https://casinobeats.com/?s=belgium',
     },
     {
         'id': 'egba', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'EGBA (European Gaming & Betting Assoc.)', 'color': '#1565c0',
+        'js': True,
         'url': 'https://www.egba.eu/news/',
     },
     {
@@ -401,6 +405,12 @@ def fetch_with_browser(src: dict) -> dict:
             html = page.content()
             n_links_total = html.count('<a ')
             print(f'    [browser] {src["name"]}: page capturée — ~{n_links_total} balises <a>', flush=True)
+
+            # Debug : sauvegarder le HTML brut pour diagnostic
+            debug_path = Path(f'data/debug_{src["id"]}.html')
+            debug_path.parent.mkdir(exist_ok=True)
+            debug_path.write_text(html[:50_000], encoding='utf-8')
+
             browser.close()
 
         kw_set = src.get('kw_set', 'institutional')
