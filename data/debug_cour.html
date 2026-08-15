@@ -1,0 +1,657 @@
+<!DOCTYPE html><html lang="fr-FR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rechercher</title><link rel="preconnect" href="https://use.typekit.net" crossorigin=""><link rel="preconnect" href="https://p.typekit.net" crossorigin=""><script type="importmap">{"imports":{"#entry":"/_nuxt/D1txIi55.js"}}</script><style>.build-badge[data-v-33d0282c]{opacity:.6;z-index:2000;pointer-events:none;align-items:center;gap:6px;display:inline-flex;position:fixed;bottom:4px;right:8px}.build-dot[data-v-33d0282c]{border-radius:50%;width:9px;height:9px;box-shadow:0 0 0 1px #00000026}</style><style>.dev-locale-switcher[data-v-6aeaacb7]{z-index:3000;opacity:.55;background:#111111d9;border-radius:6px;align-items:center;gap:4px;padding:3px;font-family:monospace;font-size:11px;line-height:1;transition:opacity .15s;display:flex;position:fixed;top:12px;right:12px;box-shadow:0 1px 4px #00000059}.dev-locale-switcher[data-v-6aeaacb7]:hover{opacity:1}.dev-tag[data-v-6aeaacb7]{color:#fff;letter-spacing:.5px;cursor:pointer;background:#d97706;border:none;border-radius:4px;padding:4px 6px;font-weight:700}.dev-locale-buttons[data-v-6aeaacb7]{gap:2px;display:flex}.dev-locale-btn[data-v-6aeaacb7]{color:#e5e5e5;cursor:pointer;background:0 0;border:none;border-radius:4px;padding:4px 7px;font-weight:600;transition:background .12s,color .12s}.dev-locale-btn[data-v-6aeaacb7]:hover{background:#ffffff1f}.dev-locale-btn.active[data-v-6aeaacb7]{color:#111;background:#fff}</style><style>.error-page[data-v-9997aef0]{flex-direction:column;justify-content:center;align-items:flex-start;max-width:60ch;min-height:calc(100vh - 260px);padding-block:32px;display:flex}.error-status[data-v-9997aef0]{color:rgba(var(--v-theme-on-surface),.6);letter-spacing:.08em;font-size:1.5rem;line-height:1.2}.error-actions[data-v-9997aef0]{flex-wrap:wrap;gap:12px;display:flex}.home-btn[data-v-9997aef0]{color:rgb(var(--v-theme-on-primary))}</style><style>h1{color:rgb(var(--v-theme-logoColor));margin-left:16px;font-family:Tiempos Headline;font-size:1.5rem;font-weight:600}a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}ul.list-none{margin-left:0;padding-left:0;list-style:none}.logo-image{-o-object-fit:contain;object-fit:contain;width:64px;height:64px;display:block}.main-content{min-height:calc(100vh - 130px);padding-top:130px}.skip-link{z-index:3000;background:rgb(var(--v-theme-surface));color:rgb(var(--v-theme-primary));border:2px solid rgb(var(--v-theme-primary));border-radius:4px;padding:8px 16px;font-weight:600;transition:transform .15s;position:fixed;top:8px;left:8px;transform:translateY(-200%)}.skip-link:focus{text-decoration:none;transform:translateY(0)}.desktop-nav{display:block}.mobile-nav-toggle{display:none!important}.site-title{white-space:nowrap;text-overflow:ellipsis;min-width:0;overflow:hidden}.menu-skeleton-block{background:linear-gradient(90deg,rgb(var(--v-theme-lightGrey)) 25%,rgb(var(--v-theme-ivoryGrey)) 37%,rgb(var(--v-theme-lightGrey)) 63%);background-size:400% 100%;border-radius:6px;width:84px;height:20px;animation:1.2s ease-in-out infinite menu-skeleton-shimmer;display:inline-block}@keyframes menu-skeleton-shimmer{0%{background-position:100%}to{background-position:0}}.menu-close-btn{z-index:10;background:#0000000a;border-radius:50%;transition:background .2s;position:absolute;top:12px;right:12px}.menu-close-btn:hover{background:#0000001f}button.cursor-pointer{color:inherit;cursor:pointer;background:0 0;border:none;padding:8px 16px;font-size:1.1rem;font-weight:500;text-decoration:none;transition:color .2s,-webkit-text-decoration .2s,text-decoration .2s}button.cursor-pointer:hover{text-decoration:underline}.submenu-link{color:rgb(var(--v-theme-textGrey));padding:8px 16px;font-size:1rem;text-decoration:none;display:block}.submenu-link:hover{background:rgb(var(--v-theme-lightGrey));color:rgb(var(--v-theme-accentBlue))}.hide-mobile{display:inline}@media (width<=599.98px){.hide-mobile{display:none!important}.site-title{max-width:135px;font-size:.95rem}}@media (width<=839.98px){.desktop-nav{display:none}.mobile-nav-toggle{display:inline-flex!important}}ul.nav-list>li{align-items:center;height:48px;margin-right:24px;display:flex}ul.nav-list>li:last-child{margin-right:0}ul.nav-list>li>a,ul.nav-list>li>button{height:100%;color:inherit;cursor:pointer;background:0 0;border:none;align-items:center;padding:0 16px;font-size:1.1rem;font-weight:500;text-decoration:none;transition:color .2s,-webkit-text-decoration .2s,text-decoration .2s;display:flex}ul.nav-list>li>a:hover,ul.nav-list>li>button:hover{color:rgb(var(--v-theme-accentBlue));text-decoration:underline}@media (width>=840px) and (width<=1559.98px){.site-title{display:none}ul.nav-list>li{margin-right:12px}ul.nav-list>li>a,ul.nav-list>li>button{padding:0 12px;font-size:1rem}.desktop-nav .v-container{padding-left:8px;padding-right:8px}}</style><style>.fulltext-judgment-card[data-v-69ee147d]{border-radius:0;margin:16px 16px 32px;padding:20px;transition:all .3s ease-in-out;position:relative;box-shadow:0 0 4px 2px #00000014}@media (width<=839.98px){.fulltext-judgment-card[data-v-69ee147d]{width:calc(100% - 32px);margin:auto auto 20px}}.fulltext-judgment-card .top-infos[data-v-69ee147d]{justify-content:space-between;display:flex}.fulltext-judgment-card .top-infos p[data-v-69ee147d]{font-size:1.25rem;line-height:24px}.fulltext-judgment-card .top-infos p[data-v-69ee147d]:first-of-type{position:relative}.fulltext-judgment-card .top-infos p[data-v-69ee147d]:first-of-type:before{content:"";background-color:#fff;height:2px;position:absolute;bottom:0;left:0;right:0}.fulltext-judgment-card h3[data-v-69ee147d]{text-align:left;margin-bottom:20px;font-size:1.25rem;line-height:24px}.fulltext-judgment-card h3 a[data-v-69ee147d]{color:#0000}.fulltext-judgment-card .subtitle[data-v-69ee147d]{text-align:left;word-break:break-word;margin-bottom:8px;font-size:1rem;font-weight:400}.fulltext-judgment-card[data-v-69ee147d] em{background:color-mix(in srgb,rgb(var(--v-theme-rajahLight)) 90%,transparent)}</style><style>.row.d-flex[data-v-5c4e542e]{margin:auto auto 80px}@media (width<=599.98px){.row.d-flex[data-v-5c4e542e]{width:100%;margin-bottom:40px}}</style><style>.footer-link[data-v-28ad2dfa]{align-items:center;min-height:24px;display:inline-flex}.footer-links[data-v-28ad2dfa]{gap:8px 40px}@media (width<=599.98px){.footer-links[data-v-28ad2dfa]{gap:0}.footer-link[data-v-28ad2dfa]{margin:4px 0;padding:4px 8px}}</style><style>.banner-image-container[data-v-e337bab7]{z-index:0;color:#fff;text-align:left;flex-direction:column;width:100%;padding:120px;display:flex;position:relative}@media (width<=599.98px){.banner-image-container[data-v-e337bab7]{padding:40px}}.banner-image-container .banner-title[data-v-e337bab7]{color:#fff;max-width:480px;margin:0 0 24px;font-family:Tiempos Headline;font-size:2rem;font-weight:600;line-height:40px;position:relative}@media (width<=599.98px){.banner-image-container .banner-title[data-v-e337bab7]{max-width:320px;font-size:1.5rem}}.banner-image-container .banner-title[data-v-e337bab7]:after{content:"";background:rgb(var(--v-theme-skyBlue));width:100px;height:8px;position:absolute;bottom:-8px;left:0}.banner-image-container p[data-v-e337bab7]{max-width:450px;margin:0;font-size:1.25rem;line-height:24px}.banner-image-container .banner-image[data-v-e337bab7]{filter:grayscale();z-index:-2;background-position:50% 24%;background-size:cover;width:100%;position:absolute;inset:0}.banner-image-container .layover[data-v-e337bab7]{background:color-mix(in srgb,rgb(var(--v-theme-secondary)) 80%,transparent);z-index:-1;width:100%;height:100%;position:absolute;inset:0}</style><style>.vertical-tabs[data-v-4dd2586b] .v-tab--selected{background-color:color-mix(in srgb,rgb(var(--v-theme-primary)) 6%,transparent);font-weight:500}.tab[data-v-4dd2586b]{text-align:left;color:#0009;letter-spacing:normal;border-left:3px solid #0000;border-radius:0 6px 6px 0;height:auto;min-height:44px;margin:4px 0;padding:12px 16px;text-decoration:none;transition:background-color .15s,border-color .15s;justify-content:flex-start!important}.tab[data-v-4dd2586b]:hover{background-color:#0000000a}.tab__label[data-v-4dd2586b]{text-align:left;text-transform:none;white-space:normal;word-break:break-word;-webkit-hyphens:auto;hyphens:auto;width:100%;line-height:1.3;display:block}</style><link rel="stylesheet" href="/_nuxt/style.L7fd1ow0.css" crossorigin=""><link rel="stylesheet" href="https://use.typekit.net/mqe5ipv.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" as="image" href="/_nuxt/banner-text_light.C4oc4TtN.webp" fetchpriority="high"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/D1txIi55.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CaYbkdP2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/jaTeRxlz.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DZN8v4UV.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Cx8fnzmP.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/fby1-evk.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/rxhDcyfF.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/vxisBbqh.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DuQ2LTf6.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DgjvMBN4.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CGQFv_L_.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Dl07uGq1.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CHwsgzhv.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DdWvPpNS.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Dik3iLvk.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BiV5DeCJ.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/OjGHV33w.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/PT-Zevva.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BYYfeWWA.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DLUGYejP.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/HclGiUj8.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CCEm9Bov.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DCq_MiUd.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/QDJOsCu9.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CMRcsXsM.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/D_FqUvSH.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CfuUSq7l.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/YObKcEB6.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BN1caoxl.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/F9ySBEHp.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/C8wuH9502.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/JiZ__nqy2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/QUfjn-G92.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CiCidONN2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DOgTdLx_2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DxfTCkf52.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BKlyjday.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CSzUGP102.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CwrQnFc52.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/4TXfDVaq2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CPG16pYV.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CfbmRTYu2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/xt2ZwAuI2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/JTkNNpAK.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/D2gV-Se8.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/ELo2-JHA.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BLPbQkfx2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Bn9sYqTB2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BzPcDgWE2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BCW4r3-M2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DlMoUb4Q2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CGui3xBn2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DiEwUBQU2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Bt2BuewD2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/_g0DgMeX2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/D8F5Sa0j2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Bev3dshR2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Gfjs7elg2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DUAMCSII.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CI1TQJ20.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/VchYiIDm.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/RiU8Uqxp2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BDNMzG2s2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DYLrp63O.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BTm7sNQq.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DH7_neB5.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/COWXFPwd.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/S3qxGqXx.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/B0QT5uRY2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Dj2oComE.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/D3-C2sDC.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/WFZMtE4K.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DKMOXSa9.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DW5lJ8CX.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Bh5R7xS4.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BLuhDdCH.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Oa5ccXvZ2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Gxye7OIT.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/tfQCzkL-2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Dtdrizy12.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Btamj08B.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CFj_rIDD.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/9tSjv_t_.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DdDj8B-Q.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CfbeetKt.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BquCiqhY2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/2mK99SOF.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DQrnYqMo.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DyjbGBsg.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DOVquImQ2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DHGYIirv2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Cc8TYFeQ2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Df5O1otn.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/5eb-XLR4.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CKp6ERLu.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CM-60TXD.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/I1ye5ckd.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CkBqvRXu2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/Ydgd64FM2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/DS06pqjS2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/WCJxvcxx.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BSwaPYeX.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/CtpHL1Lu2.js"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/fNDPuYKA.js"><script type="module" src="/_nuxt/D1txIi55.js" crossorigin=""></script><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CAyEBq4s2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DgyCJvOH.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CoMalBIe2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/ChBR8lGH.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DKMi65Yi.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CVlLHDce.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DA4-8o9Z.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BuOwvNhV.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BtafvIyU2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/Do2PJlfn2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/KaW03a_k2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BFHGRcez2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/ButnpDjc2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/Dc-ZcKP3.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DPUCdqML.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CAr2dJ0U.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/eXCFEuQQ.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DvdjaDfX2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/65Fa_dw32.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DDBvA5HG2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CBICsOzK2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/Bos1gjYJ2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/B6cnLq3b2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/KYIL5qkf2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BQ9avLm-2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/B-Gnn_Xk2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/C1Ecj9W02.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DCguwTVU2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BCO04m_r2.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/kLlBmvJP.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/B_SlPD5m.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DmDftHLH.js"><link rel="prefetch" as="image" type="image/webp" href="/_nuxt/banner-text_light.C4oc4TtN.webp"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="nl_BE"><meta property="og:locale:alternate" content="de_DE"><meta property="og:url" content="https://fr.const-court.be/search/full-text-judgment?search=ladbrokes+OR+entain+OR+bwin"><meta property="og:title" content="Cour constitutionnelle"><meta property="og:image" content="https://fr.const-court.be/img/ogImageFront.jpg"><meta property="og:locale" content="fr_FR"><meta property="og:type" content="website"><meta property="og:description" content="La Cour constitutionnelle contrôle le respect des droits fondamentaux et des règles de répartition des compétences par les normes législatives."><meta property="og:site_name" content="Cour constitutionnelle"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg"><meta name="twitter:card" content="summary_large_image"><script type="application/ld+json" data-hid="breadcrumb-jsonld">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://fr.const-court.be/"}]}</script><link rel="icon" href="/favicon/favicon.ico" type="image/x-icon"><link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="/favicon/favicon-192x192.png" sizes="192x192"><link rel="icon" type="image/png" href="/favicon/favicon-512x512.png" sizes="512x512"><link rel="apple-touch-icon" href="/favicon/favicon-180x180.png"><link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#043c72"><link rel="manifest" href="/favicon/site.webmanifest"><link rel="shortcut icon" type="image/png" href="/favicon/favicon-32x32.png"><meta name="author" content="Lars Devocht"><meta http-equiv="Content-Language" content="fr-FR"><script type="application/ld+json" data-hid="website-jsonld">{"@context":"https://schema.org","@type":"WebSite","@id":"https://fr.const-court.be#website","url":"https://fr.const-court.be","name":"Cour constitutionnelle","inLanguage":"fr-FR"}</script><script type="application/ld+json" data-hid="webpage-jsonld">{"@context":"https://schema.org","@type":"WebPage","@id":"https://fr.const-court.be/search/full-text-judgment?search=ladbrokes+OR+entain+OR+bwin#webpage","url":"https://fr.const-court.be/search/full-text-judgment?search=ladbrokes+OR+entain+OR+bwin","name":"Cour constitutionnelle","isPartOf":{"@id":"https://fr.const-court.be#website"},"inLanguage":"fr-FR"}</script><script type="application/ld+json" data-hid="organization-jsonld">{"@context":"https://schema.org","@type":"GovernmentOrganization","additionalType":["https://schema.org/Courthouse","https://schema.org/LegalService"],"name":"Cour constitutionnelle","alternateName":["Grondwettelijk Hof","Verfassungsgerichtshof","Constitutional Court"],"url":"https://fr.const-court.be/search/full-text-judgment?search=ladbrokes+OR+entain+OR+bwin","sameAs":[["https://fr.wikipedia.org/wiki/Cour_constitutionnelle_(Belgique)","https://www.linkedin.com/company/constitutional-court-of-belgium/","https://www.ejustice.just.fgov.be/cgi/rech.pl?language=fr&bron=Cour+Constitutionnelle&text1=arret"]],"logo":"https://fr.const-court.be/img/logo.svg","address":{"@type":"PostalAddress","addressCountry":"BE","postalCode":"1000","streetAddress":"7, place Royale","addressLocality":"Bruxelles"},"inLanguage":"fr-FR","areaServed":{"@type":"Country","name":"Belgium"},"contactPoint":[{"@type":"ContactPoint","contactType":"Informatie","telephone":"+32-2-500-12-32","email":"griffie@const-court.be","availableLanguage":[{"@type":"Language","name":"Dutch","alternateName":["nl","Nederlands"]}]},{"@type":"ContactPoint","contactType":"Information","telephone":"+32-2-500-12-33","email":"greffe@const-court.be","availableLanguage":[{"@type":"Language","name":"French","alternateName":["fr","Français"]}]}],"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"13:00"}}</script><link rel="alternate" hreflang="en-US" href="https://en.const-court.be/search/full-text-judgment" data-hid="alt-1st-en"><link rel="alternate" hreflang="en" href="https://en.const-court.be/search/full-text-judgment" data-hid="alt-2nd-en"><link rel="alternate" hreflang="fr-FR" href="https://fr.const-court.be/search/full-text-judgment" data-hid="alt-1st-fr"><link rel="alternate" hreflang="fr" href="https://fr.const-court.be/search/full-text-judgment" data-hid="alt-2nd-fr"><link rel="alternate" hreflang="nl-BE" href="https://nl.const-court.be/search/full-text-judgment" data-hid="alt-1st-nl"><link rel="alternate" hreflang="nl" href="https://nl.const-court.be/search/full-text-judgment" data-hid="alt-2nd-nl"><link rel="alternate" hreflang="de-DE" href="https://de.const-court.be/search/full-text-judgment" data-hid="alt-1st-de"><link rel="alternate" hreflang="de" href="https://de.const-court.be/search/full-text-judgment" data-hid="alt-2nd-de"><link rel="canonical" href="https://fr.const-court.be/search/full-text-judgment" data-hid="canonical"><meta name="description" content="Rechercher"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/CXWss6Ge.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/Db67hT4R.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/BJB19lHy.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/D_mwsoiN.js"><link rel="stylesheet" href="https://use.typekit.net/mqe5ipv.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/7JxFdqRa.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/DMzq5JuI.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/CFglvCqx.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/B_3jgYX_.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/D3k3VpB52.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/BW8nVHtQ2.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/DSEhyq5_.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/X8JV_w-L.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/B2n0ih3i.js"><link rel="modulepreload" as="script" crossorigin="" href="https://fr.const-court.be/_nuxt/CcM345cR2.js"></head><body><style id="vuetify-theme-stylesheet">@layer vuetify-utilities {
+  @layer theme-base {
+  :root {
+    color-scheme: light;
+  }
+  :root {
+    --v-theme-background: 255,255,255;
+    --v-theme-background-overlay-multiplier: 1;
+    --v-theme-surface: 255,255,255;
+    --v-theme-surface-overlay-multiplier: 1;
+    --v-theme-surface-bright: 255,255,255;
+    --v-theme-surface-bright-overlay-multiplier: 1;
+    --v-theme-surface-light: 238,238,238;
+    --v-theme-surface-light-overlay-multiplier: 1;
+    --v-theme-surface-variant: 66,66,66;
+    --v-theme-surface-variant-overlay-multiplier: 2;
+    --v-theme-on-surface-variant: 238,238,238;
+    --v-theme-primary: 4,60,114;
+    --v-theme-primary-overlay-multiplier: 2;
+    --v-theme-primary-darken-1: 31,85,146;
+    --v-theme-primary-darken-1-overlay-multiplier: 2;
+    --v-theme-secondary: 0,101,202;
+    --v-theme-secondary-overlay-multiplier: 2;
+    --v-theme-secondary-darken-1: 1,135,134;
+    --v-theme-secondary-darken-1-overlay-multiplier: 1;
+    --v-theme-error: 195,42,58;
+    --v-theme-error-overlay-multiplier: 2;
+    --v-theme-info: 0,170,231;
+    --v-theme-info-overlay-multiplier: 1;
+    --v-theme-success: 58,168,47;
+    --v-theme-success-overlay-multiplier: 1;
+    --v-theme-warning: 214,92,14;
+    --v-theme-warning-overlay-multiplier: 1;
+    --v-theme-accent: 252,191,96;
+    --v-theme-accent-overlay-multiplier: 1;
+    --v-theme-logoColor: 4,60,114;
+    --v-theme-logoColor-overlay-multiplier: 2;
+    --v-theme-skyBlue: 0,170,231;
+    --v-theme-skyBlue-overlay-multiplier: 1;
+    --v-theme-rajahYellow: 252,191,96;
+    --v-theme-rajahYellow-overlay-multiplier: 1;
+    --v-theme-rajahLight: 254,201,118;
+    --v-theme-rajahLight-overlay-multiplier: 1;
+    --v-theme-textOnRajah: 61,58,68;
+    --v-theme-textOnRajah-overlay-multiplier: 2;
+    --v-theme-ivoryGrey: 217,218,217;
+    --v-theme-ivoryGrey-overlay-multiplier: 1;
+    --v-theme-darkGrey: 104,104,104;
+    --v-theme-darkGrey-overlay-multiplier: 2;
+    --v-theme-textGrey: 51,51,51;
+    --v-theme-textGrey-overlay-multiplier: 2;
+    --v-theme-linkBlue: 0,112,157;
+    --v-theme-linkBlue-overlay-multiplier: 2;
+    --v-theme-accentBlue: 25,118,210;
+    --v-theme-accentBlue-overlay-multiplier: 2;
+    --v-theme-footerBlue: 15,96,177;
+    --v-theme-footerBlue-overlay-multiplier: 2;
+    --v-theme-lightGrey: 242,242,242;
+    --v-theme-lightGrey-overlay-multiplier: 1;
+    --v-theme-pdfRed: 201,3,4;
+    --v-theme-pdfRed-overlay-multiplier: 2;
+    --v-theme-dropdown: 201,3,4;
+    --v-theme-dropdown-overlay-multiplier: 2;
+    --v-theme-dropdownBg: 58,168,47;
+    --v-theme-dropdownBg-overlay-multiplier: 1;
+    --v-theme-on-background: 0,0,0;
+    --v-theme-on-surface: 0,0,0;
+    --v-theme-on-surface-bright: 0,0,0;
+    --v-theme-on-surface-light: 0,0,0;
+    --v-theme-on-primary: 255,255,255;
+    --v-theme-on-primary-darken-1: 255,255,255;
+    --v-theme-on-secondary: 255,255,255;
+    --v-theme-on-secondary-darken-1: 255,255,255;
+    --v-theme-on-error: 255,255,255;
+    --v-theme-on-info: 255,255,255;
+    --v-theme-on-success: 255,255,255;
+    --v-theme-on-warning: 255,255,255;
+    --v-theme-on-accent: 0,0,0;
+    --v-theme-on-logoColor: 255,255,255;
+    --v-theme-on-skyBlue: 255,255,255;
+    --v-theme-on-rajahYellow: 0,0,0;
+    --v-theme-on-rajahLight: 0,0,0;
+    --v-theme-on-textOnRajah: 255,255,255;
+    --v-theme-on-ivoryGrey: 0,0,0;
+    --v-theme-on-darkGrey: 255,255,255;
+    --v-theme-on-textGrey: 255,255,255;
+    --v-theme-on-linkBlue: 255,255,255;
+    --v-theme-on-accentBlue: 255,255,255;
+    --v-theme-on-footerBlue: 255,255,255;
+    --v-theme-on-lightGrey: 0,0,0;
+    --v-theme-on-pdfRed: 255,255,255;
+    --v-theme-on-dropdown: 255,255,255;
+    --v-theme-on-dropdownBg: 255,255,255;
+    --v-border-color: 0, 0, 0;
+    --v-border-opacity: 0.12;
+    --v-shadow-color: 0, 0, 0;
+    --v-high-emphasis-opacity: 0.87;
+    --v-medium-emphasis-opacity: 0.6;
+    --v-disabled-opacity: 0.38;
+    --v-idle-opacity: 0.04;
+    --v-hover-opacity: 0.04;
+    --v-focus-opacity: 0.12;
+    --v-selected-opacity: 0.08;
+    --v-activated-opacity: 0.12;
+    --v-pressed-opacity: 0.12;
+    --v-dragged-opacity: 0.08;
+    --v-theme-kbd: 238, 238, 238;
+    --v-theme-on-kbd: 0, 0, 0;
+    --v-theme-code: 245, 245, 245;
+    --v-theme-on-code: 0, 0, 0;
+    --v-theme-on-dark: 255, 255, 255;
+    --v-theme-on-light: 0, 0, 0;
+    --v-elevation-overlay-color: black;
+    --v-elevation-overlay-opacity-step: 2%;
+    --v-highlight-opacity: 8%;
+  }
+  .v-theme--light {
+    color-scheme: light;
+    --v-theme-background: 255,255,255;
+    --v-theme-background-overlay-multiplier: 1;
+    --v-theme-surface: 255,255,255;
+    --v-theme-surface-overlay-multiplier: 1;
+    --v-theme-surface-bright: 255,255,255;
+    --v-theme-surface-bright-overlay-multiplier: 1;
+    --v-theme-surface-light: 238,238,238;
+    --v-theme-surface-light-overlay-multiplier: 1;
+    --v-theme-surface-variant: 66,66,66;
+    --v-theme-surface-variant-overlay-multiplier: 2;
+    --v-theme-on-surface-variant: 238,238,238;
+    --v-theme-primary: 24,103,192;
+    --v-theme-primary-overlay-multiplier: 2;
+    --v-theme-primary-darken-1: 31,85,146;
+    --v-theme-primary-darken-1-overlay-multiplier: 2;
+    --v-theme-secondary: 72,169,166;
+    --v-theme-secondary-overlay-multiplier: 1;
+    --v-theme-secondary-darken-1: 1,135,134;
+    --v-theme-secondary-darken-1-overlay-multiplier: 1;
+    --v-theme-error: 176,0,32;
+    --v-theme-error-overlay-multiplier: 2;
+    --v-theme-info: 33,150,243;
+    --v-theme-info-overlay-multiplier: 1;
+    --v-theme-success: 76,175,80;
+    --v-theme-success-overlay-multiplier: 1;
+    --v-theme-warning: 251,140,0;
+    --v-theme-warning-overlay-multiplier: 1;
+    --v-theme-on-background: 0,0,0;
+    --v-theme-on-surface: 0,0,0;
+    --v-theme-on-surface-bright: 0,0,0;
+    --v-theme-on-surface-light: 0,0,0;
+    --v-theme-on-primary: 255,255,255;
+    --v-theme-on-primary-darken-1: 255,255,255;
+    --v-theme-on-secondary: 255,255,255;
+    --v-theme-on-secondary-darken-1: 255,255,255;
+    --v-theme-on-error: 255,255,255;
+    --v-theme-on-info: 255,255,255;
+    --v-theme-on-success: 255,255,255;
+    --v-theme-on-warning: 255,255,255;
+    --v-border-color: 0, 0, 0;
+    --v-border-opacity: 0.12;
+    --v-shadow-color: 0, 0, 0;
+    --v-high-emphasis-opacity: 0.87;
+    --v-medium-emphasis-opacity: 0.6;
+    --v-disabled-opacity: 0.38;
+    --v-idle-opacity: 0.04;
+    --v-hover-opacity: 0.04;
+    --v-focus-opacity: 0.12;
+    --v-selected-opacity: 0.08;
+    --v-activated-opacity: 0.12;
+    --v-pressed-opacity: 0.12;
+    --v-dragged-opacity: 0.08;
+    --v-theme-kbd: 238, 238, 238;
+    --v-theme-on-kbd: 0, 0, 0;
+    --v-theme-code: 245, 245, 245;
+    --v-theme-on-code: 0, 0, 0;
+    --v-theme-on-dark: 255, 255, 255;
+    --v-theme-on-light: 0, 0, 0;
+    --v-elevation-overlay-color: black;
+    --v-elevation-overlay-opacity-step: 2%;
+    --v-highlight-opacity: 8%;
+  }
+  .v-theme--dark {
+    color-scheme: dark;
+    --v-theme-background: 18,18,18;
+    --v-theme-background-overlay-multiplier: 1;
+    --v-theme-surface: 33,33,33;
+    --v-theme-surface-overlay-multiplier: 1;
+    --v-theme-surface-bright: 204,191,214;
+    --v-theme-surface-bright-overlay-multiplier: 2;
+    --v-theme-surface-light: 66,66,66;
+    --v-theme-surface-light-overlay-multiplier: 1;
+    --v-theme-surface-variant: 200,200,200;
+    --v-theme-surface-variant-overlay-multiplier: 2;
+    --v-theme-on-surface-variant: 0,0,0;
+    --v-theme-primary: 33,150,243;
+    --v-theme-primary-overlay-multiplier: 2;
+    --v-theme-primary-darken-1: 39,124,193;
+    --v-theme-primary-darken-1-overlay-multiplier: 2;
+    --v-theme-secondary: 84,182,178;
+    --v-theme-secondary-overlay-multiplier: 2;
+    --v-theme-secondary-darken-1: 72,169,166;
+    --v-theme-secondary-darken-1-overlay-multiplier: 2;
+    --v-theme-error: 207,102,121;
+    --v-theme-error-overlay-multiplier: 2;
+    --v-theme-info: 33,150,243;
+    --v-theme-info-overlay-multiplier: 2;
+    --v-theme-success: 76,175,80;
+    --v-theme-success-overlay-multiplier: 2;
+    --v-theme-warning: 251,140,0;
+    --v-theme-warning-overlay-multiplier: 2;
+    --v-theme-on-background: 255,255,255;
+    --v-theme-on-surface: 255,255,255;
+    --v-theme-on-surface-bright: 0,0,0;
+    --v-theme-on-surface-light: 255,255,255;
+    --v-theme-on-primary: 255,255,255;
+    --v-theme-on-primary-darken-1: 255,255,255;
+    --v-theme-on-secondary: 255,255,255;
+    --v-theme-on-secondary-darken-1: 255,255,255;
+    --v-theme-on-error: 255,255,255;
+    --v-theme-on-info: 255,255,255;
+    --v-theme-on-success: 255,255,255;
+    --v-theme-on-warning: 255,255,255;
+    --v-border-color: 255, 255, 255;
+    --v-border-opacity: 0.12;
+    --v-shadow-color: 0, 0, 0;
+    --v-high-emphasis-opacity: 1;
+    --v-medium-emphasis-opacity: 0.7;
+    --v-disabled-opacity: 0.5;
+    --v-idle-opacity: 0.1;
+    --v-hover-opacity: 0.04;
+    --v-focus-opacity: 0.12;
+    --v-selected-opacity: 0.08;
+    --v-activated-opacity: 0.12;
+    --v-pressed-opacity: 0.16;
+    --v-dragged-opacity: 0.08;
+    --v-theme-kbd: 66, 66, 66;
+    --v-theme-on-kbd: 255, 255, 255;
+    --v-theme-code: 52, 52, 52;
+    --v-theme-on-code: 204, 204, 204;
+    --v-theme-on-dark: 255, 255, 255;
+    --v-theme-on-light: 0, 0, 0;
+    --v-elevation-overlay-color: white;
+    --v-elevation-overlay-opacity-step: 2%;
+    --v-highlight-opacity: 20%;
+  }
+  .v-theme--constCourt {
+    color-scheme: light;
+    --v-theme-background: 255,255,255;
+    --v-theme-background-overlay-multiplier: 1;
+    --v-theme-surface: 255,255,255;
+    --v-theme-surface-overlay-multiplier: 1;
+    --v-theme-surface-bright: 255,255,255;
+    --v-theme-surface-bright-overlay-multiplier: 1;
+    --v-theme-surface-light: 238,238,238;
+    --v-theme-surface-light-overlay-multiplier: 1;
+    --v-theme-surface-variant: 66,66,66;
+    --v-theme-surface-variant-overlay-multiplier: 2;
+    --v-theme-on-surface-variant: 238,238,238;
+    --v-theme-primary: 4,60,114;
+    --v-theme-primary-overlay-multiplier: 2;
+    --v-theme-primary-darken-1: 31,85,146;
+    --v-theme-primary-darken-1-overlay-multiplier: 2;
+    --v-theme-secondary: 0,101,202;
+    --v-theme-secondary-overlay-multiplier: 2;
+    --v-theme-secondary-darken-1: 1,135,134;
+    --v-theme-secondary-darken-1-overlay-multiplier: 1;
+    --v-theme-error: 195,42,58;
+    --v-theme-error-overlay-multiplier: 2;
+    --v-theme-info: 0,170,231;
+    --v-theme-info-overlay-multiplier: 1;
+    --v-theme-success: 58,168,47;
+    --v-theme-success-overlay-multiplier: 1;
+    --v-theme-warning: 214,92,14;
+    --v-theme-warning-overlay-multiplier: 1;
+    --v-theme-accent: 252,191,96;
+    --v-theme-accent-overlay-multiplier: 1;
+    --v-theme-logoColor: 4,60,114;
+    --v-theme-logoColor-overlay-multiplier: 2;
+    --v-theme-skyBlue: 0,170,231;
+    --v-theme-skyBlue-overlay-multiplier: 1;
+    --v-theme-rajahYellow: 252,191,96;
+    --v-theme-rajahYellow-overlay-multiplier: 1;
+    --v-theme-rajahLight: 254,201,118;
+    --v-theme-rajahLight-overlay-multiplier: 1;
+    --v-theme-textOnRajah: 61,58,68;
+    --v-theme-textOnRajah-overlay-multiplier: 2;
+    --v-theme-ivoryGrey: 217,218,217;
+    --v-theme-ivoryGrey-overlay-multiplier: 1;
+    --v-theme-darkGrey: 104,104,104;
+    --v-theme-darkGrey-overlay-multiplier: 2;
+    --v-theme-textGrey: 51,51,51;
+    --v-theme-textGrey-overlay-multiplier: 2;
+    --v-theme-linkBlue: 0,112,157;
+    --v-theme-linkBlue-overlay-multiplier: 2;
+    --v-theme-accentBlue: 25,118,210;
+    --v-theme-accentBlue-overlay-multiplier: 2;
+    --v-theme-footerBlue: 15,96,177;
+    --v-theme-footerBlue-overlay-multiplier: 2;
+    --v-theme-lightGrey: 242,242,242;
+    --v-theme-lightGrey-overlay-multiplier: 1;
+    --v-theme-pdfRed: 201,3,4;
+    --v-theme-pdfRed-overlay-multiplier: 2;
+    --v-theme-dropdown: 201,3,4;
+    --v-theme-dropdown-overlay-multiplier: 2;
+    --v-theme-dropdownBg: 58,168,47;
+    --v-theme-dropdownBg-overlay-multiplier: 1;
+    --v-theme-on-background: 0,0,0;
+    --v-theme-on-surface: 0,0,0;
+    --v-theme-on-surface-bright: 0,0,0;
+    --v-theme-on-surface-light: 0,0,0;
+    --v-theme-on-primary: 255,255,255;
+    --v-theme-on-primary-darken-1: 255,255,255;
+    --v-theme-on-secondary: 255,255,255;
+    --v-theme-on-secondary-darken-1: 255,255,255;
+    --v-theme-on-error: 255,255,255;
+    --v-theme-on-info: 255,255,255;
+    --v-theme-on-success: 255,255,255;
+    --v-theme-on-warning: 255,255,255;
+    --v-theme-on-accent: 0,0,0;
+    --v-theme-on-logoColor: 255,255,255;
+    --v-theme-on-skyBlue: 255,255,255;
+    --v-theme-on-rajahYellow: 0,0,0;
+    --v-theme-on-rajahLight: 0,0,0;
+    --v-theme-on-textOnRajah: 255,255,255;
+    --v-theme-on-ivoryGrey: 0,0,0;
+    --v-theme-on-darkGrey: 255,255,255;
+    --v-theme-on-textGrey: 255,255,255;
+    --v-theme-on-linkBlue: 255,255,255;
+    --v-theme-on-accentBlue: 255,255,255;
+    --v-theme-on-footerBlue: 255,255,255;
+    --v-theme-on-lightGrey: 0,0,0;
+    --v-theme-on-pdfRed: 255,255,255;
+    --v-theme-on-dropdown: 255,255,255;
+    --v-theme-on-dropdownBg: 255,255,255;
+    --v-border-color: 0, 0, 0;
+    --v-border-opacity: 0.12;
+    --v-shadow-color: 0, 0, 0;
+    --v-high-emphasis-opacity: 0.87;
+    --v-medium-emphasis-opacity: 0.6;
+    --v-disabled-opacity: 0.38;
+    --v-idle-opacity: 0.04;
+    --v-hover-opacity: 0.04;
+    --v-focus-opacity: 0.12;
+    --v-selected-opacity: 0.08;
+    --v-activated-opacity: 0.12;
+    --v-pressed-opacity: 0.12;
+    --v-dragged-opacity: 0.08;
+    --v-theme-kbd: 238, 238, 238;
+    --v-theme-on-kbd: 0, 0, 0;
+    --v-theme-code: 245, 245, 245;
+    --v-theme-on-code: 0, 0, 0;
+    --v-theme-on-dark: 255, 255, 255;
+    --v-theme-on-light: 0, 0, 0;
+    --v-elevation-overlay-color: black;
+    --v-elevation-overlay-opacity-step: 2%;
+    --v-highlight-opacity: 8%;
+  }
+  }
+  @layer theme-background {
+    .bg-background {
+      --v-theme-overlay-multiplier: var(--v-theme-background-overlay-multiplier);
+      background-color: rgb(var(--v-theme-background));
+      color: rgb(var(--v-theme-on-background));
+    }
+    .bg-surface {
+      --v-theme-overlay-multiplier: var(--v-theme-surface-overlay-multiplier);
+      background-color: rgb(var(--v-theme-surface));
+      color: rgb(var(--v-theme-on-surface));
+    }
+    .bg-surface-bright {
+      --v-theme-overlay-multiplier: var(--v-theme-surface-bright-overlay-multiplier);
+      background-color: rgb(var(--v-theme-surface-bright));
+      color: rgb(var(--v-theme-on-surface-bright));
+    }
+    .bg-surface-light {
+      --v-theme-overlay-multiplier: var(--v-theme-surface-light-overlay-multiplier);
+      background-color: rgb(var(--v-theme-surface-light));
+      color: rgb(var(--v-theme-on-surface-light));
+    }
+    .bg-surface-variant {
+      --v-theme-overlay-multiplier: var(--v-theme-surface-variant-overlay-multiplier);
+      background-color: rgb(var(--v-theme-surface-variant));
+      color: rgb(var(--v-theme-on-surface-variant));
+    }
+    .bg-primary {
+      --v-theme-overlay-multiplier: var(--v-theme-primary-overlay-multiplier);
+      background-color: rgb(var(--v-theme-primary));
+      color: rgb(var(--v-theme-on-primary));
+    }
+    .bg-primary-darken-1 {
+      --v-theme-overlay-multiplier: var(--v-theme-primary-darken-1-overlay-multiplier);
+      background-color: rgb(var(--v-theme-primary-darken-1));
+      color: rgb(var(--v-theme-on-primary-darken-1));
+    }
+    .bg-secondary {
+      --v-theme-overlay-multiplier: var(--v-theme-secondary-overlay-multiplier);
+      background-color: rgb(var(--v-theme-secondary));
+      color: rgb(var(--v-theme-on-secondary));
+    }
+    .bg-secondary-darken-1 {
+      --v-theme-overlay-multiplier: var(--v-theme-secondary-darken-1-overlay-multiplier);
+      background-color: rgb(var(--v-theme-secondary-darken-1));
+      color: rgb(var(--v-theme-on-secondary-darken-1));
+    }
+    .bg-error {
+      --v-theme-overlay-multiplier: var(--v-theme-error-overlay-multiplier);
+      background-color: rgb(var(--v-theme-error));
+      color: rgb(var(--v-theme-on-error));
+    }
+    .bg-info {
+      --v-theme-overlay-multiplier: var(--v-theme-info-overlay-multiplier);
+      background-color: rgb(var(--v-theme-info));
+      color: rgb(var(--v-theme-on-info));
+    }
+    .bg-success {
+      --v-theme-overlay-multiplier: var(--v-theme-success-overlay-multiplier);
+      background-color: rgb(var(--v-theme-success));
+      color: rgb(var(--v-theme-on-success));
+    }
+    .bg-warning {
+      --v-theme-overlay-multiplier: var(--v-theme-warning-overlay-multiplier);
+      background-color: rgb(var(--v-theme-warning));
+      color: rgb(var(--v-theme-on-warning));
+    }
+    .bg-accent {
+      --v-theme-overlay-multiplier: var(--v-theme-accent-overlay-multiplier);
+      background-color: rgb(var(--v-theme-accent));
+      color: rgb(var(--v-theme-on-accent));
+    }
+    .bg-logoColor {
+      --v-theme-overlay-multiplier: var(--v-theme-logoColor-overlay-multiplier);
+      background-color: rgb(var(--v-theme-logoColor));
+      color: rgb(var(--v-theme-on-logoColor));
+    }
+    .bg-skyBlue {
+      --v-theme-overlay-multiplier: var(--v-theme-skyBlue-overlay-multiplier);
+      background-color: rgb(var(--v-theme-skyBlue));
+      color: rgb(var(--v-theme-on-skyBlue));
+    }
+    .bg-rajahYellow {
+      --v-theme-overlay-multiplier: var(--v-theme-rajahYellow-overlay-multiplier);
+      background-color: rgb(var(--v-theme-rajahYellow));
+      color: rgb(var(--v-theme-on-rajahYellow));
+    }
+    .bg-rajahLight {
+      --v-theme-overlay-multiplier: var(--v-theme-rajahLight-overlay-multiplier);
+      background-color: rgb(var(--v-theme-rajahLight));
+      color: rgb(var(--v-theme-on-rajahLight));
+    }
+    .bg-textOnRajah {
+      --v-theme-overlay-multiplier: var(--v-theme-textOnRajah-overlay-multiplier);
+      background-color: rgb(var(--v-theme-textOnRajah));
+      color: rgb(var(--v-theme-on-textOnRajah));
+    }
+    .bg-ivoryGrey {
+      --v-theme-overlay-multiplier: var(--v-theme-ivoryGrey-overlay-multiplier);
+      background-color: rgb(var(--v-theme-ivoryGrey));
+      color: rgb(var(--v-theme-on-ivoryGrey));
+    }
+    .bg-darkGrey {
+      --v-theme-overlay-multiplier: var(--v-theme-darkGrey-overlay-multiplier);
+      background-color: rgb(var(--v-theme-darkGrey));
+      color: rgb(var(--v-theme-on-darkGrey));
+    }
+    .bg-textGrey {
+      --v-theme-overlay-multiplier: var(--v-theme-textGrey-overlay-multiplier);
+      background-color: rgb(var(--v-theme-textGrey));
+      color: rgb(var(--v-theme-on-textGrey));
+    }
+    .bg-linkBlue {
+      --v-theme-overlay-multiplier: var(--v-theme-linkBlue-overlay-multiplier);
+      background-color: rgb(var(--v-theme-linkBlue));
+      color: rgb(var(--v-theme-on-linkBlue));
+    }
+    .bg-accentBlue {
+      --v-theme-overlay-multiplier: var(--v-theme-accentBlue-overlay-multiplier);
+      background-color: rgb(var(--v-theme-accentBlue));
+      color: rgb(var(--v-theme-on-accentBlue));
+    }
+    .bg-footerBlue {
+      --v-theme-overlay-multiplier: var(--v-theme-footerBlue-overlay-multiplier);
+      background-color: rgb(var(--v-theme-footerBlue));
+      color: rgb(var(--v-theme-on-footerBlue));
+    }
+    .bg-lightGrey {
+      --v-theme-overlay-multiplier: var(--v-theme-lightGrey-overlay-multiplier);
+      background-color: rgb(var(--v-theme-lightGrey));
+      color: rgb(var(--v-theme-on-lightGrey));
+    }
+    .bg-pdfRed {
+      --v-theme-overlay-multiplier: var(--v-theme-pdfRed-overlay-multiplier);
+      background-color: rgb(var(--v-theme-pdfRed));
+      color: rgb(var(--v-theme-on-pdfRed));
+    }
+    .bg-dropdown {
+      --v-theme-overlay-multiplier: var(--v-theme-dropdown-overlay-multiplier);
+      background-color: rgb(var(--v-theme-dropdown));
+      color: rgb(var(--v-theme-on-dropdown));
+    }
+    .bg-dropdownBg {
+      --v-theme-overlay-multiplier: var(--v-theme-dropdownBg-overlay-multiplier);
+      background-color: rgb(var(--v-theme-dropdownBg));
+      color: rgb(var(--v-theme-on-dropdownBg));
+    }
+  }
+  @layer theme-foreground {
+    .text-background {
+      color: rgb(var(--v-theme-background));
+    }
+    .border-background {
+      --v-border-color: var(--v-theme-background);
+    }
+    .text-surface {
+      color: rgb(var(--v-theme-surface));
+    }
+    .border-surface {
+      --v-border-color: var(--v-theme-surface);
+    }
+    .text-surface-bright {
+      color: rgb(var(--v-theme-surface-bright));
+    }
+    .border-surface-bright {
+      --v-border-color: var(--v-theme-surface-bright);
+    }
+    .text-surface-light {
+      color: rgb(var(--v-theme-surface-light));
+    }
+    .border-surface-light {
+      --v-border-color: var(--v-theme-surface-light);
+    }
+    .text-surface-variant {
+      color: rgb(var(--v-theme-surface-variant));
+    }
+    .border-surface-variant {
+      --v-border-color: var(--v-theme-surface-variant);
+    }
+    .on-surface-variant {
+      color: rgb(var(--v-theme-on-surface-variant));
+    }
+    .text-primary {
+      color: rgb(var(--v-theme-primary));
+    }
+    .border-primary {
+      --v-border-color: var(--v-theme-primary);
+    }
+    .text-primary-darken-1 {
+      color: rgb(var(--v-theme-primary-darken-1));
+    }
+    .border-primary-darken-1 {
+      --v-border-color: var(--v-theme-primary-darken-1);
+    }
+    .text-secondary {
+      color: rgb(var(--v-theme-secondary));
+    }
+    .border-secondary {
+      --v-border-color: var(--v-theme-secondary);
+    }
+    .text-secondary-darken-1 {
+      color: rgb(var(--v-theme-secondary-darken-1));
+    }
+    .border-secondary-darken-1 {
+      --v-border-color: var(--v-theme-secondary-darken-1);
+    }
+    .text-error {
+      color: rgb(var(--v-theme-error));
+    }
+    .border-error {
+      --v-border-color: var(--v-theme-error);
+    }
+    .text-info {
+      color: rgb(var(--v-theme-info));
+    }
+    .border-info {
+      --v-border-color: var(--v-theme-info);
+    }
+    .text-success {
+      color: rgb(var(--v-theme-success));
+    }
+    .border-success {
+      --v-border-color: var(--v-theme-success);
+    }
+    .text-warning {
+      color: rgb(var(--v-theme-warning));
+    }
+    .border-warning {
+      --v-border-color: var(--v-theme-warning);
+    }
+    .on-background {
+      color: rgb(var(--v-theme-on-background));
+    }
+    .on-surface {
+      color: rgb(var(--v-theme-on-surface));
+    }
+    .on-surface-bright {
+      color: rgb(var(--v-theme-on-surface-bright));
+    }
+    .on-surface-light {
+      color: rgb(var(--v-theme-on-surface-light));
+    }
+    .on-primary {
+      color: rgb(var(--v-theme-on-primary));
+    }
+    .on-primary-darken-1 {
+      color: rgb(var(--v-theme-on-primary-darken-1));
+    }
+    .on-secondary {
+      color: rgb(var(--v-theme-on-secondary));
+    }
+    .on-secondary-darken-1 {
+      color: rgb(var(--v-theme-on-secondary-darken-1));
+    }
+    .on-error {
+      color: rgb(var(--v-theme-on-error));
+    }
+    .on-info {
+      color: rgb(var(--v-theme-on-info));
+    }
+    .on-success {
+      color: rgb(var(--v-theme-on-success));
+    }
+    .on-warning {
+      color: rgb(var(--v-theme-on-warning));
+    }
+    .text-accent {
+      color: rgb(var(--v-theme-accent));
+    }
+    .border-accent {
+      --v-border-color: var(--v-theme-accent);
+    }
+    .text-logoColor {
+      color: rgb(var(--v-theme-logoColor));
+    }
+    .border-logoColor {
+      --v-border-color: var(--v-theme-logoColor);
+    }
+    .text-skyBlue {
+      color: rgb(var(--v-theme-skyBlue));
+    }
+    .border-skyBlue {
+      --v-border-color: var(--v-theme-skyBlue);
+    }
+    .text-rajahYellow {
+      color: rgb(var(--v-theme-rajahYellow));
+    }
+    .border-rajahYellow {
+      --v-border-color: var(--v-theme-rajahYellow);
+    }
+    .text-rajahLight {
+      color: rgb(var(--v-theme-rajahLight));
+    }
+    .border-rajahLight {
+      --v-border-color: var(--v-theme-rajahLight);
+    }
+    .text-textOnRajah {
+      color: rgb(var(--v-theme-textOnRajah));
+    }
+    .border-textOnRajah {
+      --v-border-co
