@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veille — Jeux d'Argent Belgique</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#eef0f4;color:#1a1a2e;font-size:14px}
+header{background:linear-gradient(135deg,#0d1b2a,#1b3a5c);color:#fff;padding:16px 20px 12px}
+header h1{font-size:17px;font-weight:700;margin-bottom:4px}
+#ts{font-size:11px;color:rgba(255,255,255,.55)}
+.kw-row{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
+.kw-chip{font-size:10px;font-weight:600;background:rgba(255,255,255,.12);border-radius:4px;padding:2px 8px;color:rgba(255,255,255,.8)}
+.kw-chip.active{background:rgba(231,76,60,.3)}
+.kw-chip .n{display:inline-block;background:#e74c3c;color:#fff;border-radius:8px;padding:0 4px;margin-left:5px;font-size:9px}
+.page{padding:14px;display:flex;flex-direction:column;gap:10px}
+.group-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:#9aa;padding:6px 2px 2px;border-bottom:1px solid #dde0e8;margin-bottom:2px}
+.card{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:4px solid #ccc;overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #f2f3f5;gap:10px}
+.card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0;display:inline-block}
+.dot.ok{background:#2ecc71}.dot.err{background:#e67e22}
+.card-url{font-size:10px;color:#b0b4bc;margin-top:1px;text-decoration:none;display:block}
+.card-url:hover{color:#3498db}
+.badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap}
+.badge-match{background:#fde8e8;color:#c0392b}
+.badge-none{background:#eef0f4;color:#999}
+.badge-err{background:#fff3e6;color:#d35400}
+.card-body{padding:10px 14px 12px}
+.result{padding:8px 0;border-bottom:1px solid #f5f6fa;line-height:1.45}
+.result:last-child{border-bottom:none}
+.result a{font-size:12.5px;font-weight:600;color:#1a5276;text-decoration:none;display:block}
+.result a:hover{color:#2980b9;text-decoration:underline}
+.ctx{font-size:11px;color:#888;margin-top:3px;line-height:1.4}
+.tag-row{margin-top:4px;display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:3px;background:#fff8dc;color:#7d5a00}
+.empty{font-size:11.5px;color:#c0c4cc;padding:4px 0;font-style:italic}
+.err-msg{font-size:11.5px;color:#d35400;padding:4px 0}
+footer{text-align:center;font-size:10px;color:#bbb;padding:10px 16px 20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🇧🇪 Veille — Jeux d'Argent Belgique</h1>
+  <div id="ts">Dernière vérification : 15/08/2026 à 18:06 UTC — 2 alertes au total — <strong style="color:#e74c3c">1 nouvelle depuis la dernière vérification</strong></div>
+  <div class="kw-row"><span class="kw-chip">entaingroup</span><span class="kw-chip">ladbrokes</span><span class="kw-chip active">controle <span class="n">1</span></span><span class="kw-chip active">contrôle <span class="n">1</span></span><span class="kw-chip">sanctions</span><span class="kw-chip">agences</span><span class="kw-chip">licences</span></div>
+</header>
+<div class="page"><div class="group-label">Institutionnel belge</div>
+<div class="card" style="border-left-color:#1a5276">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Cour Constitutionnelle</div>
+      <a class="card-url" href="https://fr.const-court.be/communication/communiques-de-presse" target="_blank">https://fr.const-court.be/communication/communiques-de-presse</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 404</div></div>
+</div>
+<div class="card" style="border-left-color:#1a6640">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> La Chambre des Représentants</div>
+      <a class="card-url" href="https://www.lachambre.be/kvvcr/showpage.cfm?section=none&amp;language=fr&amp;cfm=news.cfm" target="_blank">https://www.lachambre.be/kvvcr/showpage.cfm?section=none&amp;language=fr&amp;cfm=news.cfm</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 404</div></div>
+</div>
+<div class="card" style="border-left-color:#1a6640">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> Sénat de Belgique</div>
+      <a class="card-url" href="https://www.senate.be/www/?MIval=/index_senate&amp;lang=fr" target="_blank">https://www.senate.be/www/?MIval=/index_senate&amp;lang=fr</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div>
+<div class="card" style="border-left-color:#7d3c98">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Gaming Commission (CJH)</div>
+      <a class="card-url" href="https://www.gamingcommission.be/fr/news" target="_blank">https://www.gamingcommission.be/fr/news</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 404</div></div>
+</div>
+<div class="card" style="border-left-color:#2c3e50">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> Moniteur Belge</div>
+      <a class="card-url" href="https://www.ejustice.just.fgov.be/cgi/summary.pl?language=fr" target="_blank">https://www.ejustice.just.fgov.be/cgi/summary.pl?language=fr</a>
+    </div>
+    <span class="badge badge-match">🔴 1 alerte</span>
+  </div>
+  <div class="card-body"><div class="result"><a href="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;lg_txt=f&amp;caller=sum&amp;s_editie=1&amp;2026202040=32&amp;numac_search=2026202040&amp;view_numac=" target="_blank">Sélection comparative de Contrôleurs de gestion/Gestionnaires budgétaire (m/f/x) (niveau A1) francophones pour Régie des Bâtiments. - Numéro de sélection : AFG26150, p. 44241.</a><div class="ctx">Service public fédéral Stratégie et Appui Sélection comparative de Contrôleurs de gestion/Gestionnaires budgétaire (m/f/x) (niveau A1) francophones pour Régie des Bâtiments. - Numéro de sélection : AFG26150, p. 44241.…</div><div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div></div></div>
+</div>
+<div class="card" style="border-left-color:#2c3e50">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Conseil d'État</div>
+      <a class="card-url" href="https://www.raadvst-consetat.be/dbx/fr/actualites" target="_blank">https://www.raadvst-consetat.be/dbx/fr/actualites</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 403</div></div>
+</div>
+<div class="card" style="border-left-color:#2c3e50">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Autorité belge de la Concurrence</div>
+      <a class="card-url" href="https://www.abc-bma.be/fr/news" target="_blank">https://www.abc-bma.be/fr/news</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ Connexion impossible : HTTPSConnectionPool(host='www.abc-bma.be', port=443): Max re</div></div>
+</div>
+<div class="card" style="border-left-color:#2c3e50">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> SPF Justice</div>
+      <a class="card-url" href="https://justice.belgium.be/fr/news" target="_blank">https://justice.belgium.be/fr/news</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ Connexion impossible : HTTPSConnectionPool(host='justice.belgium.be', port=443): Ma</div></div>
+</div><div class="group-label">Presse belge francophone</div>
+<div class="card" style="border-left-color:#e67e22">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> Jeu-Argent.be</div>
+      <a class="card-url" href="https://www.jeu-argent.be" target="_blank">https://www.jeu-argent.be</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div>
+<div class="card" style="border-left-color:#c0392b">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> Médor (investigation)</div>
+      <a class="card-url" href="https://medor.coop/nos-coups/" target="_blank">https://medor.coop/nos-coups/</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div>
+<div class="card" style="border-left-color:#1565c0">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Le Soir</div>
+      <a class="card-url" href="https://www.lesoir.be/recherche?q=jeux+hasard+ladbrokes+entain" target="_blank">https://www.lesoir.be/recherche?q=jeux+hasard+ladbrokes+entain</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 403</div></div>
+</div>
+<div class="card" style="border-left-color:#e53935">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> RTBF Info</div>
+      <a class="card-url" href="https://www.rtbf.be/recherche?q=jeux+hasard+ladbrokes+entain" target="_blank">https://www.rtbf.be/recherche?q=jeux+hasard+ladbrokes+entain</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div>
+<div class="card" style="border-left-color:#0d47a1">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> La Libre Belgique</div>
+      <a class="card-url" href="https://www.lalibre.be/recherche?q=jeux+hasard+ladbrokes+entain" target="_blank">https://www.lalibre.be/recherche?q=jeux+hasard+ladbrokes+entain</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div>
+<div class="card" style="border-left-color:#b71c1c">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> La Dernière Heure</div>
+      <a class="card-url" href="https://www.dhnet.be/recherche?q=jeux+hasard+ladbrokes+entain" target="_blank">https://www.dhnet.be/recherche?q=jeux+hasard+ladbrokes+entain</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div>
+<div class="card" style="border-left-color:#ff6f00">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> RTL Info</div>
+      <a class="card-url" href="https://www.rtl.be/info/recherche?q=jeux+hasard+ladbrokes" target="_blank">https://www.rtl.be/info/recherche?q=jeux+hasard+ladbrokes</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 412</div></div>
+</div>
+<div class="card" style="border-left-color:#6a1b9a">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Le Vif</div>
+      <a class="card-url" href="https://www.levif.be/recherche/?q=jeux+hasard+ladbrokes" target="_blank">https://www.levif.be/recherche/?q=jeux+hasard+ladbrokes</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 405</div></div>
+</div>
+<div class="card" style="border-left-color:#e65100">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Sud Info</div>
+      <a class="card-url" href="https://www.sudinfo.be/recherche?q=jeux+hasard+ladbrokes" target="_blank">https://www.sudinfo.be/recherche?q=jeux+hasard+ladbrokes</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 403</div></div>
+</div><div class="group-label">Opérateurs</div>
+<div class="card" style="border-left-color:#c0392b">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> Entain Group</div>
+      <a class="card-url" href="https://www.entaingroup.com/news-and-insights/" target="_blank">https://www.entaingroup.com/news-and-insights/</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 404</div></div>
+</div><div class="group-label">Presse spécialisée &amp; Europe</div>
+<div class="card" style="border-left-color:#2471a3">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> SBC News — Belgique</div>
+      <a class="card-url" href="https://sbcnews.co.uk/tag/belgium/" target="_blank">https://sbcnews.co.uk/tag/belgium/</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 403</div></div>
+</div>
+<div class="card" style="border-left-color:#2471a3">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> iGaming Business</div>
+      <a class="card-url" href="https://igamingbusiness.com/?s=belgium" target="_blank">https://igamingbusiness.com/?s=belgium</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ HTTP 403</div></div>
+</div>
+<div class="card" style="border-left-color:#2471a3">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> CasinoBeats</div>
+      <a class="card-url" href="https://casinobeats.com/?s=belgium" target="_blank">https://casinobeats.com/?s=belgium</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div>
+<div class="card" style="border-left-color:#1565c0">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot err"></span> EGBA (European Gaming &amp; Betting Assoc.)</div>
+      <a class="card-url" href="https://www.egba.eu/news/" target="_blank">https://www.egba.eu/news/</a>
+    </div>
+    <span class="badge badge-err">Erreur</span>
+  </div>
+  <div class="card-body"><div class="err-msg">⚠️ Connexion impossible : HTTPSConnectionPool(host='www.egba.eu', port=443): Max retri</div></div>
+</div>
+<div class="card" style="border-left-color:#1565c0">
+  <div class="card-head">
+    <div>
+      <div class="card-title"><span class="dot ok"></span> EUR-Lex (législation UE)</div>
+      <a class="card-url" href="https://eur-lex.europa.eu/search.html?text=jeux+hasard+belgique&amp;scope=EURLEX&amp;type=quick&amp;lang=fr" target="_blank">https://eur-lex.europa.eu/search.html?text=jeux+hasard+belgique&amp;scope=EURLEX&amp;type=quick&amp;lang=fr</a>
+    </div>
+    <span class="badge badge-none">0 alerte</span>
+  </div>
+  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+</div></div>
+<footer>Veille Jeux d'Argent Belgique · LANCELLE 2026 · Généré automatiquement par GitHub Actions</footer>
+</body>
+</html>
