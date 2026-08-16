@@ -97,20 +97,60 @@ SOURCES = [
         ),
     },
     {
-        # ColdFusion AJAX — Search1={term} passé dans l'URL, résultats dans #callback
-        # no_kw_filter : résultats déjà filtrés par le moteur de recherche
+        # ColdFusion AJAX — l'URL ne change pas après recherche (résultats injectés en place).
+        # Remplir le champ « Recherche : » puis cliquer la loupe.
+        # Résultats = liens .pdf / .xml avec extrait en dessous.
         'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'La Chambre des Représentants', 'color': '#1a6640',
         'js': True,
         'no_kw_filter': True,
-        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=none&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall&Search1={term}',
+        'playwright_timeout': 60_000,
+        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=/search/search4&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall',
         'search_terms': SEARCH_TERMS,
-        'wait_selector': '#callback a[href]',
+        'fill_js': (
+            "(term) => {"
+            "  const inputs = Array.from(document.querySelectorAll("
+            "    'input[type=\"text\"],input:not([type]),input[type=\"search\"]'))"
+            "    .filter(i => i.offsetParent !== null && !i.disabled);"
+            "  if (!inputs.length) return false;"
+            "  const input = inputs[0];"
+            "  input.focus(); input.value = term;"
+            "  input.dispatchEvent(new Event('input',  {bubbles:true}));"
+            "  input.dispatchEvent(new Event('change', {bubbles:true}));"
+            "  window.__bgwInput = input;"
+            "  return true;"
+            "}"
+        ),
+        'submit_js': (
+            "() => {"
+            "  const inp = window.__bgwInput;"
+            "  const cands = Array.from(document.querySelectorAll("
+            "    'input[type=\"image\"],input[type=\"submit\"],button,a[href^=\"javascript\"],img'));"
+            "  const btn = cands.find(b => /zoek|search|recher|loupe|magnif/i.test("
+            "    (b.name||'') + (b.id||'') + (b.className||'') + (b.alt||'') + (b.src||'') + (b.value||'')));"
+            "  if (btn) { btn.click(); return true; }"
+            "  if (inp && inp.form) { inp.form.submit(); return true; }"
+            "  if (inp) { inp.dispatchEvent(new KeyboardEvent('keydown',"
+            "      {key:'Enter', keyCode:13, which:13, bubbles:true})); return true; }"
+            "  return false;"
+            "}"
+        ),
         'eval_extract': (
-            "() => Array.from(document.querySelectorAll('#callback a[href]')).map(a => ({"
-            "  href: a.href,"
-            "  text: (a.closest('tr') || a.closest('li') || a.closest('div') || a).innerText.trim().slice(0, 300)"
-            "})).filter(x => x.href && !x.href.includes('javascript:'))"
+            "() => {"
+            "  const seen = new Set(); const out = [];"
+            "  Array.from(document.querySelectorAll('a[href]')).forEach(a => {"
+            "    const h = a.getAttribute('href') || '';"
+            "    if (!/\\.(pdf|xml|docx?)(\\?|$)/i.test(h)) return;"
+            "    if (seen.has(a.href)) return; seen.add(a.href);"
+            "    const blk = a.closest('li,tr,p,div') || a;"
+            "    const title = (a.innerText || '').trim();"
+            "    const ctx   = (blk.innerText || '').trim();"
+            "    const text  = (ctx.length > title.length ? ctx : title).slice(0,300);"
+            "    if (text.length < 25) return;"
+            "    out.push({ href: a.href, text });"
+            "  });"
+            "  return out;"
+            "}"
         ),
     },
     # Sénat de Belgique — bloqué par Cloudflare WAF (même en navigation manuelle)
@@ -475,6 +515,10 @@ def fetch_rss(src: dict) -> dict:
 
             kws = find_keywords(title + ' ' + desc, kw_set)
             if not kws:
+                continue
+
+            # Filtre année : rejeter les entrées antérieures à MIN_YEAR
+            if date_str and is_too_old(date_str):
                 continue
 
             matches.append({
@@ -1246,6 +1290,17 @@ def main() -> None:
 
     t0 = time.time()
 
+    def _keep(m: dict) -> bool:
+        """Garde-fou final : rejeter tout ce qui est daté avant MIN_YEAR."""
+        d = m.get('date', '')
+        if d:
+            try:
+                if int(d.split('/')[-1]) < MIN_YEAR:
+                    return False
+            except Exception:
+                pass
+        return not is_too_old(m.get('text', '') + ' ' + m.get('context', ''))
+
     def _run(src):
         try:
             return src, fetch_source(src)
@@ -1254,6 +1309,8 @@ def main() -> None:
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
         for src, result in pool.map(_run, SOURCES):
+            if result.get('status') == 'ok':
+                result['matches'] = [m for m in result.get('matches', []) if _keep(m)]
             results[src['id']] = result
             if result['status'] == 'ok':
                 n = len(result['matches'])
