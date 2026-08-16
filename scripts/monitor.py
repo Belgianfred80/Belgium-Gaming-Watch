@@ -37,6 +37,47 @@ _ALL_KEYWORDS = list(dict.fromkeys(KEYWORDS_INSTITUTIONAL + KEYWORDS_PRESS))
 # Termes de recherche envoyés séparément à chaque moteur de recherche
 SEARCH_TERMS = ['ladbrokes', 'entain', 'bwin', 'jeux de hasard']
 
+def article_extractor(exclude_pattern: str = 'recherche|abonnement|login|newsletter') -> str:
+    """Extracteur JS pour sites de presse : remonte le DOM jusqu'a trouver
+    une date, puis renvoie « titre — date ». Filtre sur le terme recherche.
+    """
+    return (
+        "(term) => {"
+        "  const t = (term || '').toLowerCase();"
+        "  const DATE = /\\d{1,2}[\\/.-]\\d{1,2}[\\/.-]\\d{4}"
+        "|\\d{1,2}\\.?\\s+[A-Za-zÀ-ÿ]{3,10}\\.?\\s+\\d{4}"
+        "|[A-Za-zÀ-ÿ]{3,10}\\s+\\d{1,2},\\s*\\d{4}/;"
+        "  const seen = new Set(); const out = [];"
+        "  document.querySelectorAll('a[href]').forEach(a => {"
+        "    const h = a.getAttribute('href') || '';"
+        "    if (new RegExp('" + exclude_pattern + "', 'i').test(h)) return;"
+        "    const title = (a.innerText || '').replace(/\\s+/g,' ').trim();"
+        "    if (title.length < 18) return;"
+        "    if (seen.has(a.href)) return;"
+        "    let blk = a, ctx = '', dated = '';"
+        "    for (let i = 0; i < 6 && blk; i++) {"
+        "      /* Ne pas sortir de la carte : sinon on capte la date du voisin */"
+        "      if (blk !== a && blk.querySelectorAll('a[href]').length > 3) break;"
+        "      const s = (blk.innerText || '').replace(/\\s+/g,' ').trim();"
+        "      if (s.length > 1800) break;"
+        "      if (s.length >= title.length) {"
+        "        ctx = s;"
+        "        if (DATE.test(s)) { dated = s; break; }"
+        "      }"
+        "      blk = blk.parentElement;"
+        "    }"
+        "    const hay = (title + ' ' + ctx).toLowerCase();"
+        "    if (t && !hay.includes(t)) return;"
+        "    seen.add(a.href);"
+        "    const dm = dated ? (dated.match(DATE) || [''])[0] : '';"
+        "    out.push({ href: a.href,"
+        "               text: (dm ? title + ' — ' + dm : title).slice(0,300) });"
+        "  });"
+        "  return out;"
+        "}"
+    )
+
+
 SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
@@ -223,8 +264,10 @@ SOURCES = [
         'name': '7sur7', 'color': '#c0392b',
         'js': True,
         'no_kw_filter': True, 'require_term': True,
+        'playwright_timeout': 60_000,
         'url': 'https://www.7sur7.be/recherche/?query={term}',
         'search_terms': SEARCH_TERMS,
+        'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/meteo'),
     },
     {
         # Jetons form_build_id / form_id retirés : ils expirent et sont facultatifs
@@ -236,30 +279,7 @@ SOURCES = [
         'playwright_timeout': 60_000,
         'url': 'https://www.lesoir.be/archives/recherche?word={term}&sort=date%20desc&datefilter=lastyear',
         'search_terms': SEARCH_TERMS,
-        'eval_extract': (
-            "(term) => {"
-            "  const t = (term || '').toLowerCase();"
-            "  const seen = new Set(); const out = [];"
-            "  document.querySelectorAll('a[href]').forEach(a => {"
-            "    const h = a.getAttribute('href') || '';"
-            "    if (/recherche|abonnement|s-abonner|login|newsletter|podcast|\\/tag\\//i.test(h)) return;"
-            "    const title = (a.innerText || '').trim();"
-            "    if (title.length < 20) return;"
-            "    let blk = a, ctx = '';"
-            "    for (let i = 0; i < 4 && blk; i++) {"
-            "      const s = (blk.innerText || '').trim();"
-            "      if (s.length > title.length + 50 && s.length < 1400) { ctx = s; break; }"
-            "      blk = blk.parentElement;"
-            "    }"
-            "    const full = (title + ' ' + ctx).toLowerCase();"
-            "    if (t && !full.includes(t)) return;"
-            "    if (seen.has(a.href)) return; seen.add(a.href);"
-            "    out.push({ href: a.href,"
-            "               text: (ctx || title).replace(/\\s+/g,' ').slice(0,300) });"
-            "  });"
-            "  return out;"
-            "}"
-        ),
+        'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|podcast|/tag/'),
     },
     {
         # 5 flux RSS agrégés en une seule source
@@ -293,61 +313,37 @@ SOURCES = [
         'url': 'https://www.rtbf.be/recherche/article?q={term}',
         'search_terms': SEARCH_TERMS,
         'wait_selector': 'a[href*="/article/"]',
-        'eval_extract': (
-            "(term) => {"
-            "  const t = (term || '').toLowerCase();"
-            "  const seen = new Set(); const out = [];"
-            "  document.querySelectorAll('a[href*=\"/article/\"]').forEach(a => {"
-            "    if (seen.has(a.href)) return;"
-            "    const title = (a.innerText || '').trim();"
-            "    /* Remonter jusqu'a la carte pour recuperer chapeau + date */"
-            "    let blk = a, ctx = '';"
-            "    for (let i = 0; i < 4 && blk; i++) {"
-            "      const s = (blk.innerText || '').trim();"
-            "      if (s.length > 60 && s.length < 1200) { ctx = s; break; }"
-            "      blk = blk.parentElement;"
-            "    }"
-            "    const full = (title + ' ' + ctx).trim();"
-            "    if (full.length < 30) return;"
-            "    if (t && !full.toLowerCase().includes(t)) return;"
-            "    seen.add(a.href);"
-            "    out.push({ href: a.href, text: (ctx || title).replace(/\\s+/g,' ').slice(0,300) });"
-            "  });"
-            "  return out;"
-            "}"
-        ),
+        'eval_extract': article_extractor('/recherche|abonnement|login|newsletter|/chaines'),
     },
     {
         'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Libre Belgique', 'color': '#0d47a1',
         'js': True,
         'no_kw_filter': True, 'require_term': True,
+        'playwright_timeout': 60_000,
         'url': 'https://www.lalibre.be/recherche/query:{term};/',
         'search_terms': SEARCH_TERMS,
+        'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|/jeux'),
     },
     {
         'id': 'dhnet', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Dernière Heure', 'color': '#b71c1c',
         'js': True,
         'no_kw_filter': True, 'require_term': True,
+        'playwright_timeout': 60_000,
         'url': 'https://www.dhnet.be/recherche/query:{term};/',
         'search_terms': SEARCH_TERMS,
+        'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|/jeux'),
     },
     {
         'id': 'rtlinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTL Info', 'color': '#ff6f00',
         'js': True,
         'no_kw_filter': True, 'require_term': True,
+        'playwright_timeout': 60_000,
         'url': 'https://www.rtl.be/archives/recherche?word={term}',
         'search_terms': SEARCH_TERMS,
-    },
-    {
-        'id': 'sudinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
-        'name': 'Sud Info', 'color': '#e65100',
-        'js': True,
-        'no_kw_filter': True, 'require_term': True,
-        'url': 'https://www.sudinfo.be/archives/recherche?word={term}&sort=date+desc&datefilter=lastyear',
-        'search_terms': SEARCH_TERMS,
+        'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/emissions'),
     },
 
     # ── Presse spécialisée & Europe ───────────────────────────────────────────
@@ -1503,7 +1499,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <p>Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
     <p>Chaque site est interrogé <strong>séparément pour chacun des 4 termes</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
     <p><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence, SPF Justice.</p>
-    <p><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, Sud Info, 7sur7.</p>
+    <p><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, 7sur7.</p>
     <p><strong>Presse spécialisée &amp; Europe</strong> : CasinoBeats, EUR-Lex.</p>
     <p>Les boutons <strong>Catégories</strong> en haut de page replient les cartes d'une catégorie et masquent ses alertes dans le résumé. Le bouton <strong>✓ Lu</strong> déplace une alerte dans « Alertes déjà lues ». Ces réglages sont stockés localement dans votre navigateur.</p>
     <p>Infrastructure : <strong>GitHub Actions</strong> exécute le script Python · <strong>GitHub Pages</strong> héberge cette page · LANCELLE 2026.</p>
