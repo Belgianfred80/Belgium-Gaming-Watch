@@ -307,15 +307,6 @@ SOURCES = [
     #     'url': 'https://sbcnews.co.uk/tag/belgium/',
     # },
     {
-        # Recherche Belgique croisée avec chacun des 4 termes
-        'id': 'igaming', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
-        'name': 'iGaming Business', 'color': '#2471a3',
-        'js': True,
-        'no_kw_filter': True,
-        'url': 'https://igamingbusiness.com/search/belgium?s={term}',
-        'search_terms': SEARCH_TERMS,
-    },
-    {
         'id': 'casinobeats', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'CasinoBeats', 'color': '#2471a3',
         'js': True,
@@ -914,6 +905,11 @@ def fetch_source(src: dict) -> dict:
 
 # ── Génération HTML ────────────────────────────────────────────────────────────
 
+def slug(s: str) -> str:
+    """Identifiant technique stable pour un nom de groupe."""
+    return re.sub(r'[^a-z0-9]+', '-', normalize(s)).strip('-')
+
+
 def esc(s: str) -> str:
     return (s.replace('&', '&amp;').replace('<', '&lt;')
              .replace('>', '&gt;').replace('"', '&quot;'))
@@ -953,6 +949,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
             all_alerts.append({
                 'source_name': src['name'],
                 'source_color': src['color'],
+                'group_slug': slug(src.get('group', '')),
                 **m,
             })
     all_alerts.sort(key=lambda a: _parse_date(a.get('date', '')), reverse=True)
@@ -970,7 +967,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
             js_title = esc(json.dumps(a['text']))
             js_date  = esc(json.dumps(a.get('date', '')))
             js_src   = esc(json.dumps(a['source_name']))
-            rows += f'''<div class="alert-row" id="{row_id}" data-url="{esc(a['url'])}">
+            rows += f'''<div class="alert-row" id="{row_id}" data-url="{esc(a['url'])}" data-grp="{a.get('group_slug','')}">
   <div class="alert-row-main">
     {date_badge}
     <span class="alert-src" style="color:{a["source_color"]}">{esc(a["source_name"])}</span>
@@ -1009,9 +1006,11 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
     current_group = ''
     for src in SOURCES:
         grp = src.get('group', '')
+        gslug = slug(grp)
         if grp != current_group:
             current_group = grp
-            cards_html += f'<div class="group-label">{esc(grp)}</div>'
+            cards_html += (f'<div class="group-label" data-grp="{gslug}">'
+                           f'{esc(grp)}</div>')
 
         result = results.get(src['id'], {'status': 'error', 'message': 'Non exécuté'})
         status = result.get('status', 'error')
@@ -1045,7 +1044,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
                           f'</div>')
             body = items
 
-        cards_html += f'''<div class="card" style="border-left-color:{src["color"]}">
+        cards_html += f'''<div class="card" data-grp="{gslug}" style="border-left-color:{src["color"]}">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot {dot}"></span> {esc(src["name"])}</div>
@@ -1055,6 +1054,18 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
   </div>
   <div class="card-body">{body}</div>
 </div>'''
+
+    # ── Boutons de filtrage par catégorie ─────────────────────────────────────
+    _groups: list = []
+    for src in SOURCES:
+        g = src.get('group', '')
+        if g and g not in _groups:
+            _groups.append(g)
+    grp_buttons = ''.join(
+        f'<button class="grp-btn" id="gb-{slug(g)}" data-grp="{slug(g)}" '
+        f'onclick="toggleGroup(\'{slug(g)}\')">{esc(g)}</button>'
+        for g in _groups
+    )
 
     new_badge_header = (f' — <strong style="color:#e74c3c">'
                         f'{new_count} nouvelle{"s" if new_count != 1 else ""} depuis hier</strong>'
@@ -1089,6 +1100,16 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .kw-chip{font-size:10px;font-weight:600;background:rgba(255,255,255,.12);border-radius:4px;padding:2px 8px;color:rgba(255,255,255,.8)}
 .kw-chip.active{background:rgba(231,76,60,.3)}
 .kw-chip .n{display:inline-block;background:#e74c3c;color:#fff;border-radius:8px;padding:0 4px;margin-left:5px;font-size:9px}
+.grp-row{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.grp-row-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-right:2px}
+.grp-btn{font-size:10px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:12px;padding:3px 11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.grp-btn:hover{background:rgba(255,255,255,.28)}
+.grp-btn.off{background:transparent;color:rgba(255,255,255,.35);border-color:rgba(255,255,255,.15);text-decoration:line-through}
+/* Carte repliee : on garde l'en-tete (titre + badge), on cache le contenu */
+.card.grp-hidden .card-body{display:none}
+.card.grp-hidden{opacity:.5}
+.card.grp-hidden .card-url{display:none}
+.group-label.grp-hidden{opacity:.4}
 #theme-btn{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:6px;padding:5px 11px;font-size:11px;cursor:pointer;transition:background .2s}
 #theme-btn:hover{background:rgba(255,255,255,.22)}
 .page{padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -1151,6 +1172,43 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     js = """
 const KEY_THEME = 'bgw_theme';
 const KEY_READ  = 'bgw_read';
+const KEY_GRP   = 'bgw_groups_off';
+
+// ── Filtrage par categorie ────────────────────────────────────────────────────
+function groupsOff(){
+  try { return new Set(JSON.parse(localStorage.getItem(KEY_GRP) || '[]')); }
+  catch(e){ return new Set(); }
+}
+function toggleGroup(g){
+  const off = groupsOff();
+  off.has(g) ? off.delete(g) : off.add(g);
+  localStorage.setItem(KEY_GRP, JSON.stringify([...off]));
+  applyGroups();
+  refreshRows();
+}
+function applyGroups(){
+  const off = groupsOff();
+  document.querySelectorAll('.card[data-grp], .group-label[data-grp]').forEach(el=>{
+    el.classList.toggle('grp-hidden', off.has(el.dataset.grp));
+  });
+  document.querySelectorAll('.grp-btn').forEach(b=>{
+    b.classList.toggle('off', off.has(b.dataset.grp));
+  });
+}
+
+// ── Affichage des lignes du resume : masquee si lue OU categorie desactivee ──
+function refreshRows(){
+  const off  = groupsOff();
+  const read = new Set((JSON.parse(localStorage.getItem(KEY_READ)||'[]')).map(i=>i.url));
+  let visible = 0;
+  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
+    const hide = read.has(row.dataset.url) || off.has(row.dataset.grp);
+    row.style.display = hide ? 'none' : '';
+    if(!hide) visible++;
+  });
+  const badge = document.getElementById('summary-badge');
+  if(badge) badge.textContent = visible + ' alerte' + (visible !== 1 ? 's' : '');
+}
 
 // ── Utilitaire HTML-escape (pour renderArchive) ────────────────────────────────
 function eh(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1176,7 +1234,10 @@ function markRead(url, title, date, src, rowId){
     localStorage.setItem(KEY_READ, JSON.stringify(items.slice(0,300)));
   }
   const row = document.getElementById(rowId);
-  if(row){ row.style.opacity='0'; row.style.transition='opacity .3s'; setTimeout(()=>{ row.style.display='none'; row.style.opacity='1'; }, 300); }
+  if(row){
+    row.style.opacity='0'; row.style.transition='opacity .3s';
+    setTimeout(()=>{ row.style.opacity='1'; refreshRows(); }, 300);
+  } else { refreshRows(); }
   renderArchive();
 }
 
@@ -1185,10 +1246,7 @@ function unmarkRead(url){
   let items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
   items = items.filter(i=>i.url!==url);
   localStorage.setItem(KEY_READ, JSON.stringify(items));
-  // Réafficher la ligne correspondante dans le résumé
-  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
-    if(row.dataset.url===url) row.style.display='';
-  });
+  refreshRows();   // respecte aussi le filtre par categorie
   renderArchive();
 }
 
@@ -1223,10 +1281,8 @@ function toggleAbout(){
 // ── Init : cacher les alertes déjà lues au chargement ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
   applyTheme(localStorage.getItem(KEY_THEME)||'light');
-  const readUrls = new Set((JSON.parse(localStorage.getItem(KEY_READ)||'[]')).map(i=>i.url));
-  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
-    if(readUrls.has(row.dataset.url)) row.style.display='none';
-  });
+  applyGroups();
+  refreshRows();
   renderArchive();
 });
 """
@@ -1236,15 +1292,16 @@ document.addEventListener('DOMContentLoaded', function(){
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Veille — Jeux d'Argent Belgique</title>
+<title>News feed Ladbrokes Robot</title>
 <style>{css}</style>
 </head>
 <body>
 <header>
   <button id="theme-btn" onclick="toggleTheme()">🌙 Sombre</button>
-  <h1>🇧🇪 Veille — Jeux d'Argent Belgique</h1>
+  <h1>🇧🇪 News feed Ladbrokes Robot</h1>
   <div id="ts">Dernière vérification : {esc(run_time)} — {total_alerts} alerte{"s" if total_alerts != 1 else ""} au total{new_badge_header}</div>
   <div class="kw-row">{kw_chips}</div>
+  <div class="grp-row"><span class="grp-row-label">Catégories :</span>{grp_buttons}</div>
 </header>
 
 <div class="page">
@@ -1268,9 +1325,11 @@ document.addEventListener('DOMContentLoaded', function(){
   </button>
   <div class="about-body" id="about-body">
     <p>Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
-    <p><strong>Sources institutionnelles</strong> (Cour Constitutionnelle, La Chambre, Sénat, Gaming Commission, Moniteur Belge, Conseil d'État, ABC, SPF Justice, EUR-Lex) : surveillance des mots-clés <em>entain, entaingroup, ladbrokes, bwin, controle, sanctions, agences, licences</em>.</p>
-    <p><strong>Sources presse</strong> (RTBF, Le Soir, La Libre, DH, RTL Info, Le Vif, Sud Info, Médor, SBC News, iGaming Business, CasinoBeats, EGBA) : surveillance via flux RSS des mots-clés <em>bwin, entain, ladbrokes, jeux de hasard</em>.</p>
-    <p>Le bouton <strong>✓ Lu</strong> sur chaque alerte la déplace dans la carte « Alertes déjà lues » ci-dessus. Ces données sont stockées localement dans votre navigateur.</p>
+    <p>Chaque site est interrogé <strong>séparément pour chacun des 4 termes</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
+    <p><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence, SPF Justice.</p>
+    <p><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, Sud Info, 7sur7.</p>
+    <p><strong>Presse spécialisée &amp; Europe</strong> : CasinoBeats, EUR-Lex.</p>
+    <p>Les boutons <strong>Catégories</strong> en haut de page replient les cartes d'une catégorie et masquent ses alertes dans le résumé. Le bouton <strong>✓ Lu</strong> déplace une alerte dans « Alertes déjà lues ». Ces réglages sont stockés localement dans votre navigateur.</p>
     <p>Infrastructure : <strong>GitHub Actions</strong> exécute le script Python · <strong>GitHub Pages</strong> héberge cette page · LANCELLE 2026.</p>
   </div>
 </div>
