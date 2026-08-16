@@ -219,20 +219,35 @@ SOURCES = [
 
     # ── Presse belge francophone ───────────────────────────────────────────────
     {
-        'id': 'jeuarg', 'group': 'Presse belge francophone',
-        'name': 'Jeu-Argent.be', 'color': '#e67e22',
-        'kw_set': 'press', 'url': 'https://www.jeu-argent.be',
+        'id': '7sur7', 'group': 'Presse belge francophone', 'kw_set': 'press',
+        'name': '7sur7', 'color': '#c0392b',
+        'js': True,
+        'no_kw_filter': True, 'require_term': True,
+        'url': 'https://www.7sur7.be/recherche/?query={term}',
+        'search_terms': SEARCH_TERMS,
     },
     {
-        'id': 'medor', 'group': 'Presse belge francophone', 'kw_set': 'press',
-        'name': 'Médor (investigation)', 'color': '#c0392b',
-        'url': 'https://medor.coop/nos-coups/',
+        # Jetons form_build_id / form_id retirés : ils expirent et sont facultatifs
+        'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
+        'name': 'Le Soir', 'color': '#1565c0',
+        'js': True,
+        'no_kw_filter': True, 'require_term': True,
+        'url': 'https://www.lesoir.be/archives/recherche?word={term}&sort=date+desc&datefilter=lastyear',
+        'search_terms': SEARCH_TERMS,
     },
     {
+        # 5 flux RSS agrégés en une seule source
         'id': 'rtbf', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTBF Info', 'color': '#e53935',
         'type': 'rss',
-        'url': 'https://rss.rtbf.be/article/rss/highlight_rtbf_info.xml',
+        'url': 'https://rss.rtbf.be/article/rss/highlight_rtbf_info.xml?source=internal',
+        'feeds': [
+            'https://rss.rtbf.be/article/rss/highlight_rtbf_info.xml?source=internal',
+            'https://rss.rtbf.be/article/rss/highlight_rtbf_info-regions.xml?source=internal',
+            'https://rss.rtbf.be/article/rss/highlight_rtbf_monde-europe.xml?source=internal',
+            'https://rss.rtbf.be/article/rss/highlight_rtbf_info-economie.xml?source=internal',
+            'https://rss.rtbf.be/article/rss/highlight_rtbf_investigation.xml?source=internal',
+        ],
     },
     # Le Soir — RSS Arc retourne 403, site JS anti-bot → commenté temporairement
     # {
@@ -242,39 +257,44 @@ SOURCES = [
     #     'url': 'https://www.lesoir.be/arc/outboundfeeds/rss/?outputType=xml',
     # },
     {
+        # Complète les flux RSS : remonte les archives, pas seulement l'actualité du jour
+        'id': 'rtbf-search', 'group': 'Presse belge francophone', 'kw_set': 'press',
+        'name': 'RTBF — Recherche', 'color': '#e53935',
+        'js': True,
+        'no_kw_filter': True, 'require_term': True,
+        'url': 'https://www.rtbf.be/recherche/article?q={term}',
+        'search_terms': SEARCH_TERMS,
+    },
+    {
         'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Libre Belgique', 'color': '#0d47a1',
-        'type': 'rss',
-        'url': 'https://www.lalibre.be/arc/outboundfeeds/rss/?outputType=xml',
+        'js': True,
+        'no_kw_filter': True, 'require_term': True,
+        'url': 'https://www.lalibre.be/recherche/query:{term};/',
+        'search_terms': SEARCH_TERMS,
     },
     {
         'id': 'dhnet', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Dernière Heure', 'color': '#b71c1c',
-        'type': 'rss',
-        'url': 'https://www.dhnet.be/arc/outboundfeeds/rss/?outputType=xml',
+        'js': True,
+        'no_kw_filter': True, 'require_term': True,
+        'url': 'https://www.dhnet.be/recherche/query:{term};/',
+        'search_terms': SEARCH_TERMS,
     },
     {
         'id': 'rtlinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTL Info', 'color': '#ff6f00',
         'js': True,
-        'no_kw_filter': True,
-        'url': 'https://www.rtl.be/info/recherche?q={term}',
-        'search_terms': SEARCH_TERMS,
-    },
-    {
-        'id': 'levif', 'group': 'Presse belge francophone', 'kw_set': 'press',
-        'name': 'Le Vif', 'color': '#6a1b9a',
-        'js': True,
-        'no_kw_filter': True,
-        'url': 'https://www.levif.be/recherche/?q={term}',
+        'no_kw_filter': True, 'require_term': True,
+        'url': 'https://www.rtl.be/archives/recherche?word={term}',
         'search_terms': SEARCH_TERMS,
     },
     {
         'id': 'sudinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Sud Info', 'color': '#e65100',
         'js': True,
-        'no_kw_filter': True,
-        'url': 'https://www.sudinfo.be/recherche?q={term}',
+        'no_kw_filter': True, 'require_term': True,
+        'url': 'https://www.sudinfo.be/archives/recherche?word={term}&sort=date+desc&datefilter=lastyear',
         'search_terms': SEARCH_TERMS,
     },
 
@@ -287,20 +307,21 @@ SOURCES = [
     #     'url': 'https://sbcnews.co.uk/tag/belgium/',
     # },
     {
-        # Déjà filtré par recherche Belgium
+        # Recherche Belgique croisée avec chacun des 4 termes
         'id': 'igaming', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'iGaming Business', 'color': '#2471a3',
         'js': True,
         'no_kw_filter': True,
-        'url': 'https://igamingbusiness.com/?s=belgium',
+        'url': 'https://igamingbusiness.com/search/belgium?s={term}',
+        'search_terms': SEARCH_TERMS,
     },
     {
-        # Déjà filtré par recherche Belgium
         'id': 'casinobeats', 'group': 'Presse spécialisée & Europe', 'kw_set': 'press',
         'name': 'CasinoBeats', 'color': '#2471a3',
         'js': True,
         'no_kw_filter': True,
-        'url': 'https://casinobeats.com/?s=belgium',
+        'url': 'https://casinobeats.com/?s={term}',
+        'search_terms': SEARCH_TERMS,
     },
     # EGBA — domaine mort (ERR_NAME_NOT_RESOLVED sur www.egba.eu et egba.eu)
     # {
@@ -391,21 +412,40 @@ def find_keywords(text: str, kw_set: str = 'institutional') -> list:
 
 # Extraction de dates
 _DATE_RE = re.compile(r'\b(\d{1,2})[/\-\.](\d{1,2})[/\-\.](\d{4})\b')
-_MONTHS_FR = {
-    # Français
-    'janvier': 1, 'fevrier': 2, 'mars': 3, 'avril': 4,
-    'mai': 5, 'juin': 6, 'juillet': 7, 'aout': 8,
-    'septembre': 9, 'octobre': 10, 'novembre': 11, 'decembre': 12,
-    # Néerlandais (le Moniteur publie en FR/NL/DE)
-    'januari': 1, 'februari': 2, 'maart': 3,
-    'mei': 5, 'juni': 6, 'juli': 7, 'augustus': 8,
-    'oktober': 10, 'december': 12,
-    # Allemand
-    'januar': 1, 'februar': 2, 'marz': 3,
-    'juli': 7, 'august': 8, 'dezember': 12,
+# Radicaux de mois sur 4 caractères (FR, NL, DE, EN) — couvre aussi les
+# abréviations « juil. », « févr. », « sept. ».
+# 4 caractères permet de distinguer juin/juillet et juni/juli.
+_MONTH_STEMS4 = {
+    'janv': 1, 'janu': 1, 'jan ': 1,
+    'fevr': 2, 'febr': 2,
+    'mars': 3, 'maar': 3, 'marz': 3, 'marc': 3,
+    'avri': 4, 'apri': 4,
+    'juin': 6, 'juni': 6, 'june': 6,
+    'juil': 7, 'juli': 7, 'july': 7,
+    'aout': 8, 'augu': 8,
+    'sept': 9,
+    'octo': 10, 'okto': 10,
+    'nove': 11,
+    'dece': 12, 'deze': 12, 'dec ': 12,
 }
-# Accepte « 11 december 2025 » et « 11. Dezember 2025 »
-_MONTH_NAME_RE = re.compile(r'\b(\d{1,2})\.?\s+(\w+)\s+(\d{4})\b')
+# Mois courts (3 caractères) traités à part pour éviter les collisions
+_MONTH_SHORT = {'mai': 5, 'mei': 5, 'may': 5, 'jan': 1, 'feb': 2, 'fev': 2,
+                'mar': 3, 'apr': 4, 'avr': 4, 'jun': 6, 'jul': 7, 'aou': 8,
+                'aug': 8, 'sep': 9, 'oct': 10, 'okt': 10, 'nov': 11, 'dec': 12}
+
+
+def _month_from_word(word: str):
+    """Reconnaît un mois dans n'importe laquelle des 4 langues, abrégé ou non."""
+    w = normalize(word).strip('.')
+    if not w:
+        return None
+    return _MONTH_STEMS4.get(w[:4]) or _MONTH_SHORT.get(w[:3])
+
+
+# « 11 décembre 2025 », « 11. Dezember 2025 », « 17 juil. 2026 »
+_MONTH_NAME_RE = re.compile(r'\b(\d{1,2})\.?\s+([A-Za-zÀ-ÿ]+)\.?,?\s+(\d{4})\b')
+# « August 5, 2026 » (ordre anglais)
+_MONTH_FIRST_RE = re.compile(r'\b([A-Za-zÀ-ÿ]+)\.?\s+(\d{1,2}),?\s+(\d{4})\b')
 
 
 def is_too_old(text: str) -> bool:
@@ -425,12 +465,23 @@ def extract_date(text: str):
             return datetime(int(m.group(3)), int(m.group(2)), int(m.group(1)))
         except Exception:
             pass
-    m = _MONTH_NAME_RE.search(normalize(text))
+    # « 11 décembre 2025 » / « 17 juil. 2026 » / « 11. Dezember 2025 »
+    m = _MONTH_NAME_RE.search(text)
     if m:
-        month = _MONTHS_FR.get(m.group(2))
+        month = _month_from_word(m.group(2))
         if month:
             try:
                 return datetime(int(m.group(3)), month, int(m.group(1)))
+            except Exception:
+                pass
+
+    # « August 5, 2026 » (ordre anglais)
+    m = _MONTH_FIRST_RE.search(text)
+    if m:
+        month = _month_from_word(m.group(1))
+        if month:
+            try:
+                return datetime(int(m.group(3)), month, int(m.group(2)))
             except Exception:
                 pass
     return None
@@ -439,14 +490,35 @@ def extract_date(text: str):
 # ── Scraping ───────────────────────────────────────────────────────────────────
 
 def fetch_rss(src: dict) -> dict:
-    """Récupère un flux RSS/Atom et filtre les entrées par mots-clés."""
-    try:
-        resp = requests.get(src['url'], headers=HEADERS, timeout=REQUEST_TIMEOUT, allow_redirects=True)
-        resp.raise_for_status()
+    """Récupère un ou plusieurs flux RSS/Atom et filtre les entrées par mots-clés.
+    `feeds` (liste) est prioritaire sur `url` : les entrées sont agrégées et dédoublonnées.
+    """
+    kw_set     = src.get('kw_set', 'institutional')
+    feed_urls  = src.get('feeds') or [src['url']]
+    matches    = []
+    seen_links: set = set()
+    last_error = ''
+    ok_count   = 0
 
-        soup = BeautifulSoup(resp.content, 'xml')
-        kw_set = src.get('kw_set', 'institutional')
-        matches = []
+    for feed_url in feed_urls:
+        try:
+            resp = requests.get(feed_url, headers=HEADERS,
+                                timeout=REQUEST_TIMEOUT, allow_redirects=True)
+            resp.raise_for_status()
+            soup = BeautifulSoup(resp.content, 'xml')
+            ok_count += 1
+        except requests.exceptions.Timeout:
+            last_error = f'Délai dépassé ({REQUEST_TIMEOUT}s)'
+            continue
+        except requests.exceptions.ConnectionError as e:
+            last_error = f'Connexion impossible : {str(e)[:60]}'
+            continue
+        except requests.exceptions.HTTPError as e:
+            last_error = f'HTTP {e.response.status_code}'
+            continue
+        except Exception as e:
+            last_error = str(e)[:80]
+            continue
 
         for item in soup.find_all('item'):
             title_tag = item.find('title')
@@ -463,6 +535,9 @@ def fetch_rss(src: dict) -> dict:
             if not link and link_tag:
                 link = link_tag.get_text(strip=True)
             if not link:
+                continue
+            # Un même article peut figurer dans plusieurs flux RTBF
+            if link in seen_links:
                 continue
 
             # Description — nettoyer le HTML éventuel
@@ -490,6 +565,7 @@ def fetch_rss(src: dict) -> dict:
             if date_str and is_too_old(date_str):
                 continue
 
+            seen_links.add(link)
             matches.append({
                 'text': title,
                 'url': link,
@@ -501,16 +577,13 @@ def fetch_rss(src: dict) -> dict:
             if len(matches) >= MAX_MATCHES_PER_SOURCE:
                 break
 
-        return {'status': 'ok', 'matches': matches}
+        if len(matches) >= MAX_MATCHES_PER_SOURCE:
+            break
 
-    except requests.exceptions.Timeout:
-        return {'status': 'error', 'message': f'Délai dépassé ({REQUEST_TIMEOUT}s)'}
-    except requests.exceptions.ConnectionError as e:
-        return {'status': 'error', 'message': f'Connexion impossible : {str(e)[:60]}'}
-    except requests.exceptions.HTTPError as e:
-        return {'status': 'error', 'message': f'HTTP {e.response.status_code}'}
-    except Exception as e:
-        return {'status': 'error', 'message': str(e)[:80]}
+    # Erreur uniquement si AUCUN flux n'a répondu
+    if ok_count == 0 and last_error:
+        return {'status': 'error', 'message': last_error}
+    return {'status': 'ok', 'matches': matches}
 
 
 def fetch_with_browser(src: dict) -> dict:
@@ -534,6 +607,7 @@ def fetch_with_browser(src: dict) -> dict:
     eval_js   = src.get('eval_extract')
     base_url  = src['url']
     no_kw     = src.get('no_kw_filter', False)
+    req_term  = src.get('require_term', False)   # le terme doit figurer dans le résultat
     pw_timeout = src.get('playwright_timeout', 45_000)
     fill_js   = src.get('fill_js')      # JS(term) → remplit le champ, retourne bool
     submit_js = src.get('submit_js')    # JS() → soumet le formulaire
@@ -712,6 +786,9 @@ def fetch_with_browser(src: dict) -> dict:
                         if any(b in tl for b in _BOILERPLATE):
                             continue
                         if is_too_old(text + ' ' + ctx):
+                            continue
+                        # Exiger le terme recherché : élimine menus et navigation
+                        if req_term and term and normalize(term) not in normalize(text + ' ' + ctx):
                             continue
 
                         kws = find_keywords(text + ' ' + ctx, kw_set)
