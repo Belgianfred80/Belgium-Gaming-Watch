@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Veille — Jeux d'Argent Belgique</title>
+<title>News feed Ladbrokes Robot</title>
 <style>
 :root{
   --bg:#eef0f4;--fg:#1a1a2e;--card:#fff;--border:#f2f3f5;--shadow:rgba(0,0,0,.08);
@@ -33,6 +33,16 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .kw-chip{font-size:10px;font-weight:600;background:rgba(255,255,255,.12);border-radius:4px;padding:2px 8px;color:rgba(255,255,255,.8)}
 .kw-chip.active{background:rgba(231,76,60,.3)}
 .kw-chip .n{display:inline-block;background:#e74c3c;color:#fff;border-radius:8px;padding:0 4px;margin-left:5px;font-size:9px}
+.grp-row{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.grp-row-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-right:2px}
+.grp-btn{font-size:10px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:12px;padding:3px 11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.grp-btn:hover{background:rgba(255,255,255,.28)}
+.grp-btn.off{background:transparent;color:rgba(255,255,255,.35);border-color:rgba(255,255,255,.15);text-decoration:line-through}
+/* Carte repliee : on garde l'en-tete (titre + badge), on cache le contenu */
+.card.grp-hidden .card-body{display:none}
+.card.grp-hidden{opacity:.5}
+.card.grp-hidden .card-url{display:none}
+.group-label.grp-hidden{opacity:.4}
 #theme-btn{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:6px;padding:5px 11px;font-size:11px;cursor:pointer;transition:background .2s}
 #theme-btn:hover{background:rgba(255,255,255,.22)}
 .page{padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -95,19 +105,20 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
 <body>
 <header>
   <button id="theme-btn" onclick="toggleTheme()">🌙 Sombre</button>
-  <h1>🇧🇪 Veille — Jeux d'Argent Belgique</h1>
-  <div id="ts">Dernière vérification : 16/08/2026 à 01:14 UTC — 55 alertes au total — <strong style="color:#e74c3c">23 nouvelles depuis hier</strong></div>
-  <div class="kw-row"><span class="kw-label">Institutionnel :</span><span class="kw-chip">entaingroup</span><span class="kw-chip active">ladbrokes <span class="n">24</span></span><span class="kw-chip active">controle <span class="n">4</span></span><span class="kw-chip active">contrôle <span class="n">4</span></span><span class="kw-chip">sanctions</span><span class="kw-chip">agences</span><span class="kw-chip active">licences <span class="n">2</span></span><span class="kw-chip active">entain <span class="n">4</span></span><span class="kw-chip active">bwin <span class="n">3</span></span><span class="kw-chip active">jeux de hasard <span class="n">14</span></span><span class="kw-label kw-label-press">Presse :</span><span class="kw-chip active">bwin <span class="n">3</span></span><span class="kw-chip active">entain <span class="n">4</span></span><span class="kw-chip active">ladbrokes <span class="n">24</span></span><span class="kw-chip active">jeux de hasard <span class="n">14</span></span></div>
+  <h1>🇧🇪 News feed Ladbrokes Robot</h1>
+  <div id="ts">Dernière vérification : 16/08/2026 à 01:31 UTC — 70 alertes au total — <strong style="color:#e74c3c">15 nouvelles depuis hier</strong></div>
+  <div class="kw-row"><span class="kw-label">Institutionnel :</span><span class="kw-chip">entaingroup</span><span class="kw-chip active">ladbrokes <span class="n">32</span></span><span class="kw-chip active">controle <span class="n">4</span></span><span class="kw-chip active">contrôle <span class="n">4</span></span><span class="kw-chip">sanctions</span><span class="kw-chip">agences</span><span class="kw-chip active">licences <span class="n">2</span></span><span class="kw-chip active">entain <span class="n">5</span></span><span class="kw-chip active">bwin <span class="n">4</span></span><span class="kw-chip active">jeux de hasard <span class="n">19</span></span><span class="kw-label kw-label-press">Presse :</span><span class="kw-chip active">bwin <span class="n">4</span></span><span class="kw-chip active">entain <span class="n">5</span></span><span class="kw-chip active">ladbrokes <span class="n">32</span></span><span class="kw-chip active">jeux de hasard <span class="n">19</span></span></div>
+  <div class="grp-row"><span class="grp-row-label">Catégories :</span><button class="grp-btn" id="gb-institutionnel-belge" data-grp="institutionnel-belge" onclick="toggleGroup('institutionnel-belge')">Institutionnel belge</button><button class="grp-btn" id="gb-presse-belge-francophone" data-grp="presse-belge-francophone" onclick="toggleGroup('presse-belge-francophone')">Presse belge francophone</button><button class="grp-btn" id="gb-presse-specialisee-europe" data-grp="presse-specialisee-europe" onclick="toggleGroup('presse-specialisee-europe')">Presse spécialisée &amp; Europe</button></div>
 </header>
 
 <div class="page">
 
 <div class="card summary-card">
   <div class="card-head">
-    <div class="card-title">🔔 Résumé des alertes — 55 résultats</div>
-    <span class="badge badge-match" id="summary-badge">55 alertes</span>
+    <div class="card-title">🔔 Résumé des alertes — 70 résultats</div>
+    <span class="badge badge-match" id="summary-badge">70 alertes</span>
   </div>
-  <div class="card-body" id="summary-body"><div class="alert-row" id="ar0" data-url="https://casinobeats.com/2026/08/05/british-betting-firms-eyeing-exit-to-us-as-uk-stocks-discount-bites/">
+  <div class="card-body" id="summary-body"><div class="alert-row" id="ar0" data-url="https://casinobeats.com/2026/08/05/british-betting-firms-eyeing-exit-to-us-as-uk-stocks-discount-bites/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">05/08/2026</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -115,7 +126,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/08/05/british-betting-firms-eyeing-exit-to-us-as-uk-stocks-discount-bites/&quot;,&quot;British Betting Firms Eyeing Exit to US as \u2018UK Stocks Discount\u2019 Bites&quot;,&quot;05/08/2026&quot;,&quot;CasinoBeats&quot;,'ar0')">✓ Lu</button>
-</div><div class="alert-row" id="ar1" data-url="https://casinobeats.com/2026/07/31/betfred-follows-entain-making-huge-job-cuts-uk-tax-increases-hit/">
+</div><div class="alert-row" id="ar1" data-url="https://casinobeats.com/2026/07/31/betfred-follows-entain-making-huge-job-cuts-uk-tax-increases-hit/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">31/07/2026</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -123,7 +134,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">entain</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/07/31/betfred-follows-entain-making-huge-job-cuts-uk-tax-increases-hit/&quot;,&quot;Betfred Follows Entain in Making Huge Job Cuts as UK Tax Increases Hit&quot;,&quot;31/07/2026&quot;,&quot;CasinoBeats&quot;,'ar1')">✓ Lu</button>
-</div><div class="alert-row" id="ar2" data-url="https://casinobeats.com/news/land-based/">
+</div><div class="alert-row" id="ar2" data-url="https://casinobeats.com/news/land-based/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">31/07/2026</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -131,7 +142,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">entain</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/news/land-based/&quot;,&quot;Betfred Follows Entain in Making Huge Job Cuts as UK Tax Increases Hit Land-based Adam Roarty July 31, 2026&quot;,&quot;31/07/2026&quot;,&quot;CasinoBeats&quot;,'ar2')">✓ Lu</button>
-</div><div class="alert-row" id="ar3" data-url="https://www.gamingcommission.be/fr/alerte-concernant-des-e-mails-frauduleux-au-nom-de-la-commission-des-jeux-de-hasard">
+</div><div class="alert-row" id="ar3" data-url="https://www.gamingcommission.be/fr/alerte-concernant-des-e-mails-frauduleux-au-nom-de-la-commission-des-jeux-de-hasard" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">27/07/2026</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -139,7 +150,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/alerte-concernant-des-e-mails-frauduleux-au-nom-de-la-commission-des-jeux-de-hasard&quot;,&quot;Alerte concernant des e-mails frauduleux au nom de la Commission des jeux de hasard&quot;,&quot;27/07/2026&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar3')">✓ Lu</button>
-</div><div class="alert-row" id="ar4" data-url="https://www.gamingcommission.be/fr/delai-de-traitement-des-licences-plus-long-pendant-les-vacances-dete">
+</div><div class="alert-row" id="ar4" data-url="https://www.gamingcommission.be/fr/delai-de-traitement-des-licences-plus-long-pendant-les-vacances-dete" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">23/06/2026</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -147,7 +158,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">licences</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/delai-de-traitement-des-licences-plus-long-pendant-les-vacances-dete&quot;,&quot;D\u00e9lai de traitement des licences plus long pendant les vacances d'\u00e9t\u00e9&quot;,&quot;23/06/2026&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar4')">✓ Lu</button>
-</div><div class="alert-row" id="ar5" data-url="https://www.7sur7.be/belgique/les-jeux-en-ligne-woohoo-ne-sont-pas-des-jeux-de-hasard-la-loterie-nationale-et-son-ceo-acquittes~ac9a8eee3/">
+</div><div class="alert-row" id="ar5" data-url="https://www.7sur7.be/belgique/les-jeux-en-ligne-woohoo-ne-sont-pas-des-jeux-de-hasard-la-loterie-nationale-et-son-ceo-acquittes~ac9a8eee3/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">01/06/2026</span>
     <span class="alert-src" style="color:#c0392b">7sur7</span>
@@ -155,7 +166,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.7sur7.be/belgique/les-jeux-en-ligne-woohoo-ne-sont-pas-des-jeux-de-hasard-la-loterie-nationale-et-son-ceo-acquittes~ac9a8eee3/&quot;,&quot;Les jeux en ligne \u201cWoohoo\u201d ne sont pas des jeux de hasard: la Loterie Nationale et son CEO acquitt\u00e9s Le tribunal correctionnel de Bruxelles a acquitt\u00e9, vendredi dernier, la Loterie Nationale et son administrateur d\u00e9l\u00e9gu\u00e9, Jannie Haek, dans le cadre du dossier \u201cWoohoo\u201d, des jeux de loterie instantan\u00e9s propos\u00e9s en ligne par la Loterie Nationale. Belgique 1 juin 2026&quot;,&quot;01/06/2026&quot;,&quot;7sur7&quot;,'ar5')">✓ Lu</button>
-</div><div class="alert-row" id="ar6" data-url="https://casinobeats.com/2026/05/26/the-big-short-hedge-funds-win-2-billion-betting-against-gambling-companies/">
+</div><div class="alert-row" id="ar6" data-url="https://casinobeats.com/2026/05/26/the-big-short-hedge-funds-win-2-billion-betting-against-gambling-companies/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">26/05/2026</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -163,7 +174,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/05/26/the-big-short-hedge-funds-win-2-billion-betting-against-gambling-companies/&quot;,&quot;The Big Short: Hedge Funds Win $2 Billion Betting Against Gambling Companies&quot;,&quot;26/05/2026&quot;,&quot;CasinoBeats&quot;,'ar6')">✓ Lu</button>
-</div><div class="alert-row" id="ar7" data-url="https://www.lalibre.be/economie/conjoncture/2026/03/13/eden-hazard-vise-par-une-enquete-de-la-commission-des-jeux-de-hasard-EUFK4ISCLBEEPCJRA5FIR2ZJWM/">
+</div><div class="alert-row" id="ar7" data-url="https://www.lalibre.be/economie/conjoncture/2026/03/13/eden-hazard-vise-par-une-enquete-de-la-commission-des-jeux-de-hasard-EUFK4ISCLBEEPCJRA5FIR2ZJWM/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">13/03/2026</span>
     <span class="alert-src" style="color:#0d47a1">La Libre Belgique</span>
@@ -171,7 +182,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.lalibre.be/economie/conjoncture/2026/03/13/eden-hazard-vise-par-une-enquete-de-la-commission-des-jeux-de-hasard-EUFK4ISCLBEEPCJRA5FIR2ZJWM/&quot;,&quot;Publi\u00e9 le vendredi 13 mars 2026 \u00e0 21h54 Eden Hazard vis\u00e9 par une enqu\u00eate de la Commission des jeux de hasard Conjoncture&quot;,&quot;13/03/2026&quot;,&quot;La Libre Belgique&quot;,'ar7')">✓ Lu</button>
-</div><div class="alert-row" id="ar8" data-url="https://casinobeats.com/2026/03/05/entain-stock-price-rises-after-better-than-expected-results-in-2025/">
+</div><div class="alert-row" id="ar8" data-url="https://casinobeats.com/2026/03/05/entain-stock-price-rises-after-better-than-expected-results-in-2025/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">05/03/2026</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -179,7 +190,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">entain</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/03/05/entain-stock-price-rises-after-better-than-expected-results-in-2025/&quot;,&quot;Entain Stock Price Rises After Better-Than-Expected Results in 2025&quot;,&quot;05/03/2026&quot;,&quot;CasinoBeats&quot;,'ar8')">✓ Lu</button>
-</div><div class="alert-row" id="ar9" data-url="https://www.gamingcommission.be/fr/licences-f2-pour-les-librairies">
+</div><div class="alert-row" id="ar9" data-url="https://www.gamingcommission.be/fr/licences-f2-pour-les-librairies" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">28/01/2026</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
@@ -187,7 +198,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">licences</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/licences-f2-pour-les-librairies&quot;,&quot;Licences F2 pour les librairies&quot;,&quot;28/01/2026&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar9')">✓ Lu</button>
-</div><div class="alert-row" id="ar10" data-url="https://www.dhnet.be/regions/tournai-ath-mouscron/mouscron-comines/2026/01/27/a-mouscron-la-tva-des-repas-scolaires-fait-debat-les-ladbrokes-prolonges-et-la-mobilite-questionnee-J2RJ6VN6JFBJJPVL6CR3RSHHOI/">
+</div><div class="alert-row" id="ar10" data-url="https://www.dhnet.be/regions/tournai-ath-mouscron/mouscron-comines/2026/01/27/a-mouscron-la-tva-des-repas-scolaires-fait-debat-les-ladbrokes-prolonges-et-la-mobilite-questionnee-J2RJ6VN6JFBJJPVL6CR3RSHHOI/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">27/01/2026</span>
     <span class="alert-src" style="color:#b71c1c">La Dernière Heure</span>
@@ -195,7 +206,7 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.dhnet.be/regions/tournai-ath-mouscron/mouscron-comines/2026/01/27/a-mouscron-la-tva-des-repas-scolaires-fait-debat-les-ladbrokes-prolonges-et-la-mobilite-questionnee-J2RJ6VN6JFBJJPVL6CR3RSHHOI/&quot;,&quot;Mouscron - Comines Publi\u00e9 le mardi 27 janvier 2026 \u00e0 21h34 \u00c0 Mouscron, la TVA des repas scolaires fait d\u00e9bat, les Ladbrokes prolong\u00e9s et la mobilit\u00e9 questionn\u00e9e&quot;,&quot;27/01/2026&quot;,&quot;La Derni\u00e8re Heure&quot;,'ar10')">✓ Lu</button>
-</div><div class="alert-row" id="ar11" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2026000199=0&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+</div><div class="alert-row" id="ar11" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2026000199=0&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">11/12/2025</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -207,7 +218,7 @@ Extrait de l'arrêt n° 165/2025 du 11 décembre 2025 Numéros du rôle : 8309, 
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2026000199=0&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Cour constitutionnelle\n\nExtrait de l'arr\u00eat n\u00b0 165/2025 du 11 d\u00e9cembre 2025 Num\u00e9ros du r\u00f4le : 8309, 8313, 8314, 8315\n\n10 f\u00e9vrier 2026&quot;,&quot;11/12/2025&quot;,&quot;Moniteur Belge&quot;,'ar11')">✓ Lu</button>
-</div><div class="alert-row" id="ar12" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2026000199=1&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+</div><div class="alert-row" id="ar12" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2026000199=1&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">11/12/2025</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -219,7 +230,7 @@ Uittreksel uit arrest nr. 165/2025 van 11 december 2025 Rolnummers 8309, 8313, 8
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2026000199=1&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Grondwettelijk Hof\n\nUittreksel uit arrest nr. 165/2025 van 11 december 2025 Rolnummers 8309, 8313, 8314, 8315\n\n10 f\u00e9vrier 2026&quot;,&quot;11/12/2025&quot;,&quot;Moniteur Belge&quot;,'ar12')">✓ Lu</button>
-</div><div class="alert-row" id="ar13" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=D&amp;caller=list&amp;2026000199=2&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+</div><div class="alert-row" id="ar13" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=D&amp;caller=list&amp;2026000199=2&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">11/12/2025</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -231,7 +242,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2026-02-10&amp;numac_search=2026000199&amp;page=1&amp;lg_txt=D&amp;caller=list&amp;2026000199=2&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Verfassungsgerichtshof\n\nAuszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Gesch\u00e4ftsverzeichnisnummern 8309, 8313, 8314, 8315\n\n10 f\u00e9vrier 2026&quot;,&quot;11/12/2025&quot;,&quot;Moniteur Belge&quot;,'ar13')">✓ Lu</button>
-</div><div class="alert-row" id="ar14" data-url="https://casinobeats.com/2025/11/27/european-regulators-unite-to-tackle-illegal-online-gambling/">
+</div><div class="alert-row" id="ar14" data-url="https://casinobeats.com/2025/11/27/european-regulators-unite-to-tackle-illegal-online-gambling/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">27/11/2025</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -239,7 +250,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2025/11/27/european-regulators-unite-to-tackle-illegal-online-gambling/&quot;,&quot;European Regulators Unite To Tackle Illegal Online Gambling&quot;,&quot;27/11/2025&quot;,&quot;CasinoBeats&quot;,'ar14')">✓ Lu</button>
-</div><div class="alert-row" id="ar15" data-url="https://casinobeats.com/2025/11/26/uk-gambling-stocks-yo-yo-response-tax-increases/">
+</div><div class="alert-row" id="ar15" data-url="https://casinobeats.com/2025/11/26/uk-gambling-stocks-yo-yo-response-tax-increases/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">26/11/2025</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -247,7 +258,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2025/11/26/uk-gambling-stocks-yo-yo-response-tax-increases/&quot;,&quot;UK Gambling Stocks Yo-Yo in Response to Tax Increases&quot;,&quot;26/11/2025&quot;,&quot;CasinoBeats&quot;,'ar15')">✓ Lu</button>
-</div><div class="alert-row" id="ar16" data-url="https://casinobeats.com/2025/11/26/uk-budget-2025-leak-shows-gambling-tax-increases/">
+</div><div class="alert-row" id="ar16" data-url="https://casinobeats.com/2025/11/26/uk-budget-2025-leak-shows-gambling-tax-increases/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">26/11/2025</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -255,7 +266,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2025/11/26/uk-budget-2025-leak-shows-gambling-tax-increases/&quot;,&quot;UK Budget 2025 Leak Shows Gambling Tax Increases&quot;,&quot;26/11/2025&quot;,&quot;CasinoBeats&quot;,'ar16')">✓ Lu</button>
-</div><div class="alert-row" id="ar17" data-url="https://casinobeats.com/features/uk-budget-impact-on-gambling-industry/">
+</div><div class="alert-row" id="ar17" data-url="https://casinobeats.com/features/uk-budget-impact-on-gambling-industry/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date">31/10/2025</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
@@ -263,7 +274,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/features/uk-budget-impact-on-gambling-industry/&quot;,&quot;UK Budget 2025: What Does It Mean for UK Gambling?&quot;,&quot;31/10/2025&quot;,&quot;CasinoBeats&quot;,'ar17')">✓ Lu</button>
-</div><div class="alert-row" id="ar18" data-url="https://www.lalibre.be/belgique/2025/10/09/pres-de-la-moitie-des-emplois-menaces-chez-le-bookmaker-ladbrokes-JHVI4H3LPFDLDLQLV45DK54UUE/">
+</div><div class="alert-row" id="ar18" data-url="https://www.lalibre.be/belgique/2025/10/09/pres-de-la-moitie-des-emplois-menaces-chez-le-bookmaker-ladbrokes-JHVI4H3LPFDLDLQLV45DK54UUE/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">09/10/2025</span>
     <span class="alert-src" style="color:#0d47a1">La Libre Belgique</span>
@@ -271,7 +282,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.lalibre.be/belgique/2025/10/09/pres-de-la-moitie-des-emplois-menaces-chez-le-bookmaker-ladbrokes-JHVI4H3LPFDLDLQLV45DK54UUE/&quot;,&quot;Publi\u00e9 le jeudi 09 octobre 2025 \u00e0 10h20 Pr\u00e8s de la moiti\u00e9 des emplois menac\u00e9s chez le bookmaker Ladbrokes Belgique&quot;,&quot;09/10/2025&quot;,&quot;La Libre Belgique&quot;,'ar18')">✓ Lu</button>
-</div><div class="alert-row" id="ar19" data-url="https://www.dhnet.be/conso/travail/2025/10/09/tsunami-chez-ladbrokes-la-moitie-du-personnel-menace-de-licenciement-GMHA6DUHDVHMBBCNGU62UYC244/">
+</div><div class="alert-row" id="ar19" data-url="https://www.dhnet.be/conso/travail/2025/10/09/tsunami-chez-ladbrokes-la-moitie-du-personnel-menace-de-licenciement-GMHA6DUHDVHMBBCNGU62UYC244/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">09/10/2025</span>
     <span class="alert-src" style="color:#b71c1c">La Dernière Heure</span>
@@ -279,15 +290,31 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
   <button class="btn-read" onclick="markRead(&quot;https://www.dhnet.be/conso/travail/2025/10/09/tsunami-chez-ladbrokes-la-moitie-du-personnel-menace-de-licenciement-GMHA6DUHDVHMBBCNGU62UYC244/&quot;,&quot;Emploi Publi\u00e9 le jeudi 09 octobre 2025 \u00e0 11h53 Tsunami chez Ladbrokes: la moiti\u00e9 du personnel menac\u00e9 de licenciement&quot;,&quot;09/10/2025&quot;,&quot;La Derni\u00e8re Heure&quot;,'ar19')">✓ Lu</button>
-</div><div class="alert-row" id="ar20" data-url="https://www.lalibre.be/economie/entreprises-startup/2025/08/29/des-anciens-dirigeants-de-ladbrokes-devant-la-justice-ces-charges-sont-serieuses-EFVRGYFVIJG6XOIGEPD2ZYSQDA/">
+</div><div class="alert-row" id="ar20" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786843860579&amp;rid=1" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">03/09/2025</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786843860579&amp;rid=1" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a>
+    <div class="tag-row"><span class="tag">ladbrokes</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786843860579&amp;rid=1&quot;,&quot;Commission Decision (EU) 2025/1765 of 11\u00a0April 2025 on the measure State aid SA.53630\u00a0(2020/C) \u2013 (ex\u00a02019/FC) \u2013 Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)&quot;,&quot;03/09/2025&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar20')">✓ Lu</button>
+</div><div class="alert-row" id="ar21" data-url="http://data.europa.eu/eli/dec/2025/1765/oj" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">03/09/2025</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="http://data.europa.eu/eli/dec/2025/1765/oj" target="_blank">http://data.europa.eu/eli/dec/2025/1765/oj</a>
+    <div class="tag-row"><span class="tag">ladbrokes</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;http://data.europa.eu/eli/dec/2025/1765/oj&quot;,&quot;http://data.europa.eu/eli/dec/2025/1765/oj&quot;,&quot;03/09/2025&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar21')">✓ Lu</button>
+</div><div class="alert-row" id="ar22" data-url="https://www.lalibre.be/economie/entreprises-startup/2025/08/29/des-anciens-dirigeants-de-ladbrokes-devant-la-justice-ces-charges-sont-serieuses-EFVRGYFVIJG6XOIGEPD2ZYSQDA/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">29/08/2025</span>
     <span class="alert-src" style="color:#0d47a1">La Libre Belgique</span>
     <a href="https://www.lalibre.be/economie/entreprises-startup/2025/08/29/des-anciens-dirigeants-de-ladbrokes-devant-la-justice-ces-charges-sont-serieuses-EFVRGYFVIJG6XOIGEPD2ZYSQDA/" target="_blank">Publié le vendredi 29 août 2025 à 16h10 Des anciens dirigeants de Ladbrokes devant la justice : &quot;Ces charges sont sérieuses&quot; Entreprises &amp; Start-up</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.lalibre.be/economie/entreprises-startup/2025/08/29/des-anciens-dirigeants-de-ladbrokes-devant-la-justice-ces-charges-sont-serieuses-EFVRGYFVIJG6XOIGEPD2ZYSQDA/&quot;,&quot;Publi\u00e9 le vendredi 29 ao\u00fbt 2025 \u00e0 16h10 Des anciens dirigeants de Ladbrokes devant la justice : \&quot;Ces charges sont s\u00e9rieuses\&quot; Entreprises &amp; Start-up&quot;,&quot;29/08/2025&quot;,&quot;La Libre Belgique&quot;,'ar20')">✓ Lu</button>
-</div><div class="alert-row" id="ar21" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025005924=3&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+  <button class="btn-read" onclick="markRead(&quot;https://www.lalibre.be/economie/entreprises-startup/2025/08/29/des-anciens-dirigeants-de-ladbrokes-devant-la-justice-ces-charges-sont-serieuses-EFVRGYFVIJG6XOIGEPD2ZYSQDA/&quot;,&quot;Publi\u00e9 le vendredi 29 ao\u00fbt 2025 \u00e0 16h10 Des anciens dirigeants de Ladbrokes devant la justice : \&quot;Ces charges sont s\u00e9rieuses\&quot; Entreprises &amp; Start-up&quot;,&quot;29/08/2025&quot;,&quot;La Libre Belgique&quot;,'ar22')">✓ Lu</button>
+</div><div class="alert-row" id="ar23" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025005924=3&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">17/07/2025</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -298,8 +325,8 @@ Extrait de l'arrêt n° 106/2025 du 17 juillet 2025 Numéro du rôle : 8294 En c
 20 octobre 2025</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025005924=3&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Cour constitutionnelle\n\nExtrait de l'arr\u00eat n\u00b0 106/2025 du 17 juillet 2025 Num\u00e9ro du r\u00f4le : 8294 En cause : le recours en annulation partielle de l'ordonnance de la R\u00e9gion de Bruxelles-Capitale du 1er\n\n20 octobre 2025&quot;,&quot;17/07/2025&quot;,&quot;Moniteur Belge&quot;,'ar21')">✓ Lu</button>
-</div><div class="alert-row" id="ar22" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2025005924=4&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025005924=3&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Cour constitutionnelle\n\nExtrait de l'arr\u00eat n\u00b0 106/2025 du 17 juillet 2025 Num\u00e9ro du r\u00f4le : 8294 En cause : le recours en annulation partielle de l'ordonnance de la R\u00e9gion de Bruxelles-Capitale du 1er\n\n20 octobre 2025&quot;,&quot;17/07/2025&quot;,&quot;Moniteur Belge&quot;,'ar23')">✓ Lu</button>
+</div><div class="alert-row" id="ar24" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2025005924=4&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">17/07/2025</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -310,8 +337,8 @@ Uittreksel uit arrest nr. 106/2025 van 17 juli 2025 Rolnummer 8294 In zake : het
 20 octobre 2025</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2025005924=4&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Grondwettelijk Hof\n\nUittreksel uit arrest nr. 106/2025 van 17 juli 2025 Rolnummer 8294 In zake : het beroep tot gedeeltelijke vernietiging van de ordonnantie van het Brusselse Hoofdstedelijke Gewest van 1 februari 2024\n\n20 octobre 2025&quot;,&quot;17/07/2025&quot;,&quot;Moniteur Belge&quot;,'ar22')">✓ Lu</button>
-</div><div class="alert-row" id="ar23" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=D&amp;caller=list&amp;2025005924=5&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2025005924=4&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Grondwettelijk Hof\n\nUittreksel uit arrest nr. 106/2025 van 17 juli 2025 Rolnummer 8294 In zake : het beroep tot gedeeltelijke vernietiging van de ordonnantie van het Brusselse Hoofdstedelijke Gewest van 1 februari 2024\n\n20 octobre 2025&quot;,&quot;17/07/2025&quot;,&quot;Moniteur Belge&quot;,'ar24')">✓ Lu</button>
+</div><div class="alert-row" id="ar25" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=D&amp;caller=list&amp;2025005924=5&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">17/07/2025</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -322,8 +349,24 @@ Auszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Geschäftsverzeichnisnum
 20 octobre 2025</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=D&amp;caller=list&amp;2025005924=5&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Verfassungsgerichtshof\n\nAuszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Gesch\u00e4ftsverzeichnisnummer 8294 In Sachen: Klage auf teilweise Nichtigerkl\u00e4rung der Ordonnanz der Region Br\u00fcssel-Hauptstadt vom 1. Februar\n\n20 octobre 2025&quot;,&quot;17/07/2025&quot;,&quot;Moniteur Belge&quot;,'ar23')">✓ Lu</button>
-</div><div class="alert-row" id="ar24" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-06-24&amp;numac_search=2025827269&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025827269=6&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-10-20&amp;numac_search=2025005924&amp;page=1&amp;lg_txt=D&amp;caller=list&amp;2025005924=5&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Verfassungsgerichtshof\n\nAuszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Gesch\u00e4ftsverzeichnisnummer 8294 In Sachen: Klage auf teilweise Nichtigerkl\u00e4rung der Ordonnanz der Region Br\u00fcssel-Hauptstadt vom 1. Februar\n\n20 octobre 2025&quot;,&quot;17/07/2025&quot;,&quot;Moniteur Belge&quot;,'ar25')">✓ Lu</button>
+</div><div class="alert-row" id="ar26" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/03677&amp;qid=1786843865638&amp;rid=6" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">10/07/2025</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/03677&amp;qid=1786843865638&amp;rid=6" target="_blank">Verbatim report of proceedings of 18 September 2024</a>
+    <div class="tag-row"><span class="tag">jeux de hasard</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/03677&amp;qid=1786843865638&amp;rid=6&quot;,&quot;Verbatim report of proceedings of 18 September 2024&quot;,&quot;10/07/2025&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar26')">✓ Lu</button>
+</div><div class="alert-row" id="ar27" data-url="http://data.europa.eu/eli/C/2025/3677/oj" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">10/07/2025</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="http://data.europa.eu/eli/C/2025/3677/oj" target="_blank">http://data.europa.eu/eli/C/2025/3677/oj</a>
+    <div class="tag-row"><span class="tag">jeux de hasard</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;http://data.europa.eu/eli/C/2025/3677/oj&quot;,&quot;http://data.europa.eu/eli/C/2025/3677/oj&quot;,&quot;10/07/2025&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar27')">✓ Lu</button>
+</div><div class="alert-row" id="ar28" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-06-24&amp;numac_search=2025827269&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025827269=6&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">24/06/2025</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -332,88 +375,120 @@ Auszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Geschäftsverzeichnisnum
 24 juin 2025</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-06-24&amp;numac_search=2025827269&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025827269=6&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Tribunal de l'entreprise de Li\u00e8ge, division Li\u00e8ge.\n\n24 juin 2025&quot;,&quot;24/06/2025&quot;,&quot;Moniteur Belge&quot;,'ar24')">✓ Lu</button>
-</div><div class="alert-row" id="ar25" data-url="https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis">
+  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2025-06-24&amp;numac_search=2025827269&amp;page=1&amp;lg_txt=F&amp;caller=list&amp;2025827269=6&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Tribunal de l'entreprise de Li\u00e8ge, division Li\u00e8ge.\n\n24 juin 2025&quot;,&quot;24/06/2025&quot;,&quot;Moniteur Belge&quot;,'ar28')">✓ Lu</button>
+</div><div class="alert-row" id="ar29" data-url="https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">06/06/2025</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis" target="_blank">Sondage DataSynergy : Les jeunes et les jeux de hasard/paris</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis&quot;,&quot;Sondage DataSynergy : Les jeunes et les jeux de hasard/paris&quot;,&quot;06/06/2025&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar25')">✓ Lu</button>
-</div><div class="alert-row" id="ar26" data-url="https://www.7sur7.be/belgique/la-belgique-interdit-un-site-pour-parier-sur-l-actualite-en-cryptomonnaie~a51703e2/">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis&quot;,&quot;Sondage DataSynergy : Les jeunes et les jeux de hasard/paris&quot;,&quot;06/06/2025&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar29')">✓ Lu</button>
+</div><div class="alert-row" id="ar30" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/02132&amp;qid=1786843865638&amp;rid=10" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">10/04/2025</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/02132&amp;qid=1786843865638&amp;rid=10" target="_blank">Verbatim report of proceedings of 23 April 2024</a>
+    <div class="tag-row"><span class="tag">jeux de hasard</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/02132&amp;qid=1786843865638&amp;rid=10&quot;,&quot;Verbatim report of proceedings of 23 April 2024&quot;,&quot;10/04/2025&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar30')">✓ Lu</button>
+</div><div class="alert-row" id="ar31" data-url="https://www.7sur7.be/belgique/la-belgique-interdit-un-site-pour-parier-sur-l-actualite-en-cryptomonnaie~a51703e2/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">03/02/2025</span>
     <span class="alert-src" style="color:#c0392b">7sur7</span>
     <a href="https://www.7sur7.be/belgique/la-belgique-interdit-un-site-pour-parier-sur-l-actualite-en-cryptomonnaie~a51703e2/" target="_blank">La Belgique interdit un site pour parier sur l’actualité en cryptomonnaie Le portail en ligne de prédiction cryptographique, Polymarket, a été repris sur la liste noire de la Commission des jeux de hasard et est dès lors bloqué, a appris lundi l’agence Belga. Belgique 3 février 2025</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.7sur7.be/belgique/la-belgique-interdit-un-site-pour-parier-sur-l-actualite-en-cryptomonnaie~a51703e2/&quot;,&quot;La Belgique interdit un site pour parier sur l\u2019actualit\u00e9 en cryptomonnaie Le portail en ligne de pr\u00e9diction cryptographique, Polymarket, a \u00e9t\u00e9 repris sur la liste noire de la Commission des jeux de hasard et est d\u00e8s lors bloqu\u00e9, a appris lundi l\u2019agence Belga. Belgique 3 f\u00e9vrier 2025&quot;,&quot;03/02/2025&quot;,&quot;7sur7&quot;,'ar26')">✓ Lu</button>
-</div><div class="alert-row" id="ar27" data-url="https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux">
+  <button class="btn-read" onclick="markRead(&quot;https://www.7sur7.be/belgique/la-belgique-interdit-un-site-pour-parier-sur-l-actualite-en-cryptomonnaie~a51703e2/&quot;,&quot;La Belgique interdit un site pour parier sur l\u2019actualit\u00e9 en cryptomonnaie Le portail en ligne de pr\u00e9diction cryptographique, Polymarket, a \u00e9t\u00e9 repris sur la liste noire de la Commission des jeux de hasard et est d\u00e8s lors bloqu\u00e9, a appris lundi l\u2019agence Belga. Belgique 3 f\u00e9vrier 2025&quot;,&quot;03/02/2025&quot;,&quot;7sur7&quot;,'ar31')">✓ Lu</button>
+</div><div class="alert-row" id="ar32" data-url="https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">17/12/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux" target="_blank">Invitation session d'information 17/12/2024 - Nouvelle procédure de blocage des jeux de hasard illégaux</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux&quot;,&quot;Invitation session d'information 17/12/2024 - Nouvelle proc\u00e9dure de blocage des jeux de hasard ill\u00e9gaux&quot;,&quot;17/12/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar27')">✓ Lu</button>
-</div><div class="alert-row" id="ar28" data-url="https://www.7sur7.be/economie/jeux-de-hasard-le-secteur-prive-attaque-la-reforme-protegeant-davantage-le-joueur~a81a7abc/">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux&quot;,&quot;Invitation session d'information 17/12/2024 - Nouvelle proc\u00e9dure de blocage des jeux de hasard ill\u00e9gaux&quot;,&quot;17/12/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar32')">✓ Lu</button>
+</div><div class="alert-row" id="ar33" data-url="http://data.europa.eu/eli/C/2024/6307/oj" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">23/10/2024</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="http://data.europa.eu/eli/C/2024/6307/oj" target="_blank">http://data.europa.eu/eli/C/2024/6307/oj</a>
+    <div class="tag-row"><span class="tag">ladbrokes</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;http://data.europa.eu/eli/C/2024/6307/oj&quot;,&quot;http://data.europa.eu/eli/C/2024/6307/oj&quot;,&quot;23/10/2024&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar33')">✓ Lu</button>
+</div><div class="alert-row" id="ar34" data-url="https://www.7sur7.be/economie/jeux-de-hasard-le-secteur-prive-attaque-la-reforme-protegeant-davantage-le-joueur~a81a7abc/" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date">17/09/2024</span>
     <span class="alert-src" style="color:#c0392b">7sur7</span>
     <a href="https://www.7sur7.be/economie/jeux-de-hasard-le-secteur-prive-attaque-la-reforme-protegeant-davantage-le-joueur~a81a7abc/" target="_blank">Jeux de hasard: le secteur privé attaque la réforme protégeant davantage le joueur Différents opérateurs viennent d’introduire, devant la Cour constitutionnelle, un recours en annulation partielle de la réforme des jeux de hasard (loi “Van Hecke”), destinée à mieux protéger le joueur, rapporte Le Soir mardi. Economie 17 septembre 2024</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.7sur7.be/economie/jeux-de-hasard-le-secteur-prive-attaque-la-reforme-protegeant-davantage-le-joueur~a81a7abc/&quot;,&quot;Jeux de hasard: le secteur priv\u00e9 attaque la r\u00e9forme prot\u00e9geant davantage le joueur Diff\u00e9rents op\u00e9rateurs viennent d\u2019introduire, devant la Cour constitutionnelle, un recours en annulation partielle de la r\u00e9forme des jeux de hasard (loi \u201cVan Hecke\u201d), destin\u00e9e \u00e0 mieux prot\u00e9ger le joueur, rapporte Le Soir mardi. Economie 17 septembre 2024&quot;,&quot;17/09/2024&quot;,&quot;7sur7&quot;,'ar28')">✓ Lu</button>
-</div><div class="alert-row" id="ar29" data-url="https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1">
+  <button class="btn-read" onclick="markRead(&quot;https://www.7sur7.be/economie/jeux-de-hasard-le-secteur-prive-attaque-la-reforme-protegeant-davantage-le-joueur~a81a7abc/&quot;,&quot;Jeux de hasard: le secteur priv\u00e9 attaque la r\u00e9forme prot\u00e9geant davantage le joueur Diff\u00e9rents op\u00e9rateurs viennent d\u2019introduire, devant la Cour constitutionnelle, un recours en annulation partielle de la r\u00e9forme des jeux de hasard (loi \u201cVan Hecke\u201d), destin\u00e9e \u00e0 mieux prot\u00e9ger le joueur, rapporte Le Soir mardi. Economie 17 septembre 2024&quot;,&quot;17/09/2024&quot;,&quot;7sur7&quot;,'ar34')">✓ Lu</button>
+</div><div class="alert-row" id="ar35" data-url="https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">02/09/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1" target="_blank">Modification de la Loi sur les jeux de hasard</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1&quot;,&quot;Modification de la Loi sur les jeux de hasard&quot;,&quot;02/09/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar29')">✓ Lu</button>
-</div><div class="alert-row" id="ar30" data-url="https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1&quot;,&quot;Modification de la Loi sur les jeux de hasard&quot;,&quot;02/09/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar35')">✓ Lu</button>
+</div><div class="alert-row" id="ar36" data-url="https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">01/08/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe" target="_blank">Publication Moniteur belge - Vérification de l'âge dans les établissements de jeux de hasard de classe III</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe&quot;,&quot;Publication Moniteur belge - V\u00e9rification de l'\u00e2ge dans les \u00e9tablissements de jeux de hasard de classe III&quot;,&quot;01/08/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar30')">✓ Lu</button>
-</div><div class="alert-row" id="ar31" data-url="https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe&quot;,&quot;Publication Moniteur belge - V\u00e9rification de l'\u00e2ge dans les \u00e9tablissements de jeux de hasard de classe III&quot;,&quot;01/08/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar36')">✓ Lu</button>
+</div><div class="alert-row" id="ar37" data-url="https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">18/07/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii" target="_blank">Note directrice relative aux établissements de jeux de hasard de classe III</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii&quot;,&quot;Note directrice relative aux \u00e9tablissements de jeux de hasard de classe III&quot;,&quot;18/07/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar31')">✓ Lu</button>
-</div><div class="alert-row" id="ar32" data-url="https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii&quot;,&quot;Note directrice relative aux \u00e9tablissements de jeux de hasard de classe III&quot;,&quot;18/07/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar37')">✓ Lu</button>
+</div><div class="alert-row" id="ar38" data-url="https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">20/06/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024" target="_blank">Update actions de contrôle été 2024</a>
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024&quot;,&quot;Update actions de contr\u00f4le \u00e9t\u00e9 2024&quot;,&quot;20/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar32')">✓ Lu</button>
-</div><div class="alert-row" id="ar33" data-url="https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024&quot;,&quot;Update actions de contr\u00f4le \u00e9t\u00e9 2024&quot;,&quot;20/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar38')">✓ Lu</button>
+</div><div class="alert-row" id="ar39" data-url="https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">19/06/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite" target="_blank">Documents à des fins de contrôle de la solvabilité</a>
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite&quot;,&quot;Documents \u00e0 des fins de contr\u00f4le de la solvabilit\u00e9&quot;,&quot;19/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar33')">✓ Lu</button>
-</div><div class="alert-row" id="ar34" data-url="https://www.gamingcommission.be/fr/actions-de-controle-ete-2024">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite&quot;,&quot;Documents \u00e0 des fins de contr\u00f4le de la solvabilit\u00e9&quot;,&quot;19/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar39')">✓ Lu</button>
+</div><div class="alert-row" id="ar40" data-url="https://www.gamingcommission.be/fr/actions-de-controle-ete-2024" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">11/06/2024</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Nouvelles</span>
     <a href="https://www.gamingcommission.be/fr/actions-de-controle-ete-2024" target="_blank">Actions de contrôle Eté 2024</a>
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/actions-de-controle-ete-2024&quot;,&quot;Actions de contr\u00f4le Et\u00e9 2024&quot;,&quot;11/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar34')">✓ Lu</button>
-</div><div class="alert-row" id="ar35" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2024-03-25&amp;numac_search=2024812074&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2024812074=7&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/actions-de-controle-ete-2024&quot;,&quot;Actions de contr\u00f4le Et\u00e9 2024&quot;,&quot;11/06/2024&quot;,&quot;Gaming Commission (CJH) \u2014 Nouvelles&quot;,'ar40')">✓ Lu</button>
+</div><div class="alert-row" id="ar41" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2024/02801&amp;qid=1786843865638&amp;rid=9" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">25/04/2024</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2024/02801&amp;qid=1786843865638&amp;rid=9" target="_blank">Verbatim report of proceedings of 17 May 2017</a>
+    <div class="tag-row"><span class="tag">jeux de hasard</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2024/02801&amp;qid=1786843865638&amp;rid=9&quot;,&quot;Verbatim report of proceedings of 17 May 2017&quot;,&quot;25/04/2024&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar41')">✓ Lu</button>
+</div><div class="alert-row" id="ar42" data-url="http://data.europa.eu/eli/C/2024/2801/oj" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date">25/04/2024</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="http://data.europa.eu/eli/C/2024/2801/oj" target="_blank">http://data.europa.eu/eli/C/2024/2801/oj</a>
+    <div class="tag-row"><span class="tag">jeux de hasard</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;http://data.europa.eu/eli/C/2024/2801/oj&quot;,&quot;http://data.europa.eu/eli/C/2024/2801/oj&quot;,&quot;25/04/2024&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar42')">✓ Lu</button>
+</div><div class="alert-row" id="ar43" data-url="https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2024-03-25&amp;numac_search=2024812074&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2024812074=7&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date">25/03/2024</span>
     <span class="alert-src" style="color:#2c3e50">Moniteur Belge</span>
@@ -422,75 +497,91 @@ Auszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Geschäftsverzeichnisnum
 25 mars 2024</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2024-03-25&amp;numac_search=2024812074&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2024812074=7&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Ondernemingsrechtbank Gent, afdeling Ieper.\n\n25 mars 2024&quot;,&quot;25/03/2024&quot;,&quot;Moniteur Belge&quot;,'ar35')">✓ Lu</button>
-</div><div class="alert-row" id="ar36" data-url="https://www.gamingcommission.be/fr/operateurs/blanchiment">
+  <button class="btn-read" onclick="markRead(&quot;https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&amp;sum_date=2026-08-14&amp;pd_search=2024-03-25&amp;numac_search=2024812074&amp;page=1&amp;lg_txt=N&amp;caller=list&amp;2024812074=7&amp;choix1=et&amp;choix2=et&amp;exp=ladbrokes&amp;fr=f&amp;nl=n&amp;du=d&amp;trier=promulgation&quot;,&quot;Ondernemingsrechtbank Gent, afdeling Ieper.\n\n25 mars 2024&quot;,&quot;25/03/2024&quot;,&quot;Moniteur Belge&quot;,'ar43')">✓ Lu</button>
+</div><div class="alert-row" id="ar44" data-url="https://www.gamingcommission.be/fr/operateurs/blanchiment" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#7d3c98">Gaming Commission (CJH) — Contrôle &amp; Sanctions</span>
     <a href="https://www.gamingcommission.be/fr/operateurs/blanchiment" target="_blank">blanchiment d'argent</a>
     <div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/operateurs/blanchiment&quot;,&quot;blanchiment d'argent&quot;,&quot;&quot;,&quot;Gaming Commission (CJH) \u2014 Contr\u00f4le &amp; Sanctions&quot;,'ar36')">✓ Lu</button>
-</div><div class="alert-row" id="ar37" data-url="https://www.abc-bma.be/nl/beslissingen/02-pk-18-derby-tierce-ladbroke-vs-pmu">
+  <button class="btn-read" onclick="markRead(&quot;https://www.gamingcommission.be/fr/operateurs/blanchiment&quot;,&quot;blanchiment d'argent&quot;,&quot;&quot;,&quot;Gaming Commission (CJH) \u2014 Contr\u00f4le &amp; Sanctions&quot;,'ar44')">✓ Lu</button>
+</div><div class="alert-row" id="ar45" data-url="https://www.abc-bma.be/nl/beslissingen/02-pk-18-derby-tierce-ladbroke-vs-pmu" data-grp="institutionnel-belge">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#2c3e50">Autorité belge de la Concurrence</span>
     <a href="https://www.abc-bma.be/nl/beslissingen/02-pk-18-derby-tierce-ladbroke-vs-pmu" target="_blank">02-PK-18 Derby, Tierce Ladbroke vs PMU</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.abc-bma.be/nl/beslissingen/02-pk-18-derby-tierce-ladbroke-vs-pmu&quot;,&quot;02-PK-18 Derby, Tierce Ladbroke vs PMU&quot;,&quot;&quot;,&quot;Autorit\u00e9 belge de la Concurrence&quot;,'ar37')">✓ Lu</button>
-</div><div class="alert-row" id="ar38" data-url="https://www.rtl.be/sport/football/diables-rouges/une-sanction-pourrait-etre-envisagee-eden-hazard-bientot-la-cible-dune-enquete/2026-03-13/article/782601">
+  <button class="btn-read" onclick="markRead(&quot;https://www.abc-bma.be/nl/beslissingen/02-pk-18-derby-tierce-ladbroke-vs-pmu&quot;,&quot;02-PK-18 Derby, Tierce Ladbroke vs PMU&quot;,&quot;&quot;,&quot;Autorit\u00e9 belge de la Concurrence&quot;,'ar45')">✓ Lu</button>
+</div><div class="alert-row" id="ar46" data-url="https://www.rtl.be/sport/football/diables-rouges/une-sanction-pourrait-etre-envisagee-eden-hazard-bientot-la-cible-dune-enquete/2026-03-13/article/782601" data-grp="presse-belge-francophone">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#ff6f00">RTL Info</span>
     <a href="https://www.rtl.be/sport/football/diables-rouges/une-sanction-pourrait-etre-envisagee-eden-hazard-bientot-la-cible-dune-enquete/2026-03-13/article/782601" target="_blank">« Une sanction pourrait être envisagée » : Eden Hazard bientôt la cible d’une enquête de la Commission des jeux de hasard</a>
     <div class="tag-row"><span class="tag">jeux de hasard</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://www.rtl.be/sport/football/diables-rouges/une-sanction-pourrait-etre-envisagee-eden-hazard-bientot-la-cible-dune-enquete/2026-03-13/article/782601&quot;,&quot;\u00ab\u00a0Une sanction pourrait \u00eatre envisag\u00e9e\u00a0\u00bb\u00a0: Eden Hazard bient\u00f4t la\u00a0cible d\u2019une enqu\u00eate de la Commission des jeux de hasard&quot;,&quot;&quot;,&quot;RTL Info&quot;,'ar38')">✓ Lu</button>
-</div><div class="alert-row" id="ar39" data-url="https://casinobeats.com/2026/07/13/everton-sleeve-deal-with-stake-could-be-canceled-uk-reviews-unlicensed-sponsors/">
+  <button class="btn-read" onclick="markRead(&quot;https://www.rtl.be/sport/football/diables-rouges/une-sanction-pourrait-etre-envisagee-eden-hazard-bientot-la-cible-dune-enquete/2026-03-13/article/782601&quot;,&quot;\u00ab\u00a0Une sanction pourrait \u00eatre envisag\u00e9e\u00a0\u00bb\u00a0: Eden Hazard bient\u00f4t la\u00a0cible d\u2019une enqu\u00eate de la Commission des jeux de hasard&quot;,&quot;&quot;,&quot;RTL Info&quot;,'ar46')">✓ Lu</button>
+</div><div class="alert-row" id="ar47" data-url="https://casinobeats.com/2026/07/13/everton-sleeve-deal-with-stake-could-be-canceled-uk-reviews-unlicensed-sponsors/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
     <a href="https://casinobeats.com/2026/07/13/everton-sleeve-deal-with-stake-could-be-canceled-uk-reviews-unlicensed-sponsors/" target="_blank">Everton Sleeve Deal With Stake Could Be Canceled as UK Reviews Unlicensed Sponsors</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/07/13/everton-sleeve-deal-with-stake-could-be-canceled-uk-reviews-unlicensed-sponsors/&quot;,&quot;Everton Sleeve Deal With Stake Could Be Canceled as UK Reviews Unlicensed Sponsors&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar39')">✓ Lu</button>
-</div><div class="alert-row" id="ar40" data-url="https://casinobeats.com/2026/02/24/how-onlyfans-star-annie-knight-helped-henry-brayshaw-overcome-crippling-gambling-addiction/">
+  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/07/13/everton-sleeve-deal-with-stake-could-be-canceled-uk-reviews-unlicensed-sponsors/&quot;,&quot;Everton Sleeve Deal With Stake Could Be Canceled as UK Reviews Unlicensed Sponsors&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar47')">✓ Lu</button>
+</div><div class="alert-row" id="ar48" data-url="https://casinobeats.com/2026/02/24/how-onlyfans-star-annie-knight-helped-henry-brayshaw-overcome-crippling-gambling-addiction/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
     <a href="https://casinobeats.com/2026/02/24/how-onlyfans-star-annie-knight-helped-henry-brayshaw-overcome-crippling-gambling-addiction/" target="_blank">How OnlyFans Star Annie Knight Helped Henry Brayshaw Overcome Crippling Gambling Addiction</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/02/24/how-onlyfans-star-annie-knight-helped-henry-brayshaw-overcome-crippling-gambling-addiction/&quot;,&quot;How OnlyFans Star Annie Knight Helped Henry Brayshaw Overcome Crippling Gambling Addiction&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar40')">✓ Lu</button>
-</div><div class="alert-row" id="ar41" data-url="https://casinobeats.com/2025/12/16/australia-teen-social-media-ban-questioned-lobby-group-linked-gambling-ads/">
+  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/02/24/how-onlyfans-star-annie-knight-helped-henry-brayshaw-overcome-crippling-gambling-addiction/&quot;,&quot;How OnlyFans Star Annie Knight Helped Henry Brayshaw Overcome Crippling Gambling Addiction&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar48')">✓ Lu</button>
+</div><div class="alert-row" id="ar49" data-url="https://casinobeats.com/2025/12/16/australia-teen-social-media-ban-questioned-lobby-group-linked-gambling-ads/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
     <a href="https://casinobeats.com/2025/12/16/australia-teen-social-media-ban-questioned-lobby-group-linked-gambling-ads/" target="_blank">Australia’s Teen Social Media Ban Questioned as Lobby Group Linked to Gambling Ads</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2025/12/16/australia-teen-social-media-ban-questioned-lobby-group-linked-gambling-ads/&quot;,&quot;Australia\u2019s Teen Social Media Ban Questioned as Lobby Group Linked to Gambling Ads&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar41')">✓ Lu</button>
-</div><div class="alert-row" id="ar42" data-url="https://casinobeats.com/2025/12/11/jailed-gambler-australia-files-lawsuit-major-betting-companies/">
+  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2025/12/16/australia-teen-social-media-ban-questioned-lobby-group-linked-gambling-ads/&quot;,&quot;Australia\u2019s Teen Social Media Ban Questioned as Lobby Group Linked to Gambling Ads&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar49')">✓ Lu</button>
+</div><div class="alert-row" id="ar50" data-url="https://casinobeats.com/2025/12/11/jailed-gambler-australia-files-lawsuit-major-betting-companies/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
     <a href="https://casinobeats.com/2025/12/11/jailed-gambler-australia-files-lawsuit-major-betting-companies/" target="_blank">Jailed Gambler in Australia Files Lawsuit Against Major Betting Companies to Recover Stolen Losses</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2025/12/11/jailed-gambler-australia-files-lawsuit-major-betting-companies/&quot;,&quot;Jailed Gambler in Australia Files Lawsuit Against Major Betting Companies to Recover Stolen Losses&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar42')">✓ Lu</button>
-</div><div class="alert-row" id="ar43" data-url="https://casinobeats.com/2026/08/14/opinion-kalshi-shelves-mention-markets-for-sports-until-further-notice-why-stop-there/">
+  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2025/12/11/jailed-gambler-australia-files-lawsuit-major-betting-companies/&quot;,&quot;Jailed Gambler in Australia Files Lawsuit Against Major Betting Companies to Recover Stolen Losses&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar50')">✓ Lu</button>
+</div><div class="alert-row" id="ar51" data-url="https://casinobeats.com/2026/08/14/opinion-kalshi-shelves-mention-markets-for-sports-until-further-notice-why-stop-there/" data-grp="presse-specialisee-europe">
   <div class="alert-row-main">
     <span class="alert-date no-date">date ?</span>
     <span class="alert-src" style="color:#2471a3">CasinoBeats</span>
     <a href="https://casinobeats.com/2026/08/14/opinion-kalshi-shelves-mention-markets-for-sports-until-further-notice-why-stop-there/" target="_blank">Opinion: Kalshi Shelves Mention Markets for Sports Until Further Notice. Why Stop There?</a>
     <div class="tag-row"><span class="tag">ladbrokes</span></div>
   </div>
-  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/08/14/opinion-kalshi-shelves-mention-markets-for-sports-until-further-notice-why-stop-there/&quot;,&quot;Opinion: Kalshi Shelves Mention Markets for Sports Until Further Notice. Why Stop There?&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar43')">✓ Lu</button>
+  <button class="btn-read" onclick="markRead(&quot;https://casinobeats.com/2026/08/14/opinion-kalshi-shelves-mention-markets-for-sports-until-further-notice-why-stop-there/&quot;,&quot;Opinion: Kalshi Shelves Mention Markets for Sports Until Further Notice. Why Stop There?&quot;,&quot;&quot;,&quot;CasinoBeats&quot;,'ar51')">✓ Lu</button>
+</div><div class="alert-row" id="ar52" data-url="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786843860579&amp;rid=2" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date no-date">date ?</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786843860579&amp;rid=2" target="_blank">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union</a>
+    <div class="tag-row"><span class="tag">ladbrokes</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786843860579&amp;rid=2&quot;,&quot;STATE AID \u2013 BELGIUM\u00a0\u2013 State aid SA.53630\u00a0(2019/FC) \u2013 Belgium\u00a0\u2013 Alleged aid granted to Ladbrokes in relation to virtual betting\u00a0\u2013 Invitation to submit comments pursuant to Article\u00a0108(2) of the Treaty on the Functioning of the European Union&quot;,&quot;&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar52')">✓ Lu</button>
+</div><div class="alert-row" id="ar53" data-url="https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dladbrokes%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786843860579%26scope%3DEURLEX&amp;towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786843860579%26callingUrl%3D%252Fsearch.html%253Ftext%253Dladbrokes%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786843860579%2526scope%253DEURLEX" data-grp="presse-specialisee-europe">
+  <div class="alert-row-main">
+    <span class="alert-date no-date">date ?</span>
+    <span class="alert-src" style="color:#1565c0">EUR-Lex (législation UE)</span>
+    <a href="https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dladbrokes%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786843860579%26scope%3DEURLEX&amp;towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786843860579%26callingUrl%3D%252Fsearch.html%253Ftext%253Dladbrokes%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786843860579%2526scope%253DEURLEX" target="_blank">Create in My RSS alerts</a>
+    <div class="tag-row"><span class="tag">ladbrokes</span></div>
+  </div>
+  <button class="btn-read" onclick="markRead(&quot;https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dladbrokes%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786843860579%26scope%3DEURLEX&amp;towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786843860579%26callingUrl%3D%252Fsearch.html%253Ftext%253Dladbrokes%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786843860579%2526scope%253DEURLEX&quot;,&quot;Create in My RSS alerts&quot;,&quot;&quot;,&quot;EUR-Lex (l\u00e9gislation UE)&quot;,'ar53')">✓ Lu</button>
 </div></div>
 </div>
 
-<div class="group-label">Institutionnel belge</div><div class="card" style="border-left-color:#1a5276">
+<div class="group-label" data-grp="institutionnel-belge">Institutionnel belge</div><div class="card" data-grp="institutionnel-belge" style="border-left-color:#1a5276">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> Cour Constitutionnelle</div>
@@ -499,7 +590,7 @@ Auszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Geschäftsverzeichnisnum
     <span class="badge badge-none">0 alerte</span>
   </div>
   <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
-</div><div class="card" style="border-left-color:#7d3c98">
+</div><div class="card" data-grp="institutionnel-belge" style="border-left-color:#7d3c98">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> Gaming Commission (CJH) — Nouvelles</div>
@@ -508,7 +599,7 @@ Auszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Geschäftsverzeichnisnum
     <span class="badge badge-match">🔴 13 alertes</span>
   </div>
   <div class="card-body"><div class="result"><span class="item-date">27/07/2026</span> <a href="https://www.gamingcommission.be/fr/alerte-concernant-des-e-mails-frauduleux-au-nom-de-la-commission-des-jeux-de-hasard" target="_blank">Alerte concernant des e-mails frauduleux au nom de la Commission des jeux de hasard</a><div class="ctx">Alerte concernant des e-mails frauduleux au nom de la Commission des jeux de hasard Lundi 27/07/2026…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">23/06/2026</span> <a href="https://www.gamingcommission.be/fr/delai-de-traitement-des-licences-plus-long-pendant-les-vacances-dete" target="_blank">Délai de traitement des licences plus long pendant les vacances d'été</a><div class="ctx">Délai de traitement des licences plus long pendant les vacances d'été Mardi 23/06/2026…</div><div class="tag-row"><span class="tag">licences</span></div></div><div class="result"><span class="item-date">28/01/2026</span> <a href="https://www.gamingcommission.be/fr/licences-f2-pour-les-librairies" target="_blank">Licences F2 pour les librairies</a><div class="ctx">Licences F2 pour les librairies Mercredi 28/01/2026…</div><div class="tag-row"><span class="tag">licences</span></div></div><div class="result"><span class="item-date">06/06/2025</span> <a href="https://www.gamingcommission.be/fr/sondage-datasynergy-les-jeunes-et-les-jeux-de-hasardparis" target="_blank">Sondage DataSynergy : Les jeunes et les jeux de hasard/paris</a><div class="ctx">Sondage DataSynergy : Les jeunes et les jeux de hasard/paris Vendredi 06/06/2025…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">17/12/2024</span> <a href="https://www.gamingcommission.be/fr/invitation-session-dinformation-17122024-nouvelle-procedure-de-blocage-des-jeux-de-hasard-illegaux" target="_blank">Invitation session d'information 17/12/2024 - Nouvelle procédure de blocage des jeux de hasard illégaux</a><div class="ctx">Invitation session d'information 17/12/2024 - Nouvelle procédure de blocage des jeux de hasard illégaux Jeudi 14/11/2024…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">02/09/2024</span> <a href="https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-1" target="_blank">Modification de la Loi sur les jeux de hasard</a><div class="ctx">Modification de la Loi sur les jeux de hasard Lundi 02/09/2024…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">01/08/2024</span> <a href="https://www.gamingcommission.be/fr/publication-moniteur-belge-verification-de-lage-dans-les-etablissements-de-jeux-de-hasard-de-classe" target="_blank">Publication Moniteur belge - Vérification de l'âge dans les établissements de jeux de hasard de classe III</a><div class="ctx">Publication Moniteur belge - Vérification de l'âge dans les établissements de jeux de hasard de classe III Jeudi 01/08/2024…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">18/07/2024</span> <a href="https://www.gamingcommission.be/fr/note-directrice-relative-aux-etablissements-de-jeux-de-hasard-de-classe-iii" target="_blank">Note directrice relative aux établissements de jeux de hasard de classe III</a><div class="ctx">Note directrice relative aux établissements de jeux de hasard de classe III Jeudi 18/07/2024…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">20/06/2024</span> <a href="https://www.gamingcommission.be/fr/update-actions-de-controle-ete-2024" target="_blank">Update actions de contrôle été 2024</a><div class="ctx">Update actions de contrôle été 2024 Jeudi 20/06/2024…</div><div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div></div><div class="result"><span class="item-date">19/06/2024</span> <a href="https://www.gamingcommission.be/fr/documents-a-des-fins-de-controle-de-la-solvabilite" target="_blank">Documents à des fins de contrôle de la solvabilité</a><div class="ctx">Documents à des fins de contrôle de la solvabilité Mercredi 19/06/2024…</div><div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div></div><div class="result"><span class="item-date">11/06/2024</span> <a href="https://www.gamingcommission.be/fr/actions-de-controle-ete-2024" target="_blank">Actions de contrôle Eté 2024</a><div class="ctx">Actions de contrôle Eté 2024 Mardi 11/06/2024…</div><div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span></div></div><div class="result"><span class="item-date">22/05/2024</span> <a href="https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard-0" target="_blank">Modification de la Loi sur les jeux de hasard</a><div class="ctx">Modification de la Loi sur les jeux de hasard Mercredi 22/05/2024…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">01/03/2024</span> <a href="https://www.gamingcommission.be/fr/modification-de-la-loi-sur-les-jeux-de-hasard" target="_blank">Modification de la Loi sur les jeux de hasard</a><div class="ctx">Modification de la Loi sur les jeux de hasard Vendredi 01/03/2024…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div></div>
-</div><div class="card" style="border-left-color:#7d3c98">
+</div><div class="card" data-grp="institutionnel-belge" style="border-left-color:#7d3c98">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> Gaming Commission (CJH) — Contrôle &amp; Sanctions</div>
@@ -517,7 +608,7 @@ Auszug aus dem Entscheid Nr. 106/2025 vom 17. Juli 2025 Geschäftsverzeichnisnum
     <span class="badge badge-match">🔴 1 alerte</span>
   </div>
   <div class="card-body"><div class="result"><a href="https://www.gamingcommission.be/fr/operateurs/blanchiment" target="_blank">blanchiment d'argent</a><div class="ctx">La coopération avec la CTIF tourne essentiellement autour de la lutte contre le blanchiment d'argent . Les jeux de hasard constituent en effet un moyen potentiel pour blanchir de l’argent noir.  En matière de blanchiment…</div><div class="tag-row"><span class="tag">controle</span><span class="tag">contrôle</span><span class="tag">jeux de hasard</span></div></div></div>
-</div><div class="card" style="border-left-color:#2c3e50">
+</div><div class="card" data-grp="institutionnel-belge" style="border-left-color:#2c3e50">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> Moniteur Belge</div>
@@ -566,7 +657,7 @@ Uittreksel uit arrest nr. 165/2025 van 11 december 2025 Rolnummers 8309, 8313, 8
 Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichnisnummern 8309, 8313, 8314, 8315
 
 10 février 2026</a><div class="tag-row"><span class="tag">bwin</span></div></div></div>
-</div><div class="card" style="border-left-color:#2c3e50">
+</div><div class="card" data-grp="institutionnel-belge" style="border-left-color:#2c3e50">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> Autorité belge de la Concurrence</div>
@@ -575,7 +666,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-match">🔴 1 alerte</span>
   </div>
   <div class="card-body"><div class="result"><a href="https://www.abc-bma.be/nl/beslissingen/02-pk-18-derby-tierce-ladbroke-vs-pmu" target="_blank">02-PK-18 Derby, Tierce Ladbroke vs PMU</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div></div>
-</div><div class="card" style="border-left-color:#2c3e50">
+</div><div class="card" data-grp="institutionnel-belge" style="border-left-color:#2c3e50">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> SPF Justice</div>
@@ -584,7 +675,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-none">0 alerte</span>
   </div>
   <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
-</div><div class="group-label">Presse belge francophone</div><div class="card" style="border-left-color:#c0392b">
+</div><div class="group-label" data-grp="presse-belge-francophone">Presse belge francophone</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#c0392b">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> 7sur7</div>
@@ -593,7 +684,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-match">🔴 3 alertes</span>
   </div>
   <div class="card-body"><div class="result"><span class="item-date">01/06/2026</span> <a href="https://www.7sur7.be/belgique/les-jeux-en-ligne-woohoo-ne-sont-pas-des-jeux-de-hasard-la-loterie-nationale-et-son-ceo-acquittes~ac9a8eee3/" target="_blank">Les jeux en ligne “Woohoo” ne sont pas des jeux de hasard: la Loterie Nationale et son CEO acquittés Le tribunal correctionnel de Bruxelles a acquitté, vendredi dernier, la Loterie Nationale et son administrateur délégué, Jannie Haek, dans le cadre du dossier “Woohoo”, des jeux de loterie instantanés proposés en ligne par la Loterie Nationale. Belgique 1 juin 2026</a><div class="ctx">Verlinden déplore l’attitude des clubs sportifs sur les jeux d’argent: “Un manque de responsabilité sociale” La ministre de la Justice, Annelies Verlinden, regrette que les clubs sportifs ne recherchent pas de nouvelles …</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">17/09/2024</span> <a href="https://www.7sur7.be/economie/jeux-de-hasard-le-secteur-prive-attaque-la-reforme-protegeant-davantage-le-joueur~a81a7abc/" target="_blank">Jeux de hasard: le secteur privé attaque la réforme protégeant davantage le joueur Différents opérateurs viennent d’introduire, devant la Cour constitutionnelle, un recours en annulation partielle de la réforme des jeux de hasard (loi “Van Hecke”), destinée à mieux protéger le joueur, rapporte Le Soir mardi. Economie 17 septembre 2024</a><div class="ctx">Verlinden déplore l’attitude des clubs sportifs sur les jeux d’argent: “Un manque de responsabilité sociale” La ministre de la Justice, Annelies Verlinden, regrette que les clubs sportifs ne recherchent pas de nouvelles …</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">03/02/2025</span> <a href="https://www.7sur7.be/belgique/la-belgique-interdit-un-site-pour-parier-sur-l-actualite-en-cryptomonnaie~a51703e2/" target="_blank">La Belgique interdit un site pour parier sur l’actualité en cryptomonnaie Le portail en ligne de prédiction cryptographique, Polymarket, a été repris sur la liste noire de la Commission des jeux de hasard et est dès lors bloqué, a appris lundi l’agence Belga. Belgique 3 février 2025</a><div class="ctx">Verlinden déplore l’attitude des clubs sportifs sur les jeux d’argent: “Un manque de responsabilité sociale” La ministre de la Justice, Annelies Verlinden, regrette que les clubs sportifs ne recherchent pas de nouvelles …</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div></div>
-</div><div class="card" style="border-left-color:#1565c0">
+</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#1565c0">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> Le Soir</div>
@@ -602,7 +693,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-none">0 alerte</span>
   </div>
   <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
-</div><div class="card" style="border-left-color:#e53935">
+</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#e53935">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> RTBF Info</div>
@@ -611,7 +702,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-none">0 alerte</span>
   </div>
   <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
-</div><div class="card" style="border-left-color:#e53935">
+</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#e53935">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> RTBF — Recherche</div>
@@ -620,7 +711,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-none">0 alerte</span>
   </div>
   <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
-</div><div class="card" style="border-left-color:#0d47a1">
+</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#0d47a1">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> La Libre Belgique</div>
@@ -629,7 +720,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-match">🔴 3 alertes</span>
   </div>
   <div class="card-body"><div class="result"><span class="item-date">09/10/2025</span> <a href="https://www.lalibre.be/belgique/2025/10/09/pres-de-la-moitie-des-emplois-menaces-chez-le-bookmaker-ladbrokes-JHVI4H3LPFDLDLQLV45DK54UUE/" target="_blank">Publié le jeudi 09 octobre 2025 à 10h20 Près de la moitié des emplois menacés chez le bookmaker Ladbrokes Belgique</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">29/08/2025</span> <a href="https://www.lalibre.be/economie/entreprises-startup/2025/08/29/des-anciens-dirigeants-de-ladbrokes-devant-la-justice-ces-charges-sont-serieuses-EFVRGYFVIJG6XOIGEPD2ZYSQDA/" target="_blank">Publié le vendredi 29 août 2025 à 16h10 Des anciens dirigeants de Ladbrokes devant la justice : &quot;Ces charges sont sérieuses&quot; Entreprises &amp; Start-up</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">13/03/2026</span> <a href="https://www.lalibre.be/economie/conjoncture/2026/03/13/eden-hazard-vise-par-une-enquete-de-la-commission-des-jeux-de-hasard-EUFK4ISCLBEEPCJRA5FIR2ZJWM/" target="_blank">Publié le vendredi 13 mars 2026 à 21h54 Eden Hazard visé par une enquête de la Commission des jeux de hasard Conjoncture</a><div class="tag-row"><span class="tag">jeux de hasard</span></div></div></div>
-</div><div class="card" style="border-left-color:#b71c1c">
+</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#b71c1c">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> La Dernière Heure</div>
@@ -638,7 +729,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-match">🔴 2 alertes</span>
   </div>
   <div class="card-body"><div class="result"><span class="item-date">27/01/2026</span> <a href="https://www.dhnet.be/regions/tournai-ath-mouscron/mouscron-comines/2026/01/27/a-mouscron-la-tva-des-repas-scolaires-fait-debat-les-ladbrokes-prolonges-et-la-mobilite-questionnee-J2RJ6VN6JFBJJPVL6CR3RSHHOI/" target="_blank">Mouscron - Comines Publié le mardi 27 janvier 2026 à 21h34 À Mouscron, la TVA des repas scolaires fait débat, les Ladbrokes prolongés et la mobilité questionnée</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">09/10/2025</span> <a href="https://www.dhnet.be/conso/travail/2025/10/09/tsunami-chez-ladbrokes-la-moitie-du-personnel-menace-de-licenciement-GMHA6DUHDVHMBBCNGU62UYC244/" target="_blank">Emploi Publié le jeudi 09 octobre 2025 à 11h53 Tsunami chez Ladbrokes: la moitié du personnel menacé de licenciement</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div></div>
-</div><div class="card" style="border-left-color:#ff6f00">
+</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#ff6f00">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> RTL Info</div>
@@ -647,7 +738,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-match">🔴 1 alerte</span>
   </div>
   <div class="card-body"><div class="result"><a href="https://www.rtl.be/sport/football/diables-rouges/une-sanction-pourrait-etre-envisagee-eden-hazard-bientot-la-cible-dune-enquete/2026-03-13/article/782601" target="_blank">« Une sanction pourrait être envisagée » : Eden Hazard bientôt la cible d’une enquête de la Commission des jeux de hasard</a><div class="ctx">« Une sanction pourrait être envisagée » : Eden Hazard bientôt la cible d’une enquête de la Commission des jeux de hasard 13/03…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div></div>
-</div><div class="card" style="border-left-color:#e65100">
+</div><div class="card" data-grp="presse-belge-francophone" style="border-left-color:#e65100">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> Sud Info</div>
@@ -656,16 +747,7 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-none">0 alerte</span>
   </div>
   <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
-</div><div class="group-label">Presse spécialisée &amp; Europe</div><div class="card" style="border-left-color:#2471a3">
-  <div class="card-head">
-    <div>
-      <div class="card-title"><span class="dot ok"></span> iGaming Business</div>
-      <a class="card-url" href="https://igamingbusiness.com/search/belgium?s={term}" target="_blank">https://igamingbusiness.com/search/belgium?s={term}</a>
-    </div>
-    <span class="badge badge-none">0 alerte</span>
-  </div>
-  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
-</div><div class="card" style="border-left-color:#2471a3">
+</div><div class="group-label" data-grp="presse-specialisee-europe">Presse spécialisée &amp; Europe</div><div class="card" data-grp="presse-specialisee-europe" style="border-left-color:#2471a3">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> CasinoBeats</div>
@@ -674,15 +756,15 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
     <span class="badge badge-match">🔴 15 alertes</span>
   </div>
   <div class="card-body"><div class="result"><span class="item-date">05/08/2026</span> <a href="https://casinobeats.com/2026/08/05/british-betting-firms-eyeing-exit-to-us-as-uk-stocks-discount-bites/" target="_blank">British Betting Firms Eyeing Exit to US as ‘UK Stocks Discount’ Bites</a><div class="ctx">British Betting Firms Eyeing Exit to US as ‘UK Stocks Discount’ Bites Features Tim Alper August 5, 2026…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">31/07/2026</span> <a href="https://casinobeats.com/2026/07/31/betfred-follows-entain-making-huge-job-cuts-uk-tax-increases-hit/" target="_blank">Betfred Follows Entain in Making Huge Job Cuts as UK Tax Increases Hit</a><div class="ctx">Betfred Follows Entain in Making Huge Job Cuts as UK Tax Increases Hit Land-based Adam Roarty July 31, 2026…</div><div class="tag-row"><span class="tag">entain</span></div></div><div class="result"><span class="item-date">31/07/2026</span> <a href="https://casinobeats.com/news/land-based/" target="_blank">Betfred Follows Entain in Making Huge Job Cuts as UK Tax Increases Hit Land-based Adam Roarty July 31, 2026</a><div class="tag-row"><span class="tag">entain</span></div></div><div class="result"><span class="item-date">31/07/2026</span> <a href="https://casinobeats.com/author/adamroarty/" target="_blank">Betfred Follows Entain in Making Huge Job Cuts as UK Tax Increases Hit Land-based Adam Roarty July 31, 2026</a><div class="tag-row"><span class="tag">entain</span></div></div><div class="result"><a href="https://casinobeats.com/2026/07/13/everton-sleeve-deal-with-stake-could-be-canceled-uk-reviews-unlicensed-sponsors/" target="_blank">Everton Sleeve Deal With Stake Could Be Canceled as UK Reviews Unlicensed Sponsors</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">26/05/2026</span> <a href="https://casinobeats.com/2026/05/26/the-big-short-hedge-funds-win-2-billion-betting-against-gambling-companies/" target="_blank">The Big Short: Hedge Funds Win $2 Billion Betting Against Gambling Companies</a><div class="ctx">The Big Short: Hedge Funds Win $2 Billion Betting Against Gambling Companies News Adam Roarty May 26, 2026…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">05/03/2026</span> <a href="https://casinobeats.com/2026/03/05/entain-stock-price-rises-after-better-than-expected-results-in-2025/" target="_blank">Entain Stock Price Rises After Better-Than-Expected Results in 2025</a><div class="ctx">Entain Stock Price Rises After Better-Than-Expected Results in 2025 Land-based Adam Roarty March 5, 2026…</div><div class="tag-row"><span class="tag">entain</span></div></div><div class="result"><a href="https://casinobeats.com/2026/02/24/how-onlyfans-star-annie-knight-helped-henry-brayshaw-overcome-crippling-gambling-addiction/" target="_blank">How OnlyFans Star Annie Knight Helped Henry Brayshaw Overcome Crippling Gambling Addiction</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://casinobeats.com/2025/12/16/australia-teen-social-media-ban-questioned-lobby-group-linked-gambling-ads/" target="_blank">Australia’s Teen Social Media Ban Questioned as Lobby Group Linked to Gambling Ads</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://casinobeats.com/2025/12/11/jailed-gambler-australia-files-lawsuit-major-betting-companies/" target="_blank">Jailed Gambler in Australia Files Lawsuit Against Major Betting Companies to Recover Stolen Losses</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">27/11/2025</span> <a href="https://casinobeats.com/2025/11/27/european-regulators-unite-to-tackle-illegal-online-gambling/" target="_blank">European Regulators Unite To Tackle Illegal Online Gambling</a><div class="ctx">European Regulators Unite To Tackle Illegal Online Gambling News Adam Roarty November 27, 2025…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">26/11/2025</span> <a href="https://casinobeats.com/2025/11/26/uk-gambling-stocks-yo-yo-response-tax-increases/" target="_blank">UK Gambling Stocks Yo-Yo in Response to Tax Increases</a><div class="ctx">UK Gambling Stocks Yo-Yo in Response to Tax Increases News Adam Roarty November 26, 2025…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">26/11/2025</span> <a href="https://casinobeats.com/2025/11/26/uk-budget-2025-leak-shows-gambling-tax-increases/" target="_blank">UK Budget 2025 Leak Shows Gambling Tax Increases</a><div class="ctx">UK Budget 2025 Leak Shows Gambling Tax Increases Highlighted Adam Roarty November 26, 2025…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">31/10/2025</span> <a href="https://casinobeats.com/features/uk-budget-impact-on-gambling-industry/" target="_blank">UK Budget 2025: What Does It Mean for UK Gambling?</a><div class="ctx">UK Budget 2025: What Does It Mean for UK Gambling? Features Paul Cullen October 31, 2025…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://casinobeats.com/2026/08/14/opinion-kalshi-shelves-mention-markets-for-sports-until-further-notice-why-stop-there/" target="_blank">Opinion: Kalshi Shelves Mention Markets for Sports Until Further Notice. Why Stop There?</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div></div>
-</div><div class="card" style="border-left-color:#1565c0">
+</div><div class="card" data-grp="presse-specialisee-europe" style="border-left-color:#1565c0">
   <div class="card-head">
     <div>
       <div class="card-title"><span class="dot ok"></span> EUR-Lex (législation UE)</div>
       <a class="card-url" href="https://eur-lex.europa.eu/search.html?text={term}+belgique&amp;scope=EURLEX&amp;type=quick&amp;lang=fr" target="_blank">https://eur-lex.europa.eu/search.html?text={term}+belgique&amp;scope=EURLEX&amp;type=quick&amp;lang=fr</a>
     </div>
-    <span class="badge badge-none">0 alerte</span>
+    <span class="badge badge-match">🔴 15 alertes</span>
   </div>
-  <div class="card-body"><div class="empty">Aucune correspondance pour ces mots-clés.</div></div>
+  <div class="card-body"><div class="result"><span class="item-date">03/09/2025</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786843860579&amp;rid=1" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a><div class="ctx">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 217…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">03/09/2025</span> <a href="http://data.europa.eu/eli/dec/2025/1765/oj" target="_blank">http://data.europa.eu/eli/dec/2025/1765/oj</a><div class="ctx">OJ L, 2025/1765,  3.9.2025, ELI: http://data.europa.eu/eli/dec/2025/1765/oj (BG, ES, CS, DA, DE, ET, EL, EN, FR, GA, HR, IT, LV, LT, HU, MT, NL, PL, PT, RO, SK, SL, FI, SV)…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786843860579&amp;rid=2" target="_blank">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union</a><div class="ctx">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning o…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">23/10/2024</span> <a href="http://data.europa.eu/eli/C/2024/6307/oj" target="_blank">http://data.europa.eu/eli/C/2024/6307/oj</a><div class="ctx">OJ C, C/2024/6307,  23.10.2024, ELI: http://data.europa.eu/eli/C/2024/6307/oj (BG, ES, CS, DA, DE, ET, EL, EN, FR, GA, HR, IT, LV, LT, HU, MT, NL, PL, PT, RO, SK, SL, FI, SV)…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dladbrokes%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786843860579%26scope%3DEURLEX&amp;towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786843860579%26callingUrl%3D%252Fsearch.html%253Ftext%253Dladbrokes%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786843860579%2526scope%253DEURLEX" target="_blank">Create in My RSS alerts</a><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">03/09/2025</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786843862597&amp;rid=1" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a><div class="ctx">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 217…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><a href="https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dentain%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786843862597%26scope%3DEURLEX&amp;towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786843862597%26callingUrl%3D%252Fsearch.html%253Ftext%253Dentain%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786843862597%2526scope%253DEURLEX" target="_blank">Create in My RSS alerts</a><div class="tag-row"><span class="tag">entain</span></div></div><div class="result"><a href="https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dbwin%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786843864155%26scope%3DEURLEX&amp;towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786843864155%26callingUrl%3D%252Fsearch.html%253Ftext%253Dbwin%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786843864155%2526scope%253DEURLEX" target="_blank">Create in My RSS alerts</a><div class="tag-row"><span class="tag">bwin</span></div></div><div class="result"><a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&amp;qid=1786843865638&amp;rid=2" target="_blank">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union</a><div class="ctx">STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning o…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">03/09/2025</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&amp;qid=1786843865638&amp;rid=3" target="_blank">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)</a><div class="ctx">Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 217…</div><div class="tag-row"><span class="tag">ladbrokes</span></div></div><div class="result"><span class="item-date">10/07/2025</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/03677&amp;qid=1786843865638&amp;rid=6" target="_blank">Verbatim report of proceedings of 18 September 2024</a><div class="ctx">Verbatim report of proceedings of 18 September 2024 Select: 6 OJ C, C/2025/3677,  10.7.2025, ELI: http://data.europa.eu/eli/C/2025/3677/oj (BG, ES, CS, DA, DE, ET, EL, EN, FR, GA, HR, IT, LV, LT, HU, MT, NL, PL, PT, RO, …</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">10/07/2025</span> <a href="http://data.europa.eu/eli/C/2025/3677/oj" target="_blank">http://data.europa.eu/eli/C/2025/3677/oj</a><div class="ctx">OJ C, C/2025/3677,  10.7.2025, ELI: http://data.europa.eu/eli/C/2025/3677/oj (BG, ES, CS, DA, DE, ET, EL, EN, FR, GA, HR, IT, LV, LT, HU, MT, NL, PL, PT, RO, SK, SL, FI, SV)…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">25/04/2024</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2024/02801&amp;qid=1786843865638&amp;rid=9" target="_blank">Verbatim report of proceedings of 17 May 2017</a><div class="ctx">Verbatim report of proceedings of 17 May 2017 Select: 9 OJ C, C/2024/2801,  25.4.2024, ELI: http://data.europa.eu/eli/C/2024/2801/oj (BG, ES, CS, DA, DE, ET, EL, EN, FR, HR, IT, LV, LT, HU, MT, NL, PL, PT, RO, SK, SL, FI…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">25/04/2024</span> <a href="http://data.europa.eu/eli/C/2024/2801/oj" target="_blank">http://data.europa.eu/eli/C/2024/2801/oj</a><div class="ctx">OJ C, C/2024/2801,  25.4.2024, ELI: http://data.europa.eu/eli/C/2024/2801/oj (BG, ES, CS, DA, DE, ET, EL, EN, FR, HR, IT, LV, LT, HU, MT, NL, PL, PT, RO, SK, SL, FI, SV)…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div><div class="result"><span class="item-date">10/04/2025</span> <a href="https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/02132&amp;qid=1786843865638&amp;rid=10" target="_blank">Verbatim report of proceedings of 23 April 2024</a><div class="ctx">Verbatim report of proceedings of 23 April 2024 Select: 10 OJ C, C/2025/2132,  10.4.2025, ELI: http://data.europa.eu/eli/C/2025/2132/oj (BG, ES, CS, DA, DE, ET, EL, EN, FR, GA, HR, IT, LV, LT, HU, MT, NL, PL, PT, RO, SK,…</div><div class="tag-row"><span class="tag">jeux de hasard</span></div></div></div>
 </div>
 
 <div class="card archive-card">
@@ -700,9 +782,11 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
   </button>
   <div class="about-body" id="about-body">
     <p>Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
-    <p><strong>Sources institutionnelles</strong> (Cour Constitutionnelle, La Chambre, Sénat, Gaming Commission, Moniteur Belge, Conseil d'État, ABC, SPF Justice, EUR-Lex) : surveillance des mots-clés <em>entain, entaingroup, ladbrokes, bwin, controle, sanctions, agences, licences</em>.</p>
-    <p><strong>Sources presse</strong> (RTBF, Le Soir, La Libre, DH, RTL Info, Le Vif, Sud Info, Médor, SBC News, iGaming Business, CasinoBeats, EGBA) : surveillance via flux RSS des mots-clés <em>bwin, entain, ladbrokes, jeux de hasard</em>.</p>
-    <p>Le bouton <strong>✓ Lu</strong> sur chaque alerte la déplace dans la carte « Alertes déjà lues » ci-dessus. Ces données sont stockées localement dans votre navigateur.</p>
+    <p>Chaque site est interrogé <strong>séparément pour chacun des 4 termes</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
+    <p><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence, SPF Justice.</p>
+    <p><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, Sud Info, 7sur7.</p>
+    <p><strong>Presse spécialisée &amp; Europe</strong> : CasinoBeats, EUR-Lex.</p>
+    <p>Les boutons <strong>Catégories</strong> en haut de page replient les cartes d'une catégorie et masquent ses alertes dans le résumé. Le bouton <strong>✓ Lu</strong> déplace une alerte dans « Alertes déjà lues ». Ces réglages sont stockés localement dans votre navigateur.</p>
     <p>Infrastructure : <strong>GitHub Actions</strong> exécute le script Python · <strong>GitHub Pages</strong> héberge cette page · LANCELLE 2026.</p>
   </div>
 </div>
@@ -712,6 +796,43 @@ Auszug aus dem Entscheid Nr. 165/2025 vom 11. Dezember 2025 Geschäftsverzeichni
 <script>
 const KEY_THEME = 'bgw_theme';
 const KEY_READ  = 'bgw_read';
+const KEY_GRP   = 'bgw_groups_off';
+
+// ── Filtrage par categorie ────────────────────────────────────────────────────
+function groupsOff(){
+  try { return new Set(JSON.parse(localStorage.getItem(KEY_GRP) || '[]')); }
+  catch(e){ return new Set(); }
+}
+function toggleGroup(g){
+  const off = groupsOff();
+  off.has(g) ? off.delete(g) : off.add(g);
+  localStorage.setItem(KEY_GRP, JSON.stringify([...off]));
+  applyGroups();
+  refreshRows();
+}
+function applyGroups(){
+  const off = groupsOff();
+  document.querySelectorAll('.card[data-grp], .group-label[data-grp]').forEach(el=>{
+    el.classList.toggle('grp-hidden', off.has(el.dataset.grp));
+  });
+  document.querySelectorAll('.grp-btn').forEach(b=>{
+    b.classList.toggle('off', off.has(b.dataset.grp));
+  });
+}
+
+// ── Affichage des lignes du resume : masquee si lue OU categorie desactivee ──
+function refreshRows(){
+  const off  = groupsOff();
+  const read = new Set((JSON.parse(localStorage.getItem(KEY_READ)||'[]')).map(i=>i.url));
+  let visible = 0;
+  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
+    const hide = read.has(row.dataset.url) || off.has(row.dataset.grp);
+    row.style.display = hide ? 'none' : '';
+    if(!hide) visible++;
+  });
+  const badge = document.getElementById('summary-badge');
+  if(badge) badge.textContent = visible + ' alerte' + (visible !== 1 ? 's' : '');
+}
 
 // ── Utilitaire HTML-escape (pour renderArchive) ────────────────────────────────
 function eh(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -737,7 +858,10 @@ function markRead(url, title, date, src, rowId){
     localStorage.setItem(KEY_READ, JSON.stringify(items.slice(0,300)));
   }
   const row = document.getElementById(rowId);
-  if(row){ row.style.opacity='0'; row.style.transition='opacity .3s'; setTimeout(()=>{ row.style.display='none'; row.style.opacity='1'; }, 300); }
+  if(row){
+    row.style.opacity='0'; row.style.transition='opacity .3s';
+    setTimeout(()=>{ row.style.opacity='1'; refreshRows(); }, 300);
+  } else { refreshRows(); }
   renderArchive();
 }
 
@@ -746,10 +870,7 @@ function unmarkRead(url){
   let items = JSON.parse(localStorage.getItem(KEY_READ)||'[]');
   items = items.filter(i=>i.url!==url);
   localStorage.setItem(KEY_READ, JSON.stringify(items));
-  // Réafficher la ligne correspondante dans le résumé
-  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
-    if(row.dataset.url===url) row.style.display='';
-  });
+  refreshRows();   // respecte aussi le filtre par categorie
   renderArchive();
 }
 
@@ -784,10 +905,8 @@ function toggleAbout(){
 // ── Init : cacher les alertes déjà lues au chargement ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
   applyTheme(localStorage.getItem(KEY_THEME)||'light');
-  const readUrls = new Set((JSON.parse(localStorage.getItem(KEY_READ)||'[]')).map(i=>i.url));
-  document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
-    if(readUrls.has(row.dataset.url)) row.style.display='none';
-  });
+  applyGroups();
+  refreshRows();
   renderArchive();
 });
 </script>
