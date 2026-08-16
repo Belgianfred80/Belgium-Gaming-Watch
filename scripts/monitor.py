@@ -58,13 +58,21 @@ def article_extractor(exclude_pattern: str = 'recherche|abonnement|login|newslet
         "                      .replace(/\\s+/g,' ').trim();"
         "      if (title.length < minLen) return;"
         "      if (seen.has(a.href)) return;"
-        "      let blk = a, ctx = '', dated = '';"
+        "      let blk = a, ctx = '', dated = '', iso = '';"
         "      for (let i = 0; i < 6 && blk; i++) {"
         "        if (strict && blk !== a) {"
         "          const autres = Array.from(blk.querySelectorAll('a[href]'))"
         "            .filter(x => x !== a"
         "                    && (x.innerText || x.textContent || '').trim().length >= 18);"
         "          if (autres.length) break;"
+        "        }"
+        "        /* Date machine <time datetime=\"2025-10-09\"> : la plus fiable */"
+        "        if (!iso && blk.querySelector) {"
+        "          const tm = blk.querySelector('time[datetime]');"
+        "          if (tm) {"
+        "            const v = (tm.getAttribute('datetime')||'').match(/(\\d{4})-(\\d{2})-(\\d{2})/);"
+        "            if (v) iso = v[3] + '/' + v[2] + '/' + v[1];"
+        "          }"
         "        }"
         "        const s = (blk.innerText || blk.textContent || '')"
         "                    .replace(/\\s+/g,' ').trim();"
@@ -73,12 +81,13 @@ def article_extractor(exclude_pattern: str = 'recherche|abonnement|login|newslet
         "          ctx = s;"
         "          if (DATE.test(s)) { dated = s; break; }"
         "        }"
+        "        if (iso) break;"
         "        blk = blk.parentElement;"
         "      }"
         "      const hay = (title + ' ' + ctx).toLowerCase();"
         "      if (t && !hay.includes(t)) return;"
         "      seen.add(a.href);"
-        "      const dm = dated ? (dated.match(DATE) || [''])[0] : '';"
+        "      const dm = iso || (dated ? (dated.match(DATE) || [''])[0] : '');"
         "      out.push({ href: a.href,"
         "                 text: (dm ? title + ' — ' + dm : title).slice(0,300) });"
         "    });"
@@ -278,21 +287,22 @@ SOURCES = [
         'js': True,
         'no_kw_filter': True, 'require_term': True,
         'playwright_timeout': 60_000,
+        'warmup': 'https://www.7sur7.be/',
         'url': 'https://www.7sur7.be/recherche/?query={term}',
         'search_terms': SEARCH_TERMS,
         'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/meteo'),
     },
     {
-        # Jetons form_build_id / form_id retirés : ils expirent et sont facultatifs
-        # Extraction ciblée sur les articles, comme pour la RTBF
+        # La recherche du site bloque les serveurs GitHub (page vide, 0 lien).
+        # On passe par les flux RSS, qui restent accessibles.
         'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Soir', 'color': '#1565c0',
-        'js': True,
-        'no_kw_filter': True, 'require_term': True,
-        'playwright_timeout': 60_000,
-        'url': 'https://www.lesoir.be/archives/recherche?word={term}&sort=date%20desc&datefilter=lastyear',
-        'search_terms': SEARCH_TERMS,
-        'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|podcast|/tag/'),
+        'type': 'rss',
+        'url': 'https://www.lesoir.be/rss/9/cible_principale',
+        'feeds': [
+            'https://www.lesoir.be/rss/9/cible_principale',
+            'https://www.lesoir.be/rss/11/cible_principale',
+        ],
     },
     {
         # 5 flux RSS agrégés en une seule source
@@ -470,6 +480,10 @@ _BOILERPLATE = frozenset([
     'www.belgium.be', 'other information and services',
     'create in my rss alerts', 'my rss alerts', 'save to my items',
     'permanent link', 'lien permanent', 'download notice',
+    'passer au contenu', 'aller au contenu principal', 'contenu principal',
+    'accepter', 'refuser', 'gerer mes choix', 'gérer mes choix',
+    'politique de confidentialite', 'conditions generales',
+    'sabonner', "s'abonner", 'se connecter', 'creer un compte',
 ])
 
 # Patterns compilés une seule fois — mot entier uniquement (évite "contrôleurs" → "controle")
@@ -552,8 +566,19 @@ def is_too_old(text: str) -> bool:
     return max(years) < MIN_YEAR
 
 
+_ISO_DATE_RE = re.compile(r'\b(20\d{2})-(\d{2})-(\d{2})\b')
+
+
 def extract_date(text: str):
     """Retourne un objet datetime ou None."""
+    # Format ISO (attribut datetime des balises <time>)
+    m = _ISO_DATE_RE.search(text)
+    if m:
+        try:
+            return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except Exception:
+            pass
+
     m = _DATE_RE.search(text)
     if m:
         try:
@@ -724,6 +749,16 @@ def fetch_with_browser(src: dict) -> dict:
                     'Chrome/124.0.0.0 Safari/537.36'
                 )
             )
+
+            # ── Navigation préalable : absorbe la redirection cookies ──────
+            # (DPG Media renvoie la 1re requête vers myprivacy.dpgmedia.be)
+            if src.get('warmup'):
+                try:
+                    page.goto(src['warmup'], wait_until='domcontentloaded', timeout=30_000)
+                    page.wait_for_timeout(2500)
+                    print(f'    [warmup] {src["name"]} → {page.url[:70]}', flush=True)
+                except Exception as e:
+                    print(f'    [warmup] {src["name"]} échec : {str(e)[:60]}', flush=True)
 
             for term in terms:
                 # ── URL pour ce terme ──────────────────────────────────────
