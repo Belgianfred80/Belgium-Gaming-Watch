@@ -47,33 +47,46 @@ def article_extractor(exclude_pattern: str = 'recherche|abonnement|login|newslet
         "  const DATE = /\\d{1,2}[\\/.-]\\d{1,2}[\\/.-]\\d{4}"
         "|\\d{1,2}\\.?\\s+[A-Za-zÀ-ÿ]{3,10}\\.?\\s+\\d{4}"
         "|[A-Za-zÀ-ÿ]{3,10}\\s+\\d{1,2},\\s*\\d{4}/;"
-        "  const seen = new Set(); const out = [];"
-        "  document.querySelectorAll('a[href]').forEach(a => {"
-        "    const h = a.getAttribute('href') || '';"
-        "    if (new RegExp('" + exclude_pattern + "', 'i').test(h)) return;"
-        "    const title = (a.innerText || '').replace(/\\s+/g,' ').trim();"
-        "    if (title.length < 18) return;"
-        "    if (seen.has(a.href)) return;"
-        "    let blk = a, ctx = '', dated = '';"
-        "    for (let i = 0; i < 6 && blk; i++) {"
-        "      /* Ne pas sortir de la carte : sinon on capte la date du voisin */"
-        "      if (blk !== a && blk.querySelectorAll('a[href]').length > 3) break;"
-        "      const s = (blk.innerText || '').replace(/\\s+/g,' ').trim();"
-        "      if (s.length > 1800) break;"
-        "      if (s.length >= title.length) {"
-        "        ctx = s;"
-        "        if (DATE.test(s)) { dated = s; break; }"
+        "  const EXC = new RegExp('" + exclude_pattern + "', 'i');"
+        "  function collect(strict) {"
+        "    const seen = new Set(); const out = [];"
+        "    const minLen = strict ? 18 : 10;"
+        "    document.querySelectorAll('a[href]').forEach(a => {"
+        "      const h = a.getAttribute('href') || '';"
+        "      if (EXC.test(h)) return;"
+        "      const title = (a.innerText || a.textContent || '')"
+        "                      .replace(/\\s+/g,' ').trim();"
+        "      if (title.length < minLen) return;"
+        "      if (seen.has(a.href)) return;"
+        "      let blk = a, ctx = '', dated = '';"
+        "      for (let i = 0; i < 6 && blk; i++) {"
+        "        if (strict && blk !== a) {"
+        "          const autres = Array.from(blk.querySelectorAll('a[href]'))"
+        "            .filter(x => x !== a"
+        "                    && (x.innerText || x.textContent || '').trim().length >= 18);"
+        "          if (autres.length) break;"
+        "        }"
+        "        const s = (blk.innerText || blk.textContent || '')"
+        "                    .replace(/\\s+/g,' ').trim();"
+        "        if (s.length > 1800) break;"
+        "        if (s.length >= title.length) {"
+        "          ctx = s;"
+        "          if (DATE.test(s)) { dated = s; break; }"
+        "        }"
+        "        blk = blk.parentElement;"
         "      }"
-        "      blk = blk.parentElement;"
-        "    }"
-        "    const hay = (title + ' ' + ctx).toLowerCase();"
-        "    if (t && !hay.includes(t)) return;"
-        "    seen.add(a.href);"
-        "    const dm = dated ? (dated.match(DATE) || [''])[0] : '';"
-        "    out.push({ href: a.href,"
-        "               text: (dm ? title + ' — ' + dm : title).slice(0,300) });"
-        "  });"
-        "  return out;"
+        "      const hay = (title + ' ' + ctx).toLowerCase();"
+        "      if (t && !hay.includes(t)) return;"
+        "      seen.add(a.href);"
+        "      const dm = dated ? (dated.match(DATE) || [''])[0] : '';"
+        "      out.push({ href: a.href,"
+        "                 text: (dm ? title + ' — ' + dm : title).slice(0,300) });"
+        "    });"
+        "    return out;"
+        "  }"
+        "  let r = collect(true);"
+        "  if (!r.length) r = collect(false);"
+        "  return r;"
         "}"
     )
 
@@ -798,6 +811,25 @@ def fetch_with_browser(src: dict) -> dict:
                 if eval_js:
                     # Le terme est transmis au JS ; les snippets `() => …` l'ignorent
                     items = page.evaluate(eval_js, term)
+
+                    # ── Diagnostic : indispensable pour comprendre un 0 resultat ──
+                    try:
+                        diag = page.evaluate(
+                            "(t) => ({"
+                            "  liens: document.querySelectorAll('a[href]').length,"
+                            "  taille: document.body.innerText.length,"
+                            "  terme_present: t ? document.body.innerText"
+                            "        .toLowerCase().includes(t.toLowerCase()) : null,"
+                            "  titre: document.title.slice(0,60)"
+                            "})", term)
+                        ex = (items[0]['text'][:70] + '…') if items else '—'
+                        print(f'    [diag] {src["name"]} «{term}» : '
+                              f'{diag["liens"]} liens, {diag["taille"]} car., '
+                              f'terme dans la page={diag["terme_present"]}, '
+                              f'extraits={len(items)} | {ex}', flush=True)
+                        print(f'    [diag] {src["name"]} URL={page.url[:100]}', flush=True)
+                    except Exception:
+                        pass
                     for item in items:
                         href = item.get('href', '').strip()
                         text = item.get('text', '').strip()
