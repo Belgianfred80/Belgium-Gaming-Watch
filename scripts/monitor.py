@@ -228,12 +228,38 @@ SOURCES = [
     },
     {
         # Jetons form_build_id / form_id retirés : ils expirent et sont facultatifs
+        # Extraction ciblée sur les articles, comme pour la RTBF
         'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Soir', 'color': '#1565c0',
         'js': True,
         'no_kw_filter': True, 'require_term': True,
-        'url': 'https://www.lesoir.be/archives/recherche?word={term}&sort=date+desc&datefilter=lastyear',
+        'playwright_timeout': 60_000,
+        'url': 'https://www.lesoir.be/archives/recherche?word={term}&sort=date%20desc&datefilter=lastyear',
         'search_terms': SEARCH_TERMS,
+        'eval_extract': (
+            "(term) => {"
+            "  const t = (term || '').toLowerCase();"
+            "  const seen = new Set(); const out = [];"
+            "  document.querySelectorAll('a[href]').forEach(a => {"
+            "    const h = a.getAttribute('href') || '';"
+            "    if (/recherche|abonnement|s-abonner|login|newsletter|podcast|\\/tag\\//i.test(h)) return;"
+            "    const title = (a.innerText || '').trim();"
+            "    if (title.length < 20) return;"
+            "    let blk = a, ctx = '';"
+            "    for (let i = 0; i < 4 && blk; i++) {"
+            "      const s = (blk.innerText || '').trim();"
+            "      if (s.length > title.length + 50 && s.length < 1400) { ctx = s; break; }"
+            "      blk = blk.parentElement;"
+            "    }"
+            "    const full = (title + ' ' + ctx).toLowerCase();"
+            "    if (t && !full.includes(t)) return;"
+            "    if (seen.has(a.href)) return; seen.add(a.href);"
+            "    out.push({ href: a.href,"
+            "               text: (ctx || title).replace(/\\s+/g,' ').slice(0,300) });"
+            "  });"
+            "  return out;"
+            "}"
+        ),
     },
     {
         # 5 flux RSS agrégés en une seule source
@@ -258,12 +284,38 @@ SOURCES = [
     # },
     {
         # Complète les flux RSS : remonte les archives, pas seulement l'actualité du jour
+        # SPA : extraction ciblée sur les cartes d'articles (/article/…)
         'id': 'rtbf-search', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTBF — Recherche', 'color': '#e53935',
         'js': True,
         'no_kw_filter': True, 'require_term': True,
+        'playwright_timeout': 60_000,
         'url': 'https://www.rtbf.be/recherche/article?q={term}',
         'search_terms': SEARCH_TERMS,
+        'wait_selector': 'a[href*="/article/"]',
+        'eval_extract': (
+            "(term) => {"
+            "  const t = (term || '').toLowerCase();"
+            "  const seen = new Set(); const out = [];"
+            "  document.querySelectorAll('a[href*=\"/article/\"]').forEach(a => {"
+            "    if (seen.has(a.href)) return;"
+            "    const title = (a.innerText || '').trim();"
+            "    /* Remonter jusqu'a la carte pour recuperer chapeau + date */"
+            "    let blk = a, ctx = '';"
+            "    for (let i = 0; i < 4 && blk; i++) {"
+            "      const s = (blk.innerText || '').trim();"
+            "      if (s.length > 60 && s.length < 1200) { ctx = s; break; }"
+            "      blk = blk.parentElement;"
+            "    }"
+            "    const full = (title + ' ' + ctx).trim();"
+            "    if (full.length < 30) return;"
+            "    if (t && !full.toLowerCase().includes(t)) return;"
+            "    seen.add(a.href);"
+            "    out.push({ href: a.href, text: (ctx || title).replace(/\\s+/g,' ').slice(0,300) });"
+            "  });"
+            "  return out;"
+            "}"
+        ),
     },
     {
         'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
@@ -748,7 +800,8 @@ def fetch_with_browser(src: dict) -> dict:
 
                 # ── Extraction ciblée via evaluate() ─────────────────────
                 if eval_js:
-                    items = page.evaluate(eval_js)
+                    # Le terme est transmis au JS ; les snippets `() => …` l'ignorent
+                    items = page.evaluate(eval_js, term)
                     for item in items:
                         href = item.get('href', '').strip()
                         text = item.get('text', '').strip()
@@ -1165,14 +1218,14 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .kw-chip{font-size:10px;font-weight:600;background:rgba(255,255,255,.12);border-radius:4px;padding:2px 8px;color:rgba(255,255,255,.8)}
 .kw-chip.active{background:rgba(231,76,60,.3)}
 .kw-chip .n{display:inline-block;background:#e74c3c;color:#fff;border-radius:8px;padding:0 4px;margin-left:5px;font-size:9px}
-.filter-box{margin-top:10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:8px 10px 9px}
-.filter-hint{font-size:10px;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:6px}
-.grp-row{margin-top:5px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.filter-box{margin-top:10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px 11px}
+.filter-hint{font-size:11px;font-weight:600;color:rgba(255,255,255,.65);margin-bottom:8px}
+.grp-row{margin-top:7px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .grp-row:first-of-type{margin-top:0}
-.grp-row-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.45);min-width:74px}
+.grp-row-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);min-width:78px}
 .yr-btn{font-variant-numeric:tabular-nums}
 .reset-btn{margin-left:auto;background:rgba(255,255,255,.08);border-style:dashed}
-.grp-btn{font-size:10px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:12px;padding:3px 11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.grp-btn{font-size:12px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:14px;padding:6px 15px;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.3}
 .grp-btn:hover{background:rgba(255,255,255,.28)}
 .grp-btn.off{background:transparent;color:rgba(255,255,255,.35);border-color:rgba(255,255,255,.15);text-decoration:line-through}
 /* Carte repliee : on garde l'en-tete (titre + badge), on cache le contenu */
