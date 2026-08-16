@@ -309,6 +309,8 @@ SOURCES = [
         'name': '7sur7', 'color': '#c0392b',
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
+        'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'warmup': 'https://www.7sur7.be/',
         'sort_by_date': True,
@@ -317,15 +319,17 @@ SOURCES = [
         'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/meteo'),
     },
     {
-        # La recherche du site bloque les serveurs GitHub (page vide, 0 lien).
-        # On passe par les flux RSS, qui restent accessibles.
+        # lesoir.be renvoie 403 aux serveurs GitHub, sur la recherche ET sur ses
+        # flux RSS. On lit l'index public de Google Actualites, restreint au site.
+        # Un flux par terme : dates et tri chronologique fournis par le flux.
         'id': 'soir', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'Le Soir', 'color': '#1565c0',
         'type': 'rss',
-        'url': 'https://www.lesoir.be/rss/9/cible_principale',
+        'url': 'https://www.lesoir.be/',
         'feeds': [
-            'https://www.lesoir.be/rss/9/cible_principale',
-            'https://www.lesoir.be/rss/11/cible_principale',
+            'https://news.google.com/rss/search?q=%22' + quote_plus(t)
+            + '%22+site%3Alesoir.be&hl=fr&gl=BE&ceid=BE%3Afr'
+            for t in SEARCH_TERMS
         ],
     },
     {
@@ -356,6 +360,8 @@ SOURCES = [
         'name': 'RTBF — Recherche', 'color': '#e53935',
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
+        'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 90_000,
         'url': 'https://www.rtbf.be/recherche/article?q={term}',
         'search_terms': SEARCH_TERMS,
@@ -369,6 +375,8 @@ SOURCES = [
         'name': 'La Libre Belgique', 'color': '#0d47a1',
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
+        'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'sort_by_date': True,
         'url': 'https://www.lalibre.be/recherche/query:{term};/',
@@ -380,6 +388,8 @@ SOURCES = [
         'name': 'La Dernière Heure', 'color': '#b71c1c',
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
+        'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'sort_by_date': True,
         'url': 'https://www.dhnet.be/recherche/query:{term};/',
@@ -391,6 +401,8 @@ SOURCES = [
         'name': 'RTL Info', 'color': '#ff6f00',
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
+        'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'url': 'https://www.rtl.be/archives/recherche?word={term}',
         'search_terms': SEARCH_TERMS,
@@ -764,6 +776,8 @@ def fetch_with_browser(src: dict) -> dict:
     load_more = src.get('load_more')    # {'texte': 'Charger plus', 'clics': 6}
     # Resultats non tries par date : tout collecter puis garder les plus recents
     sort_recent = bool(load_more) or src.get('sort_by_date', False)
+    quote_phrases = src.get('quote_phrases', False)
+    require_date  = src.get('require_date', False)
 
     # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
     terms = (src.get('search_terms')
@@ -796,7 +810,7 @@ def fetch_with_browser(src: dict) -> dict:
             for term in terms:
                 # ── URL pour ce terme ──────────────────────────────────────
                 is_template = term and '{term}' in base_url
-                nav_url = base_url.replace('{term}', quote_plus(term)) if is_template else base_url
+                nav_url = build_url(base_url, term, quote_phrases) if is_template else base_url
 
                 page.goto(nav_url, wait_until='domcontentloaded', timeout=pw_timeout)
                 page.wait_for_timeout(400)
@@ -947,8 +961,13 @@ def fetch_with_browser(src: dict) -> dict:
                             if not no_kw:
                                 continue
                             kws = [term] if term else ['résultat']
-                        seen_urls.add(ckey)
                         date_obj = extract_date(text) or extract_date_from_url(full_url)
+                        # Un article a toujours une date. Sans date = lien de
+                        # navigation (« Ligue des Champions », « Météo »…).
+                        if require_date and not date_obj:
+                            continue
+
+                        seen_urls.add(ckey)
                         date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
                         all_matches.append({
                             'text': text[:300],
@@ -1061,13 +1080,14 @@ def fetch_source(src: dict) -> dict:
     base_url = src['url']
     terms    = src.get('search_terms') or [None]
     no_kw    = src.get('no_kw_filter', False)
+    quote_phrases = src.get('quote_phrases', False)
 
     all_matches: list = []
     seen_urls:   set  = set()
     last_error:  str  = ''
 
     for term in terms:
-        url = base_url.replace('{term}', quote_plus(term)) if (term and '{term}' in base_url) else base_url
+        url = build_url(base_url, term, quote_phrases)
         try:
             resp = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT, allow_redirects=True)
             resp.raise_for_status()
@@ -1139,6 +1159,17 @@ def fetch_source(src: dict) -> dict:
 
 
 # ── Génération HTML ────────────────────────────────────────────────────────────
+
+def build_url(base: str, term: str, quote_phrases: bool = False) -> str:
+    """Insère le terme dans l'URL. Si quote_phrases, une expression de plusieurs
+    mots est entourée de guillemets pour forcer la recherche exacte
+    (sinon « jeux de hasard » est cherché comme « jeux » ET « de » ET « hasard »).
+    """
+    if not term or '{term}' not in base:
+        return base
+    t = f'"{term}"' if (quote_phrases and ' ' in term) else term
+    return base.replace('{term}', quote_plus(t))
+
 
 def slug(s: str) -> str:
     """Identifiant technique stable pour un nom de groupe."""
