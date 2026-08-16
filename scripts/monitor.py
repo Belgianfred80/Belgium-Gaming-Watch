@@ -102,15 +102,56 @@ SOURCES = [
         'url': 'https://www.gamingcommission.be/fr/commission-des-jeux-de-hasard/controle-et-sanctions',
     },
     {
-        # Résultats GET — exp={term}, timeout étendu à 90s car le site est lent
-        # no_kw_filter : les titres ne contiennent pas les mots-clés cherchés
+        # Formulaire POST : /cgi/rech.pl → résultats sur /cgi/rech_res.pl
+        # Le champ « Une expression exacte » est rempli via fill_js, puis submit.
         'id': 'moniteur', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Moniteur Belge', 'color': '#2c3e50',
         'js': True,
         'no_kw_filter': True,
-        'playwright_timeout': 20_000,
-        'url': 'https://www.ejustice.just.fgov.be/cgi/article.pl?language=fr&choix1=et&choix2=et&exp={term}&fr=f&nl=n&du=d&trier=promulgation&caller=list&page=1',
+        'playwright_timeout': 60_000,
+        'url': 'https://www.ejustice.just.fgov.be/cgi/rech.pl?language=fr',
         'search_terms': SEARCH_TERMS,
+        'fill_js': (
+            "(term) => {"
+            "  const norm = s => (s||'').replace(/\\s+/g,' ').trim().toLowerCase();"
+            "  let input = document.querySelector('input[name=\"exp\"]');"
+            "  if (!input) {"
+            "    const nodes = Array.from(document.querySelectorAll('label,td,th,div,span,p'));"
+            "    const lbl = nodes.find(e => norm(e.textContent).startsWith('une expression exacte'));"
+            "    if (lbl) {"
+            "      let scope = lbl.closest('div,td,tr,fieldset,form');"
+            "      for (let i=0; i<4 && scope && !input; i++) {"
+            "        input = scope.querySelector('input[type=\"text\"],input:not([type])');"
+            "        scope = scope.parentElement;"
+            "      }"
+            "    }"
+            "  }"
+            "  if (!input) return false;"
+            "  input.focus(); input.value = term;"
+            "  input.dispatchEvent(new Event('input',  {bubbles:true}));"
+            "  input.dispatchEvent(new Event('change', {bubbles:true}));"
+            "  return true;"
+            "}"
+        ),
+        'submit_js': (
+            "() => {"
+            "  const btn = Array.from(document.querySelectorAll("
+            "    'button,input[type=\"submit\"],input[type=\"button\"],a'))"
+            "    .find(b => /rechercher|zoeken|search/i.test(b.value || b.textContent || ''));"
+            "  if (btn) { btn.click(); return true; }"
+            "  const f = document.querySelector('form'); if (f) { f.submit(); return true; }"
+            "  return false;"
+            "}"
+        ),
+        'eval_extract': (
+            "() => Array.from(document.querySelectorAll('a[href]'))"
+            "  .filter(a => /article\\.pl|numac|rech_res|\\/cgi\\//i.test(a.getAttribute('href')||''))"
+            "  .map(a => {"
+            "    const blk = a.closest('li,tr,article,div') || a;"
+            "    return { href: a.href, text: (blk.innerText||a.innerText).trim().slice(0,300) };"
+            "  })"
+            "  .filter(x => x.text.length > 25)"
+        ),
     },
     # Conseil d'État — bloqué par Cloudflare WAF (IP GitHub Actions blacklistée)
     # {
@@ -127,6 +168,7 @@ SOURCES = [
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'js': True,
         'no_kw_filter': True,
+        'playwright_timeout': 60_000,
         'url': 'https://www.abc-bma.be/fr/search?search_api_fulltext={term}&f%5B0%5D=content_type%3Adecision',
         'search_terms': SEARCH_TERMS,
         'wait_selector': '.view-content a, h2 a, h3 a, .views-row a',
@@ -270,7 +312,7 @@ HEADERS = {
 
 MIN_YEAR = 2024          # Rejeter les résultats antérieurs à cette année
 MAX_MATCHES_PER_SOURCE = 15
-REQUEST_TIMEOUT = 15
+REQUEST_TIMEOUT = 25
 DELAY_BETWEEN_REQUESTS = 0.3   # entre les termes d'une même source
 MAX_WORKERS = 8                # sources traitées en parallèle
 
@@ -450,7 +492,9 @@ def fetch_with_browser(src: dict) -> dict:
     eval_js   = src.get('eval_extract')
     base_url  = src['url']
     no_kw     = src.get('no_kw_filter', False)
-    pw_timeout = src.get('playwright_timeout', 25_000)
+    pw_timeout = src.get('playwright_timeout', 45_000)
+    fill_js   = src.get('fill_js')      # JS(term) → remplit le champ, retourne bool
+    submit_js = src.get('submit_js')    # JS() → soumet le formulaire
 
     # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
     terms = (src.get('search_terms')
@@ -478,9 +522,28 @@ def fetch_with_browser(src: dict) -> dict:
                 page.goto(nav_url, wait_until='domcontentloaded', timeout=pw_timeout)
                 page.wait_for_timeout(400)
 
-                # ── Remplissage formulaire (sources sans template URL) ─────
+                # ── Remplissage via JS dédié (formulaires POST complexes) ──
                 inp = None
-                if term and not is_template:
+                if term and fill_js:
+                    try:
+                        ok = page.evaluate(fill_js, term)
+                        print(f'    [browser] {src["name"]}: fill_js "{term}" → {ok}', flush=True)
+                        if ok:
+                            if submit_js:
+                                page.evaluate(submit_js)
+                            else:
+                                page.keyboard.press('Enter')
+                            try:
+                                page.wait_for_load_state('networkidle', timeout=15_000)
+                            except Exception:
+                                pass
+                            page.wait_for_timeout(800)
+                            print(f'    [browser] {src["name"]}: → {page.url}', flush=True)
+                    except Exception as e:
+                        print(f'    [browser] {src["name"]}: fill_js échec — {str(e)[:80]}', flush=True)
+
+                # ── Remplissage formulaire générique ──────────────────────
+                elif term and not is_template:
                     try:
                         page.wait_for_selector(_INPUT_SEL, timeout=4_000)
                         inp = page.locator(_INPUT_SEL).first
