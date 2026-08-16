@@ -322,21 +322,29 @@ SOURCES = [
     #     'url': 'https://egba.eu/news/',
     # },
     {
-        # eval_extract ciblé : uniquement les liens vers des documents CELEX
+        # js:True indispensable — sans lui eval_extract est ignoré et la page
+        # entière est aspirée (liens « Create in My RSS alerts », ELI, etc.)
         'id': 'eurlex', 'group': 'Presse spécialisée & Europe', 'kw_set': 'institutional',
         'name': 'EUR-Lex (législation UE)', 'color': '#1565c0',
+        'js': True,
         'no_kw_filter': True,
         'url': 'https://eur-lex.europa.eu/search.html?text={term}+belgique&scope=EURLEX&type=quick&lang=fr',
         'search_terms': SEARCH_TERMS,
         'eval_extract': (
-            "() => Array.from(document.querySelectorAll("
-            "  'a[href*=\"uri=CELEX\"], a[href*=\"/legal-content/AUTO/\"], a[href*=\"data.europa.eu/eli\"]'"
-            "))"
-            ".filter(a => {"
-            "  const t = a.innerText.trim();"
-            "  return t.length > 15 && !/^\\s*(pdf|html|Print|xml)\\s*$/i.test(t);"
-            "})"
-            ".map(a => ({ href: a.href, text: a.innerText.trim().slice(0,300) }))"
+            "() => {"
+            "  const seen = new Set(); const out = [];"
+            "  document.querySelectorAll('a[href*=\"uri=CELEX\"]').forEach(a => {"
+            "    let t = (a.innerText || '').trim();"
+            "    if (t.length < 25) return;"
+            "    if (/^https?:\\/\\//i.test(t)) return;"
+            "    if (/rss|s'?abonner|subscribe/i.test(t)) return;"
+            "    const cx = (a.href.match(/CELEX[:%3A]*([A-Z0-9()]+)/i) || [])[1] || a.href;"
+            "    if (seen.has(cx)) return; seen.add(cx);"
+            "    t = t.replace(/\\s*Select:\\s*\\d+\\s*/gi, ' ').replace(/\\s+/g, ' ').trim();"
+            "    out.push({ href: a.href, text: t.slice(0,300) });"
+            "  });"
+            "  return out;"
+            "}"
         ),
     },
 ]
@@ -370,6 +378,24 @@ def normalize(text: str) -> str:
     return text
 
 
+# Paramètres de session à retirer avant dédoublonnage : le même document
+# revient avec un qid/rid différent à chaque requête (EUR-Lex notamment).
+_VOLATILE_PARAMS = ('qid', 'rid', 'callingUrl', 'towardUrl', 'form_build_id')
+
+
+def canon_url(url: str) -> str:
+    """Clé stable pour dédoublonner : sans paramètres volatils ni ancre."""
+    if not url:
+        return ''
+    base = url.split('#', 1)[0]
+    if '?' not in base:
+        return base
+    path, _, query = base.partition('?')
+    keep = [p for p in query.split('&')
+            if p and p.split('=', 1)[0] not in _VOLATILE_PARAMS]
+    return path + ('?' + '&'.join(keep) if keep else '')
+
+
 # Textes boilerplate à ignorer pour les sources no_kw_filter
 _BOILERPLATE = frozenset([
     'skip to main content', 'aller au contenu', 'aller au menu',
@@ -381,6 +407,8 @@ _BOILERPLATE = frozenset([
     'customise shown information',
     'ray id', 'performance and security by cloudflare',
     'www.belgium.be', 'other information and services',
+    'create in my rss alerts', 'my rss alerts', 'save to my items',
+    'permanent link', 'lien permanent', 'download notice',
 ])
 
 # Patterns compilés une seule fois — mot entier uniquement (évite "contrôleurs" → "controle")
@@ -724,9 +752,12 @@ def fetch_with_browser(src: dict) -> dict:
                     for item in items:
                         href = item.get('href', '').strip()
                         text = item.get('text', '').strip()
-                        if not href or not text or href in seen_urls:
+                        if not href or not text:
                             continue
                         full_url = href if href.startswith('http') else urljoin(nav_url, href)
+                        ckey = canon_url(full_url)
+                        if ckey in seen_urls:
+                            continue
 
                         tl = text.lower()
                         if any(b in tl for b in _BOILERPLATE):
@@ -739,7 +770,7 @@ def fetch_with_browser(src: dict) -> dict:
                             if not no_kw:
                                 continue
                             kws = [term] if term else ['résultat']
-                        seen_urls.add(href)
+                        seen_urls.add(ckey)
                         date_obj = extract_date(text) or extract_date_from_url(full_url)
                         date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
                         all_matches.append({
@@ -775,7 +806,7 @@ def fetch_with_browser(src: dict) -> dict:
                         if not href or href.startswith('javascript') or href in ('#', ''):
                             continue
                         full_url = href if href.startswith('http') else urljoin(nav_url, href)
-                        if full_url in seen_urls:
+                        if canon_url(full_url) in seen_urls:
                             continue
 
                         block = a
@@ -803,7 +834,7 @@ def fetch_with_browser(src: dict) -> dict:
                                 continue
                             kws = [term] if term else ['résultat']
 
-                        seen_urls.add(full_url)
+                        seen_urls.add(canon_url(full_url))
                         date_obj = (extract_date(ctx) or extract_date(text)
                                     or extract_date_from_url(full_url))
                         date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
@@ -867,7 +898,7 @@ def fetch_source(src: dict) -> dict:
                 if not href or href.startswith('javascript') or href in ('#', ''):
                     continue
                 full_url = href if href.startswith('http') else urljoin(url, href)
-                if full_url in seen_urls:
+                if canon_url(full_url) in seen_urls:
                     continue
 
                 block = a.find_parent(['article', 'li', 'tr', 'p', 'div', 'section'])
@@ -886,7 +917,7 @@ def fetch_source(src: dict) -> dict:
                         continue
                     kws = [term] if term else ['résultat']
 
-                seen_urls.add(full_url)
+                seen_urls.add(canon_url(full_url))
                 date_obj = (extract_date(ctx) or extract_date(text)
                             or extract_date_from_url(full_url))
                 date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
@@ -1435,6 +1466,22 @@ document.addEventListener('DOMContentLoaded', function(){
 
 # ── Issue GitHub ───────────────────────────────────────────────────────────────
 
+def md_line(m: dict) -> str:
+    """Une ligne Markdown propre pour une correspondance."""
+    # Le texte extrait contient des retours à la ligne qui cassent la liste Markdown
+    txt = re.sub(r'\s+', ' ', m.get('text', '')).strip()[:180]
+    txt = txt.replace('[', '(').replace(']', ')')     # évite de casser le lien
+    kws = ', '.join(f'`{kw}`' for kw in m.get('keywords', []))
+    date = m.get('date', '')
+    prefix = f'**{date}** — ' if date else '_(sans date)_ — '
+    return f'- {prefix}[{txt}]({m["url"]}) — {kws}'
+
+
+def sorted_by_date(matches: list) -> list:
+    """Plus récent en premier ; les sans-date à la fin."""
+    return sorted(matches, key=lambda m: _parse_date(m.get('date', '')), reverse=True)
+
+
 def create_github_issue(new_matches_by_src: dict, run_time: str) -> None:
     token = os.environ.get('GITHUB_TOKEN')
     repo  = os.environ.get('GITHUB_REPOSITORY')
@@ -1443,15 +1490,29 @@ def create_github_issue(new_matches_by_src: dict, run_time: str) -> None:
         print('⚠️  GITHUB_TOKEN / GITHUB_REPOSITORY absent — issue non créée')
         return
 
-    lines = [f'Vérification du **{run_time}**\n']
-    for src_name, matches in new_matches_by_src.items():
-        lines.append(f'\n### {src_name}')
-        for m in matches:
-            kws = ', '.join(f'`{kw}`' for kw in m['keywords'])
-            date_info = f' ({m["date"]})' if m.get('date') else ''
-            lines.append(f'- [{m["text"]}]({m["url"]}) — {kws}{date_info}')
-
     total = sum(len(v) for v in new_matches_by_src.values())
+
+    lines = [f'Vérification du **{run_time}** — {total} nouvelle'
+             f'{"s" if total != 1 else ""} correspondance'
+             f'{"s" if total != 1 else ""}\n']
+
+    # ── Vue chronologique globale, toutes sources confondues ──────────────────
+    flat = []
+    for src_name, matches in new_matches_by_src.items():
+        for m in matches:
+            flat.append({**m, '_src': src_name})
+    flat = sorted_by_date(flat)
+
+    lines.append('\n## Par date (plus récent en premier)\n')
+    for m in flat:
+        lines.append(md_line(m) + f' — _{m["_src"]}_')
+
+    # ── Détail par source, chaque source triée par date ───────────────────────
+    lines.append('\n---\n\n## Par source\n')
+    for src_name, matches in new_matches_by_src.items():
+        lines.append(f'\n### {src_name}\n')
+        for m in sorted_by_date(matches):
+            lines.append(md_line(m))
     title = (f'🔴 {total} nouvelle{"s" if total != 1 else ""} '
              f'correspondance{"s" if total != 1 else ""} — {run_time}')
 
@@ -1562,10 +1623,9 @@ def main() -> None:
         status_lines += ['## Nouvelles alertes', '']
         for src_name, matches in new_matches_by_src.items():
             status_lines.append(f'### {src_name}')
-            for m in matches:
-                kws = ', '.join(f'`{kw}`' for kw in m['keywords'])
-                date_info = f' ({m["date"]})' if m.get('date') else ''
-                status_lines.append(f'- [{m["text"]}]({m["url"]}) — {kws}{date_info}')
+            status_lines.append('')
+            for m in sorted_by_date(matches):
+                status_lines.append(md_line(m))
             status_lines.append('')
     else:
         status_lines.append('*Aucune nouvelle alerte depuis la dernière vérification.*')
