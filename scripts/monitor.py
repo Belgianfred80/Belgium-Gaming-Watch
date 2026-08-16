@@ -84,18 +84,41 @@ def article_extractor(exclude_pattern: str = 'recherche|abonnement|login|newslet
         "        if (iso) break;"
         "        blk = blk.parentElement;"
         "      }"
-        "      const hay = (title + ' ' + ctx).toLowerCase();"
-        "      if (t && !hay.includes(t)) return;"
+        "      /* Pas de filtre sur le terme : le moteur du site indexe le texte"
+        "         integral, le mot peut n'apparaitre que dans le corps de l'article"
+        "         (ex. cotes Ladbrokes citees dans un article sur le prix Nobel). */"
         "      seen.add(a.href);"
-        "      const dm = iso || (dated ? (dated.match(DATE) || [''])[0] : '');"
+        "      let dm = iso || (dated ? (dated.match(DATE) || [''])[0] : '');"
+        "      /* Date placee a cote du lien (7sur7 : « Economie 9 octobre 2025 ») */"
+        "      if (!dm) {"
+        "        let n = a, hops = 0;"
+        "        while (n && hops < 4 && !dm) {"
+        "          let sib = n.nextElementSibling, k = 0;"
+        "          while (sib && k < 4 && !dm) {"
+        "            const tm = sib.querySelector"
+        "                     ? sib.querySelector('time[datetime]') : null;"
+        "            if (tm) {"
+        "              const v = (tm.getAttribute('datetime')||'')"
+        "                          .match(/(\\d{4})-(\\d{2})-(\\d{2})/);"
+        "              if (v) { dm = v[3] + '/' + v[2] + '/' + v[1]; break; }"
+        "            }"
+        "            const s = (sib.innerText || sib.textContent || '')"
+        "                        .replace(/\\s+/g,' ').trim();"
+        "            if (s.length < 120) {"
+        "              const mm = s.match(DATE);"
+        "              if (mm) { dm = mm[0]; break; }"
+        "            }"
+        "            sib = sib.nextElementSibling; k++;"
+        "          }"
+        "          n = n.parentElement; hops++;"
+        "        }"
+        "      }"
         "      out.push({ href: a.href,"
         "                 text: (dm ? title + ' — ' + dm : title).slice(0,300) });"
         "    });"
         "    return out;"
         "  }"
-        "  let r = collect(true);"
-        "  if (!r.length) r = collect(false);"
-        "  return r;"
+        "  return collect(true);"
         "}"
     )
 
@@ -285,9 +308,10 @@ SOURCES = [
         'id': '7sur7', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': '7sur7', 'color': '#c0392b',
         'js': True,
-        'no_kw_filter': True, 'require_term': True,
+        'no_kw_filter': True,   # moteur du site = filtre suffisant
         'playwright_timeout': 60_000,
         'warmup': 'https://www.7sur7.be/',
+        'sort_by_date': True,
         'url': 'https://www.7sur7.be/recherche/?query={term}',
         'search_terms': SEARCH_TERMS,
         'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/meteo'),
@@ -331,10 +355,12 @@ SOURCES = [
         'id': 'rtbf-search', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTBF — Recherche', 'color': '#e53935',
         'js': True,
-        'no_kw_filter': True, 'require_term': True,
-        'playwright_timeout': 60_000,
+        'no_kw_filter': True,   # moteur du site = filtre suffisant
+        'playwright_timeout': 90_000,
         'url': 'https://www.rtbf.be/recherche/article?q={term}',
         'search_terms': SEARCH_TERMS,
+        # Resultats NON tries par date : on deroule puis on garde les plus recents
+        'load_more': {'texte': 'Charger plus', 'clics': 8},
         'wait_selector': 'a[href*="/article/"]',
         'eval_extract': article_extractor('/recherche|abonnement|login|newsletter|/chaines'),
     },
@@ -342,8 +368,9 @@ SOURCES = [
         'id': 'lalibre', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Libre Belgique', 'color': '#0d47a1',
         'js': True,
-        'no_kw_filter': True, 'require_term': True,
+        'no_kw_filter': True,   # moteur du site = filtre suffisant
         'playwright_timeout': 60_000,
+        'sort_by_date': True,
         'url': 'https://www.lalibre.be/recherche/query:{term};/',
         'search_terms': SEARCH_TERMS,
         'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|/jeux'),
@@ -352,8 +379,9 @@ SOURCES = [
         'id': 'dhnet', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'La Dernière Heure', 'color': '#b71c1c',
         'js': True,
-        'no_kw_filter': True, 'require_term': True,
+        'no_kw_filter': True,   # moteur du site = filtre suffisant
         'playwright_timeout': 60_000,
+        'sort_by_date': True,
         'url': 'https://www.dhnet.be/recherche/query:{term};/',
         'search_terms': SEARCH_TERMS,
         'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|/jeux'),
@@ -362,10 +390,12 @@ SOURCES = [
         'id': 'rtlinfo', 'group': 'Presse belge francophone', 'kw_set': 'press',
         'name': 'RTL Info', 'color': '#ff6f00',
         'js': True,
-        'no_kw_filter': True, 'require_term': True,
+        'no_kw_filter': True,   # moteur du site = filtre suffisant
         'playwright_timeout': 60_000,
         'url': 'https://www.rtl.be/archives/recherche?word={term}',
         'search_terms': SEARCH_TERMS,
+        # Resultats melanges (2024, 2023, 2024…) : trier avant de couper a 15
+        'sort_by_date': True,
         'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/emissions'),
     },
 
@@ -731,6 +761,9 @@ def fetch_with_browser(src: dict) -> dict:
     pw_timeout = src.get('playwright_timeout', 45_000)
     fill_js   = src.get('fill_js')      # JS(term) → remplit le champ, retourne bool
     submit_js = src.get('submit_js')    # JS() → soumet le formulaire
+    load_more = src.get('load_more')    # {'texte': 'Charger plus', 'clics': 6}
+    # Resultats non tries par date : tout collecter puis garder les plus recents
+    sort_recent = bool(load_more) or src.get('sort_by_date', False)
 
     # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
     terms = (src.get('search_terms')
@@ -842,6 +875,34 @@ def fetch_with_browser(src: dict) -> dict:
                         pass
                     page.wait_for_timeout(500)
 
+                # ── « Charger plus » : liste non triee, il faut derouler ──
+                if load_more:
+                    libelle = load_more.get('texte', 'Charger plus')
+                    clics   = load_more.get('clics', 6)
+                    faits   = 0
+                    for _ in range(clics):
+                        try:
+                            ok = page.evaluate(
+                                "(lbl) => {"
+                                "  const b = Array.from(document.querySelectorAll("
+                                "    'button,a,[role=\"button\"]'))"
+                                "    .find(x => (x.innerText||x.textContent||'')"
+                                "                 .trim().toLowerCase()"
+                                "                 .includes(lbl.toLowerCase()));"
+                                "  if (!b) return false;"
+                                "  b.scrollIntoView({block:'center'});"
+                                "  b.click(); return true;"
+                                "}", libelle)
+                            if not ok:
+                                break
+                            faits += 1
+                            page.wait_for_timeout(1200)
+                        except Exception:
+                            break
+                    if faits:
+                        print(f'    [load+] {src["name"]} «{term}» : '
+                              f'{faits} clic(s) sur « {libelle} »', flush=True)
+
                 # ── Extraction ciblée via evaluate() ─────────────────────
                 if eval_js:
                     # Le terme est transmis au JS ; les snippets `() => …` l'ignorent
@@ -896,7 +957,9 @@ def fetch_with_browser(src: dict) -> dict:
                             'context': '',
                             'date': date_str,
                         })
-                        if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
+                        # Liste non triee (RTBF) : on collecte tout, on triera
+                        # par date a la fin pour garder les plus recents.
+                        if not sort_recent and len(all_matches) >= MAX_MATCHES_PER_SOURCE:
                             break
 
                 else:
@@ -966,10 +1029,18 @@ def fetch_with_browser(src: dict) -> dict:
                         if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
                             break
 
-                if len(all_matches) >= MAX_MATCHES_PER_SOURCE:
+                if not sort_recent and len(all_matches) >= MAX_MATCHES_PER_SOURCE:
                     break
 
             browser.close()
+
+        # Liste non triee : on garde les PLUS RECENTS, pas les premiers trouves
+        if sort_recent and len(all_matches) > MAX_MATCHES_PER_SOURCE:
+            avant = len(all_matches)
+            all_matches.sort(key=lambda m: _parse_date(m.get('date', '')), reverse=True)
+            all_matches = all_matches[:MAX_MATCHES_PER_SOURCE]
+            print(f'    [tri] {src["name"]}: {avant} collectes → '
+                  f'{len(all_matches)} plus recents conserves', flush=True)
 
         print(f'    [browser] {src["name"]}: {len(all_matches)} correspondance(s) au total', flush=True)
         return {'status': 'ok', 'matches': all_matches}
