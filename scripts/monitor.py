@@ -271,7 +271,9 @@ SOURCES = [
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'js': True,
         'no_kw_filter': True,
-        'playwright_timeout': 90_000,
+        # Site irregulier : echec accepte certains jours plutot que de bloquer
+        # un ouvrier 90 s et rallonger la duree totale du run.
+        'playwright_timeout': 45_000,
         'url': 'https://www.abc-bma.be/fr/search?search_api_fulltext={term}&f%5B0%5D=content_type%3Adecision',
         'search_terms': SEARCH_TERMS,
         'wait_selector': '.view-content a, h2 a, h3 a, .views-row a',
@@ -300,12 +302,6 @@ SOURCES = [
             "  return out;"
             "}"
         ),
-    },
-    {
-        'id': 'spfjust', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
-        'name': 'SPF Justice', 'color': '#2c3e50',
-        'type': 'rss',
-        'url': 'https://justice.belgium.be/fr/news/rss',
     },
 
     # ── Presse belge francophone ───────────────────────────────────────────────
@@ -1689,7 +1685,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <p>Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
     <p>Chaque site est interrogé <strong>séparément pour chaque terme</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
     <p>Exception : les moteurs de 7sur7, RTBF, La Libre, DH et RTL ne gèrent pas les expressions exactes — ils cherchent <em>jeux</em>, <em>de</em> et <em>hasard</em> séparément, ce qui remonte des centaines d'articles sans rapport. Ces cinq sources ne reçoivent donc que les trois marques. La thématique reste couverte par la Gaming Commission, le Moniteur Belge et Le Soir.</p>
-    <p><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence, SPF Justice.</p>
+    <p><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence.</p>
     <p><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, 7sur7.</p>
     <p><strong>Presse spécialisée &amp; Europe</strong> : CasinoBeats, EUR-Lex.</p>
     <p>Les boutons <strong>Catégories</strong> en haut de page replient les cartes d'une catégorie et masquent ses alertes dans le résumé. Le bouton <strong>✓ Lu</strong> déplace une alerte dans « Alertes déjà lues ». Ces réglages sont stockés localement dans votre navigateur.</p>
