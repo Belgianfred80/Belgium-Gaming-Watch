@@ -96,63 +96,6 @@ SOURCES = [
             "}"
         ),
     },
-    {
-        # ColdFusion AJAX — l'URL ne change pas après recherche (résultats injectés en place).
-        # Remplir le champ « Recherche : » puis cliquer la loupe.
-        # Résultats = liens .pdf / .xml avec extrait en dessous.
-        'id': 'chambre', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
-        'name': 'La Chambre des Représentants', 'color': '#1a6640',
-        'js': True,
-        'no_kw_filter': True,
-        'playwright_timeout': 60_000,
-        'url': 'https://www.lachambre.be/kvvcr/showpage.cfm?section=/search/search4&language=fr&cfm=/site/wwwcfm/search/search_new.cfm?db=searchall',
-        'search_terms': SEARCH_TERMS,
-        'fill_js': (
-            "(term) => {"
-            "  const inputs = Array.from(document.querySelectorAll("
-            "    'input[type=\"text\"],input:not([type]),input[type=\"search\"]'))"
-            "    .filter(i => i.offsetParent !== null && !i.disabled);"
-            "  if (!inputs.length) return false;"
-            "  const input = inputs[0];"
-            "  input.focus(); input.value = term;"
-            "  input.dispatchEvent(new Event('input',  {bubbles:true}));"
-            "  input.dispatchEvent(new Event('change', {bubbles:true}));"
-            "  window.__bgwInput = input;"
-            "  return true;"
-            "}"
-        ),
-        'submit_js': (
-            "() => {"
-            "  const inp = window.__bgwInput;"
-            "  const cands = Array.from(document.querySelectorAll("
-            "    'input[type=\"image\"],input[type=\"submit\"],button,a[href^=\"javascript\"],img'));"
-            "  const btn = cands.find(b => /zoek|search|recher|loupe|magnif/i.test("
-            "    (b.name||'') + (b.id||'') + (b.className||'') + (b.alt||'') + (b.src||'') + (b.value||'')));"
-            "  if (btn) { btn.click(); return true; }"
-            "  if (inp && inp.form) { inp.form.submit(); return true; }"
-            "  if (inp) { inp.dispatchEvent(new KeyboardEvent('keydown',"
-            "      {key:'Enter', keyCode:13, which:13, bubbles:true})); return true; }"
-            "  return false;"
-            "}"
-        ),
-        'eval_extract': (
-            "() => {"
-            "  const seen = new Set(); const out = [];"
-            "  Array.from(document.querySelectorAll('a[href]')).forEach(a => {"
-            "    const h = a.getAttribute('href') || '';"
-            "    if (!/\\.(pdf|xml|docx?)(\\?|$)/i.test(h)) return;"
-            "    if (seen.has(a.href)) return; seen.add(a.href);"
-            "    const blk = a.closest('li,tr,p,div') || a;"
-            "    const title = (a.innerText || '').trim();"
-            "    const ctx   = (blk.innerText || '').trim();"
-            "    const text  = (ctx.length > title.length ? ctx : title).slice(0,300);"
-            "    if (text.length < 25) return;"
-            "    out.push({ href: a.href, text });"
-            "  });"
-            "  return out;"
-            "}"
-        ),
-    },
     # Sénat de Belgique — bloqué par Cloudflare WAF (même en navigation manuelle)
     # {
     #     'id': 'senat', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
@@ -244,9 +187,26 @@ SOURCES = [
         'eval_extract': (
             "() => {"
             "  const sel = '.view-content a[href], h2 a[href], h3 a[href], article a[href]';"
-            "  return Array.from(document.querySelectorAll(sel))"
-            "    .filter(a => a.href.includes('abc-bma') && a.innerText.trim().length > 15)"
-            "    .map(a => ({ href: a.href, text: a.innerText.trim().slice(0,300) }));"
+            "  const seen = new Set(); const out = [];"
+            "  Array.from(document.querySelectorAll(sel)).forEach(a => {"
+            "    if (!a.href.includes('abc-bma')) return;"
+            "    const title = (a.innerText || '').trim();"
+            "    if (title.length < 15) return;"
+            "    /* Dédoublonnage sur le titre : le même dossier apparaît sous plusieurs URLs */"
+            "    const key = title.toLowerCase().slice(0,80);"
+            "    if (seen.has(key)) return; seen.add(key);"
+            "    /* Remonter chercher la date, absente du titre du lien */"
+            "    let blk = a.closest('.views-row, article, li, .node') || a.parentElement;"
+            "    let ctx = '';"
+            "    for (let i = 0; i < 3 && blk; i++) {"
+            "      const s = (blk.innerText || '').trim();"
+            "      if (s.length > title.length && s.length < 800) { ctx = s; break; }"
+            "      blk = blk.parentElement;"
+            "    }"
+            "    const hasDate = /\\d{1,2}[\\/\\-\\.]\\d{1,2}[\\/\\-\\.]\\d{4}|\\d{1,2}\\.?\\s+\\w+\\s+\\d{4}/.test(ctx);"
+            "    out.push({ href: a.href, text: (hasDate ? ctx : title).slice(0,300) });"
+            "  });"
+            "  return out;"
             "}"
         ),
     },
@@ -432,11 +392,20 @@ def find_keywords(text: str, kw_set: str = 'institutional') -> list:
 # Extraction de dates
 _DATE_RE = re.compile(r'\b(\d{1,2})[/\-\.](\d{1,2})[/\-\.](\d{4})\b')
 _MONTHS_FR = {
+    # Français
     'janvier': 1, 'fevrier': 2, 'mars': 3, 'avril': 4,
     'mai': 5, 'juin': 6, 'juillet': 7, 'aout': 8,
     'septembre': 9, 'octobre': 10, 'novembre': 11, 'decembre': 12,
+    # Néerlandais (le Moniteur publie en FR/NL/DE)
+    'januari': 1, 'februari': 2, 'maart': 3,
+    'mei': 5, 'juni': 6, 'juli': 7, 'augustus': 8,
+    'oktober': 10, 'december': 12,
+    # Allemand
+    'januar': 1, 'februar': 2, 'marz': 3,
+    'juli': 7, 'august': 8, 'dezember': 12,
 }
-_MONTH_NAME_RE = re.compile(r'\b(\d{1,2})\s+(\w+)\s+(\d{4})\b')
+# Accepte « 11 december 2025 » et « 11. Dezember 2025 »
+_MONTH_NAME_RE = re.compile(r'\b(\d{1,2})\.?\s+(\w+)\s+(\d{4})\b')
 
 
 def is_too_old(text: str) -> bool:
@@ -895,9 +864,15 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
 
     # ── Carte résumé — toutes alertes triées par date ──────────────────────────
     all_alerts = []
+    _seen_titles: set = set()
     for src in SOURCES:
         result = results.get(src['id'], {})
         for m in result.get('matches', []):
+            # Dédoublonnage : même dossier publié sous plusieurs URLs
+            key = (src['id'], normalize(m.get('text', ''))[:90])
+            if key in _seen_titles:
+                continue
+            _seen_titles.add(key)
             all_alerts.append({
                 'source_name': src['name'],
                 'source_color': src['color'],
