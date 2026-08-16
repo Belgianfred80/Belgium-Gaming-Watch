@@ -2,117 +2,27 @@
 
 | Champ | Valeur |
 |---|---|
-| Dernière vérification | 16/08/2026 à 01:41 UTC |
-| Alertes totales | 80 |
-| Nouvelles depuis la veille | 26 |
+| Dernière vérification | 16/08/2026 à 01:52 UTC |
+| Alertes totales | 56 |
+| Nouvelles depuis la veille | 9 |
 | Sources interrogées | 16 |
 
 ## Nouvelles alertes
 
 ### Cour Constitutionnelle
-- [01/01/2025
 
-7.68
-
- 2025-153f
-... Conformément à la loi du 7 mai 1999, la Commission des jeux de hasard encadre en effet le secteur des jeux de hasard. ... La Loterie nationale n’est pas un opérateur de jeux de hasard au sens de la loi sur les jeux de hasard. La commission des jeux de hasard est char](https://fr.const-court.be/public/f/2025/2025-153f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2025)
-- [01/01/2026
-
-7.67
-
- 2026-045f
-... Elles se présentent comme des entreprises actives sur le marché des jeux de hasard et précisent qu’elles sont titulaires de licences de jeux de hasard des classes B, B+, F1 et F1+. ... Les parties requérantes soulignent que les jeux de hasard automatiques peuvent êtr](https://fr.const-court.be/public/f/2026/2026-045f.pdf#search=jeux%20de%20hasard) — `licences`, `jeux de hasard` (01/01/2026)
-- [01/01/2025
-
-7.67
-
- 2025-165f
-... Les parties requérantes dans l’affaire n° 8309 estiment justifier d’un intérêt à demander l’annulation des articles 4, 5 et 7 de la loi du 18 février 2024 « modifiant la loi du 7 mai 1999 sur les jeux de hasard, les paris, les établissements de jeux de hasard et la p](https://fr.const-court.be/public/f/2025/2025-165f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2025)
-- [01/01/2025
-
-7.65
-
- 2025-165f-info
-... Contexte de l’affaire Une loi du 18 février 20241 introduit de nouvelles mesures de protection des joueurs en matière de jeux de hasard (en ce compris les paris), à savoir : (1) l’interdiction pour les opérateurs de jeux de hasard en ligne de cumuler sur un même](https://fr.const-court.be/public/f/2025/2025-165f-info.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2025)
-- [01/01/2025
-
-7.61
-
- 2025-087f
-... Les établissements de jeux de hasard autorisés par la loi du 7 mai 1999 sont répartis en quatre catégories (article 6, alinéa 1er, de cette loi) : les établissements de jeux de hasard de classe I ou casinos (article 28), les établissements de jeux de hasard de classe](https://fr.const-court.be/public/f/2025/2025-087f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2025)
-- [01/01/2026
-
-7.61
-
- 2026-045f-info
-... 2026-045f-info 8356 1 16 avril 2026 Cour constitutionnelle COMMUNIQUÉ DE PRESSE ARRÊT 45/2026 La réglementation selon laquelle les exploitants de certains établissements de jeux de hasard doivent vérifier si une personne est interdite de jeux de hasard (contrôle](https://fr.const-court.be/public/f/2026/2026-045f-info.pdf#search=jeux%20de%20hasard) — `controle`, `contrôle`, `jeux de hasard` (01/01/2026)
-- [01/01/2024
-
-7.59
-
- 2024-101f
-... La question préjudicielle porte sur les articles 61, alinéa 2, et 64 de la loi du 7 mai 1999 « sur les jeux de hasard, les paris, les établissements de jeux de hasard et la protection des joueurs » (ci-après : la loi du 7 mai 1999). ... Pour l’application de l’alinéa](https://fr.const-court.be/public/f/2024/2024-101f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2024)
-- [01/01/2024
-
-7.55
-
- 2024-038f
-... Le classement est actualisé et simplifié et s’aligne davantage sur la loi du 7 mai 1999 ‘ sur les jeux de hasard, les paris, les établissements de jeux de hasard et la protection des joueurs ’ (la loi sur les jeux de hasard). ... Cet article 2.13.6.0.1, 2°, dispose :](https://fr.const-court.be/public/f/2024/2024-038f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2024)
-- [01/01/2025
-
-7.46
-
- 2025-132f
-... Quand bien même le second objectif serait réellement poursuivi, la partie requérante dans l’affaire n° 8188 souligne que les jeux d’argent ne sont pas une activité répréhensible mais sont officiellement autorisés et régulés par la loi du 7 mai 1999 « sur les jeux de](https://fr.const-court.be/public/f/2025/2025-132f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2025)
-- [01/01/2024
-
-7.44
-
- 2024-051f
-... Le grief formulé par la partie requérante semble en réalité dirigé contre l’article 62 de la loi du 7 mai 1999 « sur les jeux de hasard, les paris, les établissements de jeux de hasard et la protection des joueurs » (ci-après : la loi du 7 mai 1999), tel qu’il a été](https://fr.const-court.be/public/f/2024/2024-051f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2024)
-- [01/01/2025
-
-7.33
-
- 2025-150f
-... Dans l’exercice de cette compétence, l’autorité fédérale a adopté la loi du 7 mai 1999 « sur les jeux de hasard, les paris, les établissements de jeux de hasard et la protection des joueurs », ECLI:BE:GHCC:2025:ARR.150 10 puis la loi du 10 janvier 2010 « portant modi](https://fr.const-court.be/public/f/2025/2025-150f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2025)
-- [01/01/2026
-
-6.43
-
- 2026-003f
-... Les parties requérantes devant la juridiction a quo ainsi que la Commission des jeux de hasard font valoir que le contenu du contrat de gestion dont il est question déroge au droit des contrats, s’impose à des tiers et est, au moins en partie, de nature réglementaire](https://fr.const-court.be/public/f/2026/2026-003f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2026)
-- [01/01/2024
-
-2.64
-
- 2024-110f
-... De plus, elles ne pouvaient en avoir eu connaissance au moment de la rédaction de la requête. ... En outre, la partie intervenante conteste l’argument tiré de la violation de l’article 190 de la Constitution. ... Les parties requérantes prennent un premier moyen d’un](https://fr.const-court.be/public/f/2024/2024-110f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2024)
-- [01/01/2024
-
-1.96
-
- 2024-098f
-... Par ailleurs, la loi du 19 juin 2022 impose aux prestataires de services de la société de l’information des obligations d’information à l’égard des éditeurs de presse. ... La partie intervenante précise que ses membres sont des groupes belges de médias actifs dans le](https://fr.const-court.be/public/f/2024/2024-098f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2024)
-- [01/01/2025
-
-1.85
-
- 2025-151f
-... Le Conseil des ministres soutient que l’arrêt précité du 11 juin 2024 de la Cour de cassation doit servir de ligne directrice à la jurisprudence de la Cour. ... Le certificat de garantie est un élément de la réglementation en matière de bien-être des animaux. ... Le](https://fr.const-court.be/public/f/2025/2025-151f.pdf#search=jeux%20de%20hasard) — `jeux de hasard` (01/01/2025)
+- **01/01/2026** — [01/01/2026 0.864 2026-045f ... En particulier, ses activités portent tant sur l’organisation de paris que sur leur engagement et sont proposées au public sous l’enseigne « Ladbroke](https://fr.const-court.be/public/f/2026/2026-045f.pdf#search=ladbrokes) — `ladbrokes`
 
 ### EUR-Lex (législation UE)
-- [Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&qid=1786844501604&rid=1) — `ladbrokes` (03/09/2025)
-- [STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&qid=1786844501604&rid=2) — `ladbrokes`
-- [Create in My RSS alerts](https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dladbrokes%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786844501604%26scope%3DEURLEX&towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786844501604%26callingUrl%3D%252Fsearch.html%253Ftext%253Dladbrokes%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786844501604%2526scope%253DEURLEX) — `ladbrokes`
-- [Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&qid=1786844503866&rid=1) — `ladbrokes` (03/09/2025)
-- [Create in My RSS alerts](https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dentain%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786844503866%26scope%3DEURLEX&towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786844503866%26callingUrl%3D%252Fsearch.html%253Ftext%253Dentain%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786844503866%2526scope%253DEURLEX) — `entain`
-- [Create in My RSS alerts](https://eur-lex.europa.eu/error/authentication-required.html?callingUrl=%2Fsearch.html%3Ftext%3Dbwin%2Bbelgique%26lang%3Dfr%26type%3Dquick%26qid%3D1786844505309%26scope%3DEURLEX&towardUrl=%2Fprotected%2Fsave-rss.html%3Fid%3D1786844505309%26callingUrl%3D%252Fsearch.html%253Ftext%253Dbwin%252Bbelgique%2526lang%253Dfr%2526type%253Dquick%2526qid%253D1786844505309%2526scope%253DEURLEX) — `bwin`
-- [STATE AID – BELGIUM – State aid SA.53630 (2019/FC) – Belgium – Alleged aid granted to Ladbrokes in relation to virtual betting – Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of the European Union](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52024AS53630&qid=1786844506785&rid=2) — `ladbrokes`
-- [Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual betting (notified under document C(2025) 2174)](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&qid=1786844506785&rid=3) — `ladbrokes` (03/09/2025)
-- [Verbatim report of proceedings of 18 September 2024](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/03677&qid=1786844506785&rid=6) — `jeux de hasard` (10/07/2025)
-- [Verbatim report of proceedings of 17 May 2017](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2024/02801&qid=1786844506785&rid=9) — `jeux de hasard` (25/04/2024)
-- [Verbatim report of proceedings of 23 April 2024](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/02132&qid=1786844506785&rid=10) — `jeux de hasard` (10/04/2025)
+
+- **11/04/2025** — [Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual bett](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&qid=1786845117499&rid=1) — `ladbrokes`
+- **18/09/2024** — [Verbatim report of proceedings of 18 September 2024](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/03677&qid=1786845126947&rid=6) — `jeux de hasard`
+- _(sans date)_ — [State aid — Denmark — State aid C 35/10 (ex N 302/10) — Duties for Online Gaming in the Danish Gaming Duties Act — Invitation to submit comments pursuant to Article 108(2) of the T](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52011XC0122(05)&qid=1786845117499&rid=4) — `ladbrokes`
+- _(sans date)_ — [State aid — Belgium — Aid C 53/03 (ex NN 62/03) — Restructuring aid for ABX Logistics — Invitation to submit comments pursuant to Article 88(2) of the EC Treaty (Text with EEA rele](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52004XC0114(05)&qid=1786845117499&rid=8) — `ladbrokes`
+- _(sans date)_ — [Invitation to submit comments on alleged state aid granted by the Icelandic State to investment funds and associated fund management companies connected to the three failed Iceland](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:E2010C1028(01)&qid=1786845117499&rid=9) — `ladbrokes`
+- _(sans date)_ — [State aid — Greece — State aid C 16/10 (ex NN 22/10) — Aid to certain Greek casinos — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of t](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52010XC0831(01)&qid=1786845124712&rid=1) — `bwin`
+- _(sans date)_ — [State aid — France — State aid C 34/10 (ex N 140/10) — Levy to finance the public service mission of improvement of the equine species and the promotion of horse breeding, training](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52011XC0114(03)&qid=1786845126947&rid=5) — `jeux de hasard`
+- _(sans date)_ — [Written questions by Members of the European Parliament and their answers given by a European Union institution](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C2013/317E/01&qid=1786845126947&rid=7) — `jeux de hasard`
 
 ---
 *Généré automatiquement par GitHub Actions · LANCELLE 2026*
