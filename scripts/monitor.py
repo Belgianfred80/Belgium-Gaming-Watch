@@ -37,6 +37,11 @@ _ALL_KEYWORDS = list(dict.fromkeys(KEYWORDS_INSTITUTIONAL + KEYWORDS_PRESS))
 # Termes de recherche envoyés séparément à chaque moteur de recherche
 SEARCH_TERMS = ['ladbrokes', 'entain', 'bwin', 'jeux de hasard']
 
+# Les moteurs de 7sur7, RTBF, La Libre, DH et RTL ignorent les guillemets :
+# « jeux de hasard » y est cherche comme trois mots separes, ce qui remonte
+# des centaines d'articles sans rapport. On ne leur envoie que les marques.
+PRESS_TERMS = ['ladbrokes', 'entain', 'bwin']
+
 def article_extractor(exclude_pattern: str = 'recherche|abonnement|login|newsletter') -> str:
     """Extracteur JS pour sites de presse : remonte le DOM jusqu'a trouver
     une date, puis renvoie « titre — date ». Filtre sur le terme recherche.
@@ -266,7 +271,7 @@ SOURCES = [
         'name': 'Autorité belge de la Concurrence', 'color': '#2c3e50',
         'js': True,
         'no_kw_filter': True,
-        'playwright_timeout': 60_000,
+        'playwright_timeout': 90_000,
         'url': 'https://www.abc-bma.be/fr/search?search_api_fulltext={term}&f%5B0%5D=content_type%3Adecision',
         'search_terms': SEARCH_TERMS,
         'wait_selector': '.view-content a, h2 a, h3 a, .views-row a',
@@ -310,12 +315,13 @@ SOURCES = [
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
         'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_phrase': True, # …que le moteur ignore : on verifie nous-memes
         'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'warmup': 'https://www.7sur7.be/',
         'sort_by_date': True,
         'url': 'https://www.7sur7.be/recherche/?query={term}',
-        'search_terms': SEARCH_TERMS,
+        'search_terms': PRESS_TERMS,
         'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/meteo'),
     },
     {
@@ -361,10 +367,11 @@ SOURCES = [
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
         'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_phrase': True, # …que le moteur ignore : on verifie nous-memes
         'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 90_000,
         'url': 'https://www.rtbf.be/recherche/article?q={term}',
-        'search_terms': SEARCH_TERMS,
+        'search_terms': PRESS_TERMS,
         # Resultats NON tries par date : on deroule puis on garde les plus recents
         'load_more': {'texte': 'Charger plus', 'clics': 8},
         'wait_selector': 'a[href*="/article/"]',
@@ -376,11 +383,12 @@ SOURCES = [
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
         'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_phrase': True, # …que le moteur ignore : on verifie nous-memes
         'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'sort_by_date': True,
         'url': 'https://www.lalibre.be/recherche/query:{term};/',
-        'search_terms': SEARCH_TERMS,
+        'search_terms': PRESS_TERMS,
         'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|/jeux'),
     },
     {
@@ -389,11 +397,12 @@ SOURCES = [
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
         'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_phrase': True, # …que le moteur ignore : on verifie nous-memes
         'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'sort_by_date': True,
         'url': 'https://www.dhnet.be/recherche/query:{term};/',
-        'search_terms': SEARCH_TERMS,
+        'search_terms': PRESS_TERMS,
         'eval_extract': article_extractor('recherche|abonnement|s-abonner|login|newsletter|/jeux'),
     },
     {
@@ -402,10 +411,11 @@ SOURCES = [
         'js': True,
         'no_kw_filter': True,   # moteur du site = filtre suffisant
         'quote_phrases': True,  # « jeux de hasard » = expression exacte
+        'require_phrase': True, # …que le moteur ignore : on verifie nous-memes
         'require_date': True,   # sans date = lien de navigation
         'playwright_timeout': 60_000,
         'url': 'https://www.rtl.be/archives/recherche?word={term}',
-        'search_terms': SEARCH_TERMS,
+        'search_terms': PRESS_TERMS,
         # Resultats melanges (2024, 2023, 2024…) : trier avant de couper a 15
         'sort_by_date': True,
         'eval_extract': article_extractor('recherche|abonnement|login|newsletter|/emissions'),
@@ -525,6 +535,8 @@ _BOILERPLATE = frozenset([
     'passer au contenu', 'aller au contenu principal', 'contenu principal',
     'accepter', 'refuser', 'gerer mes choix', 'gérer mes choix',
     'politique de confidentialite', 'conditions generales',
+    'politique de vie privee', 'vie privee', 'politique de cookies',
+    'lire notre politique', 'parametrer les cookies', 'tout accepter',
     'sabonner', "s'abonner", 'se connecter', 'creer un compte',
 ])
 
@@ -778,6 +790,10 @@ def fetch_with_browser(src: dict) -> dict:
     sort_recent = bool(load_more) or src.get('sort_by_date', False)
     quote_phrases = src.get('quote_phrases', False)
     require_date  = src.get('require_date', False)
+    # Les moteurs de presse ignorent les guillemets et eclatent « jeux de
+    # hasard » en trois mots. Pour les expressions composees uniquement,
+    # on verifie nous-memes la presence de l'expression complete.
+    require_phrase = src.get('require_phrase', False)
 
     # Termes à parcourir (search_terms prioritaire, sinon search_query legacy, sinon [None])
     terms = (src.get('search_terms')
@@ -954,6 +970,11 @@ def fetch_with_browser(src: dict) -> dict:
                         if any(b in tl for b in _BOILERPLATE):
                             continue
                         if is_too_old(text):
+                            continue
+                        # Expression composee : le moteur du site a eclate les
+                        # mots, on exige l'expression complete dans le texte
+                        if (require_phrase and term and ' ' in term
+                                and normalize(term) not in normalize(text)):
                             continue
 
                         kws = find_keywords(text, kw_set)
@@ -1666,7 +1687,8 @@ document.addEventListener('DOMContentLoaded', function(){
   </button>
   <div class="about-body" id="about-body">
     <p>Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
-    <p>Chaque site est interrogé <strong>séparément pour chacun des 4 termes</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
+    <p>Chaque site est interrogé <strong>séparément pour chaque terme</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
+    <p>Exception : les moteurs de 7sur7, RTBF, La Libre, DH et RTL ne gèrent pas les expressions exactes — ils cherchent <em>jeux</em>, <em>de</em> et <em>hasard</em> séparément, ce qui remonte des centaines d'articles sans rapport. Ces cinq sources ne reçoivent donc que les trois marques. La thématique reste couverte par la Gaming Commission, le Moniteur Belge et Le Soir.</p>
     <p><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence, SPF Justice.</p>
     <p><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, 7sur7.</p>
     <p><strong>Presse spécialisée &amp; Europe</strong> : CasinoBeats, EUR-Lex.</p>
