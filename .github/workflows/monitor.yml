@@ -42,8 +42,12 @@ jobs:
         if: steps.pwcache.outputs.cache-hit != 'true'
         run: playwright install chromium
 
-      # Les librairies systeme ne sont pas cachables : toujours necessaires
+      # Les librairies Chromium sont deja presentes sur l'image ubuntu-24.04 :
+      # cette etape n'installait que des polices (japonais, chinois, cyrillique,
+      # thai) inutiles pour lire du texte, et coutait 14 s a chaque run.
+      # On la garde en filet de securite, uniquement quand le cache est vide.
       - name: Dependances systeme Chromium
+        if: steps.pwcache.outputs.cache-hit != 'true'
         run: playwright install-deps chromium
 
       - name: Lancer la veille
