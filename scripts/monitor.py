@@ -1250,7 +1250,8 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
             tags = ''.join(f'<span class="tag">{esc(kw)}</span>' for kw in a['keywords'])
             date_badge = (
                 f'<span class="alert-date">{esc(a["date"])}</span>'
-                if a.get('date') else '<span class="alert-date no-date">date ?</span>'
+                if a.get('date') else ('<span class="alert-date no-date" '
+                                       'data-i18n="dateUnknown">date ?</span>')
             )
             row_id = f'ar{idx}'
             js_url   = esc(json.dumps(a['url']))
@@ -1264,28 +1265,29 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
     <a href="{esc(a["url"])}" target="_blank">{esc(a["text"])}</a>
     <div class="tag-row">{tags}</div>
   </div>
-  <button class="btn-read" onclick="markRead({js_url},{js_title},{js_date},{js_src},'{row_id}')">✓ Lu</button>
+  <button class="btn-read" data-i18n="read" onclick="markRead({js_url},{js_title},{js_date},{js_src},'{row_id}')">✓ Lu</button>
 </div>'''
         summary_card = f'''<div class="card summary-card">
   <div class="card-head">
-    <div class="card-title">🔔 Résumé des alertes — {total_alerts} résultat{"s" if total_alerts != 1 else ""}</div>
+    <div class="card-title"><span data-i18n="summaryTitle">🔔 Résumé des alertes</span> — {total_alerts}</div>
     <span class="badge badge-match" id="summary-badge">{total_alerts} alerte{"s" if total_alerts != 1 else ""}</span>
   </div>
   <div class="card-body" id="summary-body">{rows}</div>
 </div>'''
     else:
         summary_card = '''<div class="card summary-card">
-  <div class="card-head"><div class="card-title">🔔 Résumé des alertes</div></div>
-  <div class="card-body"><div class="empty">Aucune alerte pour cette vérification.</div></div>
+  <div class="card-head"><div class="card-title" data-i18n="summaryTitle">🔔 Résumé des alertes</div></div>
+  <div class="card-body"><div class="empty" data-i18n="noAlerts">Aucune alerte pour cette vérification.</div></div>
 </div>'''
 
     # Chips mots-clés
-    kw_chips = '<span class="kw-label">Institutionnel :</span>'
+    kw_chips = '<span class="kw-label" data-i18n="kwInstitutional">Institutionnel :</span>'
     for kw in KEYWORDS_INSTITUTIONAL:
         cnt = kw_counts.get(kw, 0)
         kw_chips += (f'<span class="kw-chip active">{esc(kw)} <span class="n">{cnt}</span></span>'
                      if cnt else f'<span class="kw-chip">{esc(kw)}</span>')
-    kw_chips += '<span class="kw-label kw-label-press">Presse :</span>'
+    kw_chips += ('<span class="kw-label kw-label-press" '
+                 'data-i18n="kwPress">Presse :</span>')
     for kw in KEYWORDS_PRESS:
         cnt = kw_counts.get(kw, 0)
         kw_chips += (f'<span class="kw-chip active">{esc(kw)} <span class="n">{cnt}</span></span>'
@@ -1299,8 +1301,8 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
         gslug = slug(grp)
         if grp != current_group:
             current_group = grp
-            cards_html += (f'<div class="group-label" data-grp="{gslug}">'
-                           f'{esc(grp)}</div>')
+            cards_html += (f'<div class="group-label" data-grp="{gslug}" '
+                           f'data-i18n="grp-{gslug}">{esc(grp)}</div>')
 
         result = results.get(src['id'], {'status': 'error', 'message': 'Non exécuté'})
         status = result.get('status', 'error')
@@ -1313,12 +1315,13 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
                      if matches else '<span class="badge badge-none" data-count>0 alerte</span>')
         else:
             dot = 'err'
-            badge = '<span class="badge badge-err">Erreur</span>'
+            badge = '<span class="badge badge-err" data-i18n="error">Erreur</span>'
 
         if status == 'error':
             body = f'<div class="err-msg">⚠️ {esc(result.get("message", "Erreur inconnue"))}</div>'
         elif not matches:
-            body = '<div class="empty">Aucune correspondance pour ces mots-clés.</div>'
+            body = ('<div class="empty" data-i18n="noMatch">'
+                    'Aucune correspondance pour ces mots-clés.</div>')
         else:
             items = ''
             for m in matches:
@@ -1367,8 +1370,8 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
         for y in _years
     )
 
-    new_badge_header = (f' — <strong style="color:#e74c3c">'
-                        f'{new_count} nouvelle{"s" if new_count != 1 else ""} depuis hier</strong>'
+    new_badge_header = (f' — <strong style="color:#e74c3c">{new_count} '
+                        f'<span data-i18n="newSince">nouvelles depuis hier</span></strong>'
                         ) if new_count else ''
 
     css = """
@@ -1407,6 +1410,8 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .grp-row-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);min-width:78px}
 .yr-btn{font-variant-numeric:tabular-nums}
 .reset-btn{margin-left:auto;background:rgba(255,255,255,.08);border-style:dashed}
+.lang-btn{min-width:42px;text-align:center}
+.lang-btn.on{background:rgba(255,255,255,.85);color:#0d1b2a;border-color:#fff}
 .grp-btn{font-size:12px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:14px;padding:6px 15px;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.3}
 .grp-btn:hover{background:rgba(255,255,255,.28)}
 .grp-btn.off{background:transparent;color:rgba(255,255,255,.35);border-color:rgba(255,255,255,.15);text-decoration:line-through}
@@ -1477,6 +1482,108 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
     js = """
 const KEY_THEME = 'bgw_theme';
 const KEY_READ  = 'bgw_read';
+const KEY_LANG  = 'bgw_lang';
+
+// ── Traductions de l'interface (les titres d'articles ne sont pas traduits) ──
+const I18N = {
+  fr: {},   // langue de reference : le HTML est deja en francais
+  en: {
+    lastCheck:'Last check:', alertsTotal:'alerts in total', newSince:'new since yesterday',
+    kwInstitutional:'Institutional:', kwPress:'Press:',
+    filtersHint:'🎛️ Filters — click to hide, click again to show',
+    categories:'Categories', years:'Years', showAll:'↺ Show all', language:'Language',
+    'grp-institutionnel-belge':'Belgian institutions',
+    'grp-presse-belge-francophone':'Belgian French-language press',
+    'grp-presse-specialisee-europe':'Trade press & Europe',
+    summaryTitle:'🔔 Alerts summary', noAlerts:'No alerts for this check.',
+    noMatch:'No match for these keywords.', error:'Error',
+    dateUnknown:'no date', read:'✓ Read', unread:'↩ Unread',
+    archiveTitle:'📁 Alerts already read', archiveEmpty:'No archived item.',
+    empty:'empty', alert:'alert', alerts:'alerts', item:'item', items:'items',
+    aboutTitle:'ℹ️ How does this page work?',
+    footer:'Generated automatically by GitHub Actions',
+    dark:'🌙 Dark', light:'☀️ Light',
+    about1:"This page is a <strong>regulatory monitoring dashboard</strong> for the gambling sector in Belgium, generated automatically every morning at <strong>7:30 am</strong>.",
+    about2:"Each site is queried <strong>separately for every term</strong>: <em>ladbrokes, entain, bwin, jeux de hasard</em>. Results earlier than <strong>2024</strong> are discarded.",
+    about3:"Exception: the search engines of 7sur7, RTBF, La Libre, DH and RTL do not support exact phrases — they look for <em>jeux</em>, <em>de</em> and <em>hasard</em> separately, which returns hundreds of unrelated articles. Those five sources therefore only receive the three brand names. The topic remains covered by the Gaming Commission, the Belgian Official Gazette and Le Soir.",
+    about4:"<strong>Institutional sources</strong>: Constitutional Court, Gaming Commission, Belgian Official Gazette, Belgian Competition Authority.",
+    about5:"<strong>Belgian French-language press</strong>: RTBF (5 feeds + archives), Le Soir, La Libre, DH, RTL Info, 7sur7.",
+    about6:"<strong>Trade press &amp; Europe</strong>: CasinoBeats, EUR-Lex.",
+    about7:"The <strong>Categories</strong> buttons at the top collapse a category's cards and hide its alerts from the summary. The <strong>✓ Read</strong> button moves an alert to “Alerts already read”. These settings are stored locally in your browser.",
+    about8:"Infrastructure: <strong>GitHub Actions</strong> runs the Python script · <strong>GitHub Pages</strong> hosts this page · LANCELLE 2026.",
+  },
+  nl: {
+    lastCheck:'Laatste controle:', alertsTotal:'waarschuwingen in totaal',
+    newSince:'nieuw sinds gisteren',
+    kwInstitutional:'Institutioneel:', kwPress:'Pers:',
+    filtersHint:'🎛️ Filters — klik om te verbergen, klik opnieuw om te tonen',
+    categories:'Categorieën', years:'Jaren', showAll:'↺ Alles tonen', language:'Taal',
+    'grp-institutionnel-belge':'Belgische instellingen',
+    'grp-presse-belge-francophone':'Belgische Franstalige pers',
+    'grp-presse-specialisee-europe':'Vakpers & Europa',
+    summaryTitle:'🔔 Overzicht waarschuwingen', noAlerts:'Geen waarschuwingen bij deze controle.',
+    noMatch:'Geen resultaat voor deze zoekwoorden.', error:'Fout',
+    dateUnknown:'geen datum', read:'✓ Gelezen', unread:'↩ Ongelezen',
+    archiveTitle:'📁 Reeds gelezen waarschuwingen', archiveEmpty:'Geen gearchiveerd item.',
+    empty:'leeg', alert:'waarschuwing', alerts:'waarschuwingen',
+    item:'item', items:'items',
+    aboutTitle:'ℹ️ Hoe werkt deze pagina?',
+    footer:'Automatisch gegenereerd door GitHub Actions',
+    dark:'🌙 Donker', light:'☀️ Licht',
+    about1:"Deze pagina is een <strong>dashboard voor regelgevingsmonitoring</strong> van de kansspelsector in België, elke ochtend automatisch gegenereerd om <strong>7.30 uur</strong>.",
+    about2:"Elke site wordt <strong>afzonderlijk bevraagd voor elke term</strong>: <em>ladbrokes, entain, bwin, jeux de hasard</em>. Resultaten van vóór <strong>2024</strong> worden geweerd.",
+    about3:"Uitzondering: de zoekmachines van 7sur7, RTBF, La Libre, DH en RTL ondersteunen geen exacte uitdrukkingen — ze zoeken <em>jeux</em>, <em>de</em> en <em>hasard</em> apart, wat honderden irrelevante artikelen oplevert. Die vijf bronnen krijgen daarom enkel de drie merknamen. Het thema blijft gedekt door de Kansspelcommissie, het Belgisch Staatsblad en Le Soir.",
+    about4:"<strong>Institutionele bronnen</strong>: Grondwettelijk Hof, Kansspelcommissie, Belgisch Staatsblad, Belgische Mededingingsautoriteit.",
+    about5:"<strong>Belgische Franstalige pers</strong>: RTBF (5 feeds + archief), Le Soir, La Libre, DH, RTL Info, 7sur7.",
+    about6:"<strong>Vakpers &amp; Europa</strong>: CasinoBeats, EUR-Lex.",
+    about7:"De knoppen <strong>Categorieën</strong> bovenaan klappen de kaarten van een categorie dicht en verbergen de waarschuwingen ervan in het overzicht. De knop <strong>✓ Gelezen</strong> verplaatst een waarschuwing naar „Reeds gelezen waarschuwingen”. Deze instellingen worden lokaal in uw browser bewaard.",
+    about8:"Infrastructuur: <strong>GitHub Actions</strong> voert het Python-script uit · <strong>GitHub Pages</strong> host deze pagina · LANCELLE 2026.",
+  }
+};
+// Textes francais d'origine. Les cles purement dynamiques (jamais presentes
+// dans le HTML) sont prerenseignees ; les autres sont relevees au chargement.
+const FR = {
+  alert:'alerte', alerts:'alertes', item:'élément', items:'éléments',
+  dark:'🌙 Sombre', light:'☀️ Clair', unread:'↩ Non lu',
+  empty:'vide', archiveEmpty:'Aucun élément archivé.',
+};
+
+function lang(){ return localStorage.getItem(KEY_LANG) || 'fr'; }
+
+function tr(key){
+  const L = lang();
+  if(L === 'fr') return FR[key] !== undefined ? FR[key] : key;
+  return (I18N[L] && I18N[L][key] !== undefined) ? I18N[L][key]
+       : (FR[key] !== undefined ? FR[key] : key);
+}
+
+function setLang(L){
+  localStorage.setItem(KEY_LANG, L);
+  applyLang();
+  applyFilters();     // badges et compteurs
+  renderArchive();
+  applyTheme(localStorage.getItem(KEY_THEME) || 'light');
+}
+
+function applyLang(){
+  const L = lang();
+  document.documentElement.setAttribute('lang', L);
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.dataset.i18n;
+    if(FR[k] === undefined) FR[k] = el.textContent;   // memoriser le francais
+    el.textContent = tr(k);
+  });
+  // Paragraphes contenant du HTML (gras, italique) : innerHTML
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const k = el.dataset.i18nHtml;
+    if(FR[k] === undefined) FR[k] = el.innerHTML;
+    el.innerHTML = tr(k);
+  });
+  ['fr','en','nl'].forEach(x=>{
+    const b = document.getElementById('lang-'+x);
+    if(b) b.classList.toggle('on', x === L);
+  });
+}
 const KEY_GRP   = 'bgw_groups_off';
 const KEY_YEAR  = 'bgw_years_off';
 
@@ -1539,8 +1646,8 @@ function applyFilters(){
     });
     const badge = card.querySelector('.badge[data-count]');
     if(badge && items.length){
-      badge.textContent = shown ? '🔴 ' + shown + ' alerte' + (shown > 1 ? 's' : '')
-                                : '0 alerte';
+      badge.textContent = shown ? '🔴 ' + shown + ' ' + tr(shown > 1 ? 'alerts' : 'alert')
+                                : '0 ' + tr('alert');
       badge.className = 'badge ' + (shown ? 'badge-match' : 'badge-none');
       badge.setAttribute('data-count','');
     }
@@ -1556,7 +1663,7 @@ function applyFilters(){
     if(!hide) visible++;
   });
   const sb = document.getElementById('summary-badge');
-  if(sb) sb.textContent = visible + ' alerte' + (visible !== 1 ? 's' : '');
+  if(sb) sb.textContent = visible + ' ' + tr(visible !== 1 ? 'alerts' : 'alert');
 }
 
 // Alias conserve pour les appels existants
@@ -1570,7 +1677,7 @@ function eh(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
   const btn = document.getElementById('theme-btn');
-  if(btn) btn.textContent = t==='dark' ? '☀️ Clair' : '🌙 Sombre';
+  if(btn) btn.textContent = t==='dark' ? tr('light') : tr('dark');
 }
 function toggleTheme(){
   const t = document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
@@ -1609,9 +1716,10 @@ function renderArchive(){
   const body  = document.getElementById('archive-body');
   const badge = document.getElementById('archive-badge');
   if(!body) return;
-  if(badge) badge.textContent = items.length ? items.length+' élément'+(items.length>1?'s':'') : 'vide';
+  if(badge) badge.textContent = items.length
+      ? items.length + ' ' + tr(items.length > 1 ? 'items' : 'item') : tr('empty');
   if(!items.length){
-    body.innerHTML = '<div class="empty">Aucun élément archivé.</div>';
+    body.innerHTML = '<div class="empty">' + tr('archiveEmpty') + '</div>';
     return;
   }
   body.innerHTML = items.map(i=>`
@@ -1619,7 +1727,7 @@ function renderArchive(){
       <span class="archive-date">${eh(i.date||'—')}</span>
       <span class="archive-src" style="color:#888">${eh(i.src)}</span>
       <a href="${eh(i.url)}" target="_blank">${eh(i.title)}</a>
-      <button class="btn-unread" onclick="unmarkRead(this.closest('.archive-row').dataset.url)">↩ Non lu</button>
+      <button class="btn-unread" onclick="unmarkRead(this.closest('.archive-row').dataset.url)">${tr('unread')}</button>
     </div>`).join('');
 }
 
@@ -1633,6 +1741,7 @@ function toggleAbout(){
 
 // ── Init : cacher les alertes déjà lues au chargement ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
+  applyLang();
   applyTheme(localStorage.getItem(KEY_THEME)||'light');
   applyFilters();
   renderArchive();
@@ -1651,13 +1760,18 @@ document.addEventListener('DOMContentLoaded', function(){
 <header>
   <button id="theme-btn" onclick="toggleTheme()">🌙 Sombre</button>
   <h1>🇧🇪 News feed Ladbrokes Robot</h1>
-  <div id="ts">Dernière vérification : {esc(run_time)} — {total_alerts} alerte{"s" if total_alerts != 1 else ""} au total{new_badge_header}</div>
+  <div id="ts"><span data-i18n="lastCheck">Dernière vérification :</span> {esc(run_time)} — {total_alerts} <span data-i18n="alertsTotal">alertes au total</span>{new_badge_header}</div>
   <div class="kw-row">{kw_chips}</div>
   <div class="filter-box">
-    <div class="filter-hint">🎛️ Filtres — cliquez pour masquer, recliquez pour réafficher</div>
-    <div class="grp-row"><span class="grp-row-label">Catégories</span>{grp_buttons}</div>
-    <div class="grp-row"><span class="grp-row-label">Années</span>{year_buttons}
-      <button class="grp-btn reset-btn" onclick="resetFilters()" title="Tout réafficher">↺ Tout afficher</button>
+    <div class="filter-hint" data-i18n="filtersHint">🎛️ Filtres — cliquez pour masquer, recliquez pour réafficher</div>
+    <div class="grp-row"><span class="grp-row-label" data-i18n="categories">Catégories</span>{grp_buttons}</div>
+    <div class="grp-row"><span class="grp-row-label" data-i18n="years">Années</span>{year_buttons}
+      <button class="grp-btn reset-btn" onclick="resetFilters()" data-i18n="showAll">↺ Tout afficher</button>
+    </div>
+    <div class="grp-row"><span class="grp-row-label" data-i18n="language">Langue</span>
+      <button class="grp-btn lang-btn" id="lang-fr" onclick="setLang('fr')">FR</button>
+      <button class="grp-btn lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+      <button class="grp-btn lang-btn" id="lang-nl" onclick="setLang('nl')">NL</button>
     </div>
   </div>
 </header>
@@ -1670,31 +1784,31 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <div class="card archive-card">
   <div class="card-head">
-    <div class="card-title">📁 Alertes déjà lues</div>
-    <span class="badge badge-none" id="archive-badge">vide</span>
+    <div class="card-title" data-i18n="archiveTitle">📁 Alertes déjà lues</div>
+    <span class="badge badge-none" id="archive-badge" data-i18n="empty">vide</span>
   </div>
-  <div class="card-body" id="archive-body"><div class="empty">Aucun élément archivé.</div></div>
+  <div class="card-body" id="archive-body"><div class="empty" data-i18n="archiveEmpty">Aucun élément archivé.</div></div>
 </div>
 
 <div class="about-section">
   <button class="about-toggle" id="about-btn" onclick="toggleAbout()">
-    ℹ️ Comment fonctionne cette page ?
+    <span data-i18n="aboutTitle">ℹ️ Comment fonctionne cette page ?</span>
     <span class="about-chevron">▼</span>
   </button>
   <div class="about-body" id="about-body">
-    <p>Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
-    <p>Chaque site est interrogé <strong>séparément pour chaque terme</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
-    <p>Exception : les moteurs de 7sur7, RTBF, La Libre, DH et RTL ne gèrent pas les expressions exactes — ils cherchent <em>jeux</em>, <em>de</em> et <em>hasard</em> séparément, ce qui remonte des centaines d'articles sans rapport. Ces cinq sources ne reçoivent donc que les trois marques. La thématique reste couverte par la Gaming Commission, le Moniteur Belge et Le Soir.</p>
-    <p><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence.</p>
-    <p><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, 7sur7.</p>
-    <p><strong>Presse spécialisée &amp; Europe</strong> : CasinoBeats, EUR-Lex.</p>
-    <p>Les boutons <strong>Catégories</strong> en haut de page replient les cartes d'une catégorie et masquent ses alertes dans le résumé. Le bouton <strong>✓ Lu</strong> déplace une alerte dans « Alertes déjà lues ». Ces réglages sont stockés localement dans votre navigateur.</p>
-    <p>Infrastructure : <strong>GitHub Actions</strong> exécute le script Python · <strong>GitHub Pages</strong> héberge cette page · LANCELLE 2026.</p>
+    <p data-i18n-html="about1">Cette page est un <strong>tableau de bord de veille réglementaire</strong> sur le secteur des jeux d'argent en Belgique, généré automatiquement chaque matin à <strong>7h30</strong>.</p>
+    <p data-i18n-html="about2">Chaque site est interrogé <strong>séparément pour chaque terme</strong> : <em>ladbrokes, entain, bwin, jeux de hasard</em>. Les résultats antérieurs à <strong>2024</strong> sont écartés.</p>
+    <p data-i18n-html="about3">Exception : les moteurs de 7sur7, RTBF, La Libre, DH et RTL ne gèrent pas les expressions exactes — ils cherchent <em>jeux</em>, <em>de</em> et <em>hasard</em> séparément, ce qui remonte des centaines d'articles sans rapport. Ces cinq sources ne reçoivent donc que les trois marques. La thématique reste couverte par la Gaming Commission, le Moniteur Belge et Le Soir.</p>
+    <p data-i18n-html="about4"><strong>Sources institutionnelles</strong> : Cour Constitutionnelle, Gaming Commission, Moniteur Belge, Autorité belge de la Concurrence.</p>
+    <p data-i18n-html="about5"><strong>Presse belge francophone</strong> : RTBF (5 flux + archives), Le Soir, La Libre, DH, RTL Info, 7sur7.</p>
+    <p data-i18n-html="about6"><strong>Presse spécialisée &amp; Europe</strong> : CasinoBeats, EUR-Lex.</p>
+    <p data-i18n-html="about7">Les boutons <strong>Catégories</strong> en haut de page replient les cartes d'une catégorie et masquent ses alertes dans le résumé. Le bouton <strong>✓ Lu</strong> déplace une alerte dans « Alertes déjà lues ». Ces réglages sont stockés localement dans votre navigateur.</p>
+    <p data-i18n-html="about8">Infrastructure : <strong>GitHub Actions</strong> exécute le script Python · <strong>GitHub Pages</strong> héberge cette page · LANCELLE 2026.</p>
   </div>
 </div>
 
 </div>
-<footer>Veille Jeux d'Argent Belgique · LANCELLE 2026 · Généré automatiquement par GitHub Actions</footer>
+<footer><span data-i18n="footer">Généré automatiquement par GitHub Actions</span> · LANCELLE 2026</footer>
 <script>{js}</script>
 </body>
 </html>"""
