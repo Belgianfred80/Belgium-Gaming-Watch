@@ -40,30 +40,59 @@ SEARCH_TERMS = ['ladbrokes', 'entain', 'bwin', 'jeux de hasard']
 SOURCES = [
     # ── Institutionnel belge ───────────────────────────────────────────────────
     {
-        # App Nuxt/Vuetify — 1 requête par terme, sélecteur CSS sur les cartes de résultats
-        # no_kw_filter : le moteur de recherche a déjà filtré
-        # Le fallback exclut les URLs /search/ (menu de navigation)
+        # SPA Nuxt/Vuetify — l'URL ne pilote PAS la recherche (le param ?search= est ignoré).
+        # Il faut remplir le champ « Recherche(s) » et cliquer SOUMETTRE.
         'id': 'cour', 'group': 'Institutionnel belge', 'kw_set': 'institutional',
         'name': 'Cour Constitutionnelle', 'color': '#1a5276',
         'js': True,
         'no_kw_filter': True,
-        'url': 'https://fr.const-court.be/search/full-text-judgment?search={term}',
+        'playwright_timeout': 60_000,
+        'url': 'https://fr.const-court.be/search/full-text-judgment',
         'search_terms': SEARCH_TERMS,
-        'wait_selector': '.fulltext-judgment-card',
+        'fill_js': (
+            "(term) => {"
+            "  const inputs = Array.from(document.querySelectorAll('input[type=\"text\"],input:not([type]),textarea'))"
+            "    .filter(i => i.offsetParent !== null);"
+            "  if (!inputs.length) return false;"
+            "  const input = inputs[0];"
+            "  const proto = input.tagName === 'TEXTAREA'"
+            "    ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;"
+            "  const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;"
+            "  input.focus();"
+            "  setter.call(input, term);"
+            "  input.dispatchEvent(new Event('input',  {bubbles:true}));"
+            "  input.dispatchEvent(new Event('change', {bubbles:true}));"
+            "  return true;"
+            "}"
+        ),
+        'submit_js': (
+            "() => {"
+            "  const btn = Array.from(document.querySelectorAll('button,input[type=\"submit\"],a'))"
+            "    .find(b => /soumettre|submit|rechercher/i.test((b.value||'') + ' ' + (b.textContent||'')));"
+            "  if (btn) { btn.click(); return true; }"
+            "  return false;"
+            "}"
+        ),
         'eval_extract': (
             "() => {"
-            "  const cards = document.querySelectorAll('.fulltext-judgment-card');"
-            "  if (cards.length) return Array.from(cards).map(c => {"
+            "  const hasRef = el => /\\d{4}-\\d{3}/.test(el.innerText || '');"
+            "  const cards = Array.from(document.querySelectorAll('div,article,li'))"
+            "    .filter(el => {"
+            "      const t = el.innerText || '';"
+            "      return /\\d{2}\\/\\d{2}\\/\\d{4}/.test(t) && /\\d{4}-\\d{3}/.test(t)"
+            "             && t.length > 40 && t.length < 1500"
+            "             && !Array.from(el.querySelectorAll('div,article,li')).some(hasRef);"
+            "    });"
+            "  const seen = new Set(); const out = [];"
+            "  cards.forEach(c => {"
             "    const a = c.querySelector('a[href]');"
-            "    return { href: a ? a.href : '', text: c.innerText.trim().slice(0,300) };"
-            "  }).filter(x => x.href);"
-            "  const main = document.querySelector('main') || document.body;"
-            "  return Array.from(main.querySelectorAll('a[href]'))"
-            "    .filter(a => a.href.includes('const-court')"
-            "               && !a.href.includes('/search/')"
-            "               && !a.href.includes('#')"
-            "               && a.innerText.trim().length > 25)"
-            "    .map(a => ({ href: a.href, text: a.innerText.trim().slice(0,300) }));"
+            "    const href = a ? a.href : location.href;"
+            "    const text = c.innerText.trim().slice(0,300);"
+            "    const key = href + '|' + text.slice(0,50);"
+            "    if (seen.has(key)) return; seen.add(key);"
+            "    out.push({ href, text });"
+            "  });"
+            "  return out;"
             "}"
         ),
     },
