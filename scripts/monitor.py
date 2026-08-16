@@ -439,6 +439,21 @@ _MONTH_NAME_RE = re.compile(r'\b(\d{1,2})\.?\s+([A-Za-zÀ-ÿ]+)\.?,?\s+(\d{4})\b
 _MONTH_FIRST_RE = re.compile(r'\b([A-Za-zÀ-ÿ]+)\.?\s+(\d{1,2}),?\s+(\d{4})\b')
 
 
+# Date présente dans l'URL : /2025/12/11/ (CasinoBeats, WordPress en général)
+_URL_DATE_RE = re.compile(r'/(20\d{2})/(\d{1,2})/(\d{1,2})(?:/|$)')
+
+
+def extract_date_from_url(url: str):
+    """Récupère la date depuis le chemin de l'URL. Retourne datetime ou None."""
+    m = _URL_DATE_RE.search(url or '')
+    if not m:
+        return None
+    try:
+        return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    except Exception:
+        return None
+
+
 def is_too_old(text: str) -> bool:
     """True si le texte contient une année antérieure à MIN_YEAR.
     Sans année détectée → False (on garde, on ne peut pas juger)."""
@@ -725,7 +740,7 @@ def fetch_with_browser(src: dict) -> dict:
                                 continue
                             kws = [term] if term else ['résultat']
                         seen_urls.add(href)
-                        date_obj = extract_date(text)
+                        date_obj = extract_date(text) or extract_date_from_url(full_url)
                         date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
                         all_matches.append({
                             'text': text[:300],
@@ -789,7 +804,8 @@ def fetch_with_browser(src: dict) -> dict:
                             kws = [term] if term else ['résultat']
 
                         seen_urls.add(full_url)
-                        date_obj = extract_date(ctx) or extract_date(text)
+                        date_obj = (extract_date(ctx) or extract_date(text)
+                                    or extract_date_from_url(full_url))
                         date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
                         display_text = text if len(text) >= 15 else ctx[:120]
 
@@ -871,7 +887,8 @@ def fetch_source(src: dict) -> dict:
                     kws = [term] if term else ['résultat']
 
                 seen_urls.add(full_url)
-                date_obj = extract_date(ctx) or extract_date(text)
+                date_obj = (extract_date(ctx) or extract_date(text)
+                            or extract_date_from_url(full_url))
                 date_str = date_obj.strftime('%d/%m/%Y') if date_obj else ''
 
                 all_matches.append({
@@ -908,6 +925,13 @@ def fetch_source(src: dict) -> dict:
 def slug(s: str) -> str:
     """Identifiant technique stable pour un nom de groupe."""
     return re.sub(r'[^a-z0-9]+', '-', normalize(s)).strip('-')
+
+
+def year_of(date_str: str) -> str:
+    """Année d'une date jj/mm/aaaa, ou 'na' si absente/illisible."""
+    if date_str and len(date_str) >= 4 and date_str[-4:].isdigit():
+        return date_str[-4:]
+    return 'na'
 
 
 def esc(s: str) -> str:
@@ -967,7 +991,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
             js_title = esc(json.dumps(a['text']))
             js_date  = esc(json.dumps(a.get('date', '')))
             js_src   = esc(json.dumps(a['source_name']))
-            rows += f'''<div class="alert-row" id="{row_id}" data-url="{esc(a['url'])}" data-grp="{a.get('group_slug','')}">
+            rows += f'''<div class="alert-row" id="{row_id}" data-url="{esc(a['url'])}" data-grp="{a.get('group_slug','')}" data-year="{year_of(a.get('date',''))}">
   <div class="alert-row-main">
     {date_badge}
     <span class="alert-src" style="color:{a["source_color"]}">{esc(a["source_name"])}</span>
@@ -1019,8 +1043,8 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
         if status == 'ok':
             dot = 'ok'
             n = len(matches)
-            badge = (f'<span class="badge badge-match">🔴 {n} alerte{"s" if n > 1 else ""}</span>'
-                     if matches else '<span class="badge badge-none">0 alerte</span>')
+            badge = (f'<span class="badge badge-match" data-count>🔴 {n} alerte{"s" if n > 1 else ""}</span>'
+                     if matches else '<span class="badge badge-none" data-count>0 alerte</span>')
         else:
             dot = 'err'
             badge = '<span class="badge badge-err">Erreur</span>'
@@ -1036,7 +1060,7 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
                 date_html = f'<span class="item-date">{esc(m["date"])}</span> ' if m.get('date') else ''
                 ctx_html = (f'<div class="ctx">{esc(m["context"][:220])}…</div>'
                             if m.get('context') else '')
-                items += (f'<div class="result">'
+                items += (f'<div class="result" data-year="{year_of(m.get("date",""))}">'
                           f'{date_html}'
                           f'<a href="{esc(m["url"])}" target="_blank">{esc(m["text"])}</a>'
                           f'{ctx_html}'
@@ -1063,8 +1087,18 @@ def generate_html(results: dict, run_time: str, new_count: int) -> str:
             _groups.append(g)
     grp_buttons = ''.join(
         f'<button class="grp-btn" id="gb-{slug(g)}" data-grp="{slug(g)}" '
+        f'title="Masquer / afficher cette catégorie" '
         f'onclick="toggleGroup(\'{slug(g)}\')">{esc(g)}</button>'
         for g in _groups
+    )
+
+    # ── Boutons de filtrage par année (MIN_YEAR → année en cours) ─────────────
+    _years = [str(y) for y in range(MIN_YEAR, datetime.now(timezone.utc).year + 1)]
+    year_buttons = ''.join(
+        f'<button class="grp-btn yr-btn" id="yb-{y}" data-year="{y}" '
+        f'title="Masquer / afficher les résultats de {y}" '
+        f'onclick="toggleYear(\'{y}\')">{y}</button>'
+        for y in _years
     )
 
     new_badge_header = (f' — <strong style="color:#e74c3c">'
@@ -1100,8 +1134,13 @@ header h1{font-size:17px;font-weight:700;margin-bottom:4px}
 .kw-chip{font-size:10px;font-weight:600;background:rgba(255,255,255,.12);border-radius:4px;padding:2px 8px;color:rgba(255,255,255,.8)}
 .kw-chip.active{background:rgba(231,76,60,.3)}
 .kw-chip .n{display:inline-block;background:#e74c3c;color:#fff;border-radius:8px;padding:0 4px;margin-left:5px;font-size:9px}
-.grp-row{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.grp-row-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-right:2px}
+.filter-box{margin-top:10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:8px 10px 9px}
+.filter-hint{font-size:10px;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:6px}
+.grp-row{margin-top:5px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.grp-row:first-of-type{margin-top:0}
+.grp-row-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.45);min-width:74px}
+.yr-btn{font-variant-numeric:tabular-nums}
+.reset-btn{margin-left:auto;background:rgba(255,255,255,.08);border-style:dashed}
 .grp-btn{font-size:10px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:12px;padding:3px 11px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .grp-btn:hover{background:rgba(255,255,255,.28)}
 .grp-btn.off{background:transparent;color:rgba(255,255,255,.35);border-color:rgba(255,255,255,.15);text-decoration:line-through}
@@ -1173,42 +1212,90 @@ footer{text-align:center;font-size:10px;color:var(--foot);padding:10px 16px 20px
 const KEY_THEME = 'bgw_theme';
 const KEY_READ  = 'bgw_read';
 const KEY_GRP   = 'bgw_groups_off';
+const KEY_YEAR  = 'bgw_years_off';
 
-// ── Filtrage par categorie ────────────────────────────────────────────────────
-function groupsOff(){
-  try { return new Set(JSON.parse(localStorage.getItem(KEY_GRP) || '[]')); }
+function loadSet(key){
+  try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); }
   catch(e){ return new Set(); }
 }
+const groupsOff = () => loadSet(KEY_GRP);
+const yearsOff  = () => loadSet(KEY_YEAR);
+
+// ── Filtrage par categorie ────────────────────────────────────────────────────
 function toggleGroup(g){
   const off = groupsOff();
   off.has(g) ? off.delete(g) : off.add(g);
   localStorage.setItem(KEY_GRP, JSON.stringify([...off]));
-  applyGroups();
-  refreshRows();
-}
-function applyGroups(){
-  const off = groupsOff();
-  document.querySelectorAll('.card[data-grp], .group-label[data-grp]').forEach(el=>{
-    el.classList.toggle('grp-hidden', off.has(el.dataset.grp));
-  });
-  document.querySelectorAll('.grp-btn').forEach(b=>{
-    b.classList.toggle('off', off.has(b.dataset.grp));
-  });
+  applyFilters();
 }
 
-// ── Affichage des lignes du resume : masquee si lue OU categorie desactivee ──
-function refreshRows(){
-  const off  = groupsOff();
+// ── Filtrage par annee ────────────────────────────────────────────────────────
+function toggleYear(y){
+  const off = yearsOff();
+  off.has(y) ? off.delete(y) : off.add(y);
+  localStorage.setItem(KEY_YEAR, JSON.stringify([...off]));
+  applyFilters();
+}
+
+function resetFilters(){
+  localStorage.removeItem(KEY_GRP);
+  localStorage.removeItem(KEY_YEAR);
+  applyFilters();
+}
+
+// ── Application de tous les filtres ───────────────────────────────────────────
+function applyFilters(){
+  const gOff = groupsOff();
+  const yOff = yearsOff();
   const read = new Set((JSON.parse(localStorage.getItem(KEY_READ)||'[]')).map(i=>i.url));
+
+  // Etat visuel des boutons
+  document.querySelectorAll('.grp-btn[data-grp]').forEach(b=>{
+    b.classList.toggle('off', gOff.has(b.dataset.grp));
+  });
+  document.querySelectorAll('.grp-btn[data-year]').forEach(b=>{
+    b.classList.toggle('off', yOff.has(b.dataset.year));
+  });
+
+  // Cartes : repliees si categorie masquee (le titre reste visible)
+  document.querySelectorAll('.card[data-grp], .group-label[data-grp]').forEach(el=>{
+    el.classList.toggle('grp-hidden', gOff.has(el.dataset.grp));
+  });
+
+  // Resultats dans les cartes individuelles : filtres par annee
+  document.querySelectorAll('.card[data-grp]').forEach(card=>{
+    let shown = 0;
+    const items = card.querySelectorAll('.result[data-year]');
+    items.forEach(r=>{
+      const hide = yOff.has(r.dataset.year);
+      r.style.display = hide ? 'none' : '';
+      if(!hide) shown++;
+    });
+    const badge = card.querySelector('.badge[data-count]');
+    if(badge && items.length){
+      badge.textContent = shown ? '🔴 ' + shown + ' alerte' + (shown > 1 ? 's' : '')
+                                : '0 alerte';
+      badge.className = 'badge ' + (shown ? 'badge-match' : 'badge-none');
+      badge.setAttribute('data-count','');
+    }
+  });
+
+  // Resume : masque si lu, categorie masquee ou annee masquee
   let visible = 0;
   document.querySelectorAll('.alert-row[data-url]').forEach(row=>{
-    const hide = read.has(row.dataset.url) || off.has(row.dataset.grp);
+    const hide = read.has(row.dataset.url)
+              || gOff.has(row.dataset.grp)
+              || yOff.has(row.dataset.year);
     row.style.display = hide ? 'none' : '';
     if(!hide) visible++;
   });
-  const badge = document.getElementById('summary-badge');
-  if(badge) badge.textContent = visible + ' alerte' + (visible !== 1 ? 's' : '');
+  const sb = document.getElementById('summary-badge');
+  if(sb) sb.textContent = visible + ' alerte' + (visible !== 1 ? 's' : '');
 }
+
+// Alias conserve pour les appels existants
+const refreshRows = applyFilters;
+const applyGroups = applyFilters;
 
 // ── Utilitaire HTML-escape (pour renderArchive) ────────────────────────────────
 function eh(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1281,8 +1368,7 @@ function toggleAbout(){
 // ── Init : cacher les alertes déjà lues au chargement ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
   applyTheme(localStorage.getItem(KEY_THEME)||'light');
-  applyGroups();
-  refreshRows();
+  applyFilters();
   renderArchive();
 });
 """
@@ -1301,7 +1387,13 @@ document.addEventListener('DOMContentLoaded', function(){
   <h1>🇧🇪 News feed Ladbrokes Robot</h1>
   <div id="ts">Dernière vérification : {esc(run_time)} — {total_alerts} alerte{"s" if total_alerts != 1 else ""} au total{new_badge_header}</div>
   <div class="kw-row">{kw_chips}</div>
-  <div class="grp-row"><span class="grp-row-label">Catégories :</span>{grp_buttons}</div>
+  <div class="filter-box">
+    <div class="filter-hint">🎛️ Filtres — cliquez pour masquer, recliquez pour réafficher</div>
+    <div class="grp-row"><span class="grp-row-label">Catégories</span>{grp_buttons}</div>
+    <div class="grp-row"><span class="grp-row-label">Années</span>{year_buttons}
+      <button class="grp-btn reset-btn" onclick="resetFilters()" title="Tout réafficher">↺ Tout afficher</button>
+    </div>
+  </div>
 </header>
 
 <div class="page">
