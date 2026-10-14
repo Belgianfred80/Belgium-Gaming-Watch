@@ -2,34 +2,27 @@
 
 | Champ | Valeur |
 |---|---|
-| Dernière vérification | 13/10/2026 à 12:49 UTC |
-| Alertes totales | 71 |
-| Nouvelles depuis la veille | 16 |
+| Dernière vérification | 14/10/2026 à 10:23 UTC |
+| Alertes totales | 79 |
+| Nouvelles depuis la veille | 9 |
 | Sources interrogées | 14 |
 
 ## Nouvelles alertes
 
-### Le Soir
-
-- **03/04/2026** — [Malgré un net recul du secteur des jeux de hasard, l’inquiétude persiste - Le Soir](https://news.google.com/rss/articles/CBMiugFBVV95cUxPcWpOXzM1TzJQMUdRNWNGNTByeFVaWkp1RnFZN3pCOGtVT1JTa1d2VjItWlMzeXdHVFRybkpHYUdxbUJSMVNSSDlRZmZhUVFoZm1tcDhhY0E5blU3cF9OQXIzeUZOcE5OQ2tHaVNmbFMxUWJObGRmWUxkT1A4SHBDaFk5VFVnNjdqLTdsblg3cm80WHg0QlhLeFR2ZUpkaWRaRTZHcnd5U2VQSmlkRjRlRkhwSDF5Ylc1RXc?oc=5) — `jeux de hasard`
-- **13/03/2026** — [Eden Hazard dans le viseur de la Commission des jeux de hasard - Le Soir](https://news.google.com/rss/articles/CBMirwFBVV95cUxOWGpQd0pMYmtpanp1UnRkMzFHcVhVVDkwWWNQdjRCdGZJaGx1LWxubkpDWXF3aVhnV3FKWGlRUE5IVWxEWFh5MTV0VU9KdmNIbFY1NWh4QXlpZ1gwYTVKSGlKZ1hsWllRVmtwTlJOTWM3ZHMxTUtvYXNzSmZ5WFdkS21NZHBucklDOW5HSzhnZkstZUtZS3NnV3p0Z3pXcWtGcVVYamd1NW1INk5FTmxF?oc=5) — `jeux de hasard`
-- **05/01/2026** — [Le ministre Beenders veut limiter l’accès aux jeux de hasard - Le Soir](https://news.google.com/rss/articles/CBMiqwFBVV95cUxOTlM2MTcyRWYxZ215SDIwWFFjNTNCZE5VYzRzNFZMY0o5MnhyVTFTR3I2dkVBV0JJOXFRcUJ3SHdXNllsQ1drZmR4S3g1TXA0QjJTVmpmSFVzT0N6dTV1Sm1oYlp3SUpaMllCZ3FwZlhxbHpMdWxrX3BnNk0tVTZDUFcyYW52dHQtYVdWck9Xbmt6ZUVCYnBVMTFEVnZPWG5KVjMzR2NDWHJBM0k?oc=5) — `jeux de hasard`
-- **16/12/2025** — [Différences entre jeux de hasard et de loterie: la Loterie "à disposition" des autorités - Le Soir](https://news.google.com/rss/articles/CBMivgFBVV95cUxOS1dTaXJ6aHNsMVdTX1BwSndibDlvRlVRbHBWSzZ2WjdYSXN2T2lFZU8zZzA5WTZKaE91cGYtTXRYRFJuX1c4UlBWSzVPS1BXTUVaYWNrY2ZWSFpNZFBWYXdZRTJxT2FjTUZSTEcyUzFCX01Kbkh2Q3Z2VmU2cjZVN1lKYmVXOWFUYXFvZ2h6RFd5MEpyQXN3NUF3UVNQZFU0aFdPendkY3JPZWE2QmU2R2NLZ3YxbVlsNHJQSkhB?oc=5) — `jeux de hasard`
-- **09/10/2025** — [Ladbrokes : vives inquiétudes quant à l’avenir des agences physiques - Le Soir](https://news.google.com/rss/articles/CBMisAFBVV95cUxQdlc0dlVBazdVY1BDQnhqN1hBU1hVSG9BUDBEVUFTbV95R1FuSHl0a2pEbnpHcm1sU09ObW5fTWdIR1RzRWI5RmNMa09yYlN0c0ZmUE1wbXNtWlVmM1VJVkM5a2hPZUNhb3BwRHlXN3B1a1VFT2VFZEctb245czZMd0wzek5uRGVQLWRNUDFQYlJPbWE0X3VyazlTSy1uR1llZW1lNl9uYVdBenlUN2h4WA?oc=5) — `ladbrokes`
-- **09/10/2025** — [Le bookmaker Ladbrokes prévoit de licencier près de la moitié de ses employés - Le Soir](https://news.google.com/rss/articles/CBMiwwFBVV95cUxPYWdHelFWMTIzdG9CY3k2Z1JLVVNOTnpLVDRCSnpnNFlMNVpudDNEMHRZT2ZYQkp5WUZRVDZxbkctNmNaRFIxRkk5cWl5eTMzV19jMnpSSUJvREZZYnJFNi0tbjRrbmlLTE9aRWxjSHZkYVFhVFJGV2VXa3kzSVRCNlRPX3RFQXVrbmJ1VEpMQnZ0ald1U1ZQYTljcVo4X1BzWlRFVm1vRjNxOXVtMl9VWDQ2emhnZlNlSVhZcUZqTUZxUVU?oc=5) — `ladbrokes`
-- **06/06/2025** — [Jeux de hasard : le durcissement des règles et la restriction de la pub impactent peu les habitudes des 18-30 ans - Le Soir](https://news.google.com/rss/articles/CBMixgFBVV95cUxPTmJvcy1ORnNGUDhmUksxTGU5ZnNnZkJ6QmJBS2cxaUcxeFBYcFNQVzVyZ2ZrQ0R3cC1BWXpGUjhqOFk4YTJMMlVUcTEzYnpsa1ZkVWczMjFyT09jc0FxYm9YOGZQWXcweUJVM3dSQVAzMklmUzRIYmFtWm80eUtpUGI4ZWdwMi1TRXBrakJXSDdNeXc0ejhXY2pONEoxZHh5dHRvWDhtb0FiemdSOHhfdFNHaElKYzZWcWc1QVZlZWVoTTludnc?oc=5) — `jeux de hasard`
-- **10/12/2024** — [Publicité dans le sport : la Commission des jeux de hasard ne laissera pas passer les manœuvres des sites de paris - Le Soir](https://news.google.com/rss/articles/CBMixgFBVV95cUxQZmI4VUhEWjRlQUxCVmItVWVXRHQ2c2JCaDdESVVJSTBnNWF6c2FfQ1ZXU0c5cUdGdTNPT1B3eVBoeVFDQkIwSkhUaGZ2cDc0ajNZUmZWQlNUdVgzM0R3MmNwbHlVRmUxWEJrVGNFdmdtZXRrYWphRGYxZUkzcTFibUN5NFRtTDZvQXVRaVNEVFdITGxXQ0c1NmI0ekZxbTVKS1FQdFAycDltVkE1Ymo0alhUa00zajJwMnBsbGpvSEdESTF5QlE?oc=5) — `jeux de hasard`
-- **04/12/2024** — [Jeux de hasard : les e-tickets de la Loterie, une porte ouverte pour blanchir son argent ? - Le Soir](https://news.google.com/rss/articles/CBMixAFBVV95cUxQM2l6eGREZDVrb1dsbEVIOWducnZ0RVJnOXQ3elhlV21INThiTkJsdktuaDMtbWU1UmZkUEw1LTVpd2pCeG84dXdmTjBWYTJBWnlmanpIRU1oY1cwRU94ckpvdU1PSkl3YzNZREdmbkU1X2NUQm0zSjlKQnJ2dUgzYmpKTnM1MjVNei1fV21qZDItX0poRzZPYkV1S3JMSDdkaWVWcjh2T1prNjhKc3JJSWJ1YU5VV0tRS1Y1alUyVlBFX1dG?oc=5) — `jeux de hasard`
-- **24/07/2024** — [Jeux de hasard : quand le régulateur ne grandit pas aussi vite que le secteur - Le Soir](https://news.google.com/rss/articles/CBMiwAFBVV95cUxQUFR4cWtGTnBOcFByS1RJczl6OEM1YzQ0ZzhfbWJySExIYzVhSmZzek1FamZDWmhoTkhJTTQxYjI3NzBWOHVfNnFGb3pZTEZyR2l4a0IxSnZQVGRXbVktVWJGUWRqOF9KdDlyaVgwM3d1YTd5d1RQekxuS3RrbzFJMWI5RHlHUVJRVENyb0RWYm5ieVR1bmhyVFAwQ0o1SDN2cURDM185dFp6M3FwOEZIQW9aTFd5RmxOMFkxOUFKS1U?oc=5) — `jeux de hasard`
-- **20/06/2024** — [Jeux de hasard : le match se poursuit entre acteurs légaux et illégaux - Le Soir](https://news.google.com/rss/articles/CBMitwFBVV95cUxQb3czSmpYdkpQcklSazhYT2Q1czFCQVh6NFFuQ2R3c2l6UzRPR2FsZXhKWVozMzMybTJFREFOdHkySUNRSVJhdzVxS3dKcXRDZV9QTWFnMnVyMmtNQjlvNlBmb0RGMXl1bWwxaTNPM3NQMndrdXUxTEkwRjdwMThiNXRpa3NjcUhpYTlSd242VW5Ccjh2SFVwb3U4aDZ0Wlo2WFA0dG5SZGx1WWR1bUhvSnhlTG9mdjg?oc=5) — `jeux de hasard`
-- **14/05/2024** — [Maison à gagner pour dix euros : la Commission des jeux de hasard annule le concours - Le Soir](https://news.google.com/rss/articles/CBMixwFBVV95cUxQRmtEdFJ1Y2NRSGVOa1JNeDhSaVB3U0lPWF82Y2l5T1dOcWVGamZTbXNvUGpBdlQtZi16YTllVVp2SFlMaG00eGRQNlNxR19zcXB5N05UNmp6VGE3WEg0bWVuWllTT1RrcERQQklEeHBXbWloMWFHT09YbWQtUjBEUmFwQjJFUFU1cWJORHo4NXBOQ1U4aTltRVU4aVlJWHhlOVlrSlV5VUM4WHBMM3FyZDYydlo5SHo1VHJOS0s3MWJITTd6Qzdj?oc=5) — `jeux de hasard`
-- **10/04/2024** — [Les jeux de hasard cartonnent dans les communes pauvres - Le Soir](https://news.google.com/rss/articles/CBMipgFBVV95cUxPNnlHTmwwWlhqel9SX3JVR0tfd09QdzlDN2hzM1ZIRzZDN2ZqcHR4dTVoZ2QzY0k2TGtQMy1jNUZsdUFvNW1yV1J0WmVmU0ROdjRGRVRpWHZaOTVRNHBKRHpIX2o5ZFlpMFdZNmRRUEZWZVFpRHZtMEhRVjFMUDZwVjlpbkNXSlMtYVhBclhXaV9tZEJ3ejRLSWRyM01sQUN1Y1VPQVdn?oc=5) — `jeux de hasard`
-- **10/04/2024** — [Jeux de hasard : un pactole pour les finances publiques, un dilemme pour certaines communes - Le Soir](https://news.google.com/rss/articles/CBMixgFBVV95cUxQTzh3OTBrUnFxN2xOVnlJNmdTRTF0YTJxN25HS3pTZ08zS2FhbnIyRTlKV0tYNFV6aFg5NUtLX1U3ZmFSbERYbEZRVUl6Si03Y2o5SnU4YVplQ2NqRi1Hd1NfSmNTNjZtNHFfTEJfSjlIT0dtNE9MYV9yZUtIemVFNEJwUkNoemJUR3Z1dGVpdkNZNlZnTVI1V210TWR2XzBoVzd2VnRDWGptMWhuaFJmaEVxVHJPeXpmaGhzYkNURUR4M2REOGc?oc=5) — `jeux de hasard`
-- **10/04/2024** — [Les jeux de hasard aiment les pauvres - Le Soir](https://news.google.com/rss/articles/CBMijgFBVV95cUxNMTBZSlkxNW5nUVFGOEd0bmRYbHZzTmVqZzNTaWg4Z25GazE5UlVmdzQyNWZaYjU1QzRwOFo0Q1JGY0JjVlVCUEVYMlBIMHJONkRhRXNaTXpYbk5VbDlRaGU4cHZjb2NrSTg0TE1hVl9rQVZ3UndTNDdoMmY1bERNLXY5OUVCQmk2V3hWVjJB?oc=5) — `jeux de hasard`
-
 ### CasinoBeats
 
-- **13/10/2026** — [Registration Rules Set YouTube Masthead Access](https://casinobeats.com/2026/10/13/youtube-masthead-gambling-rules/) — `ladbrokes`
+- **14/10/2026** — [CFTC Action Puts New Focus on Kalshi Sports Contracts](https://casinobeats.com/2026/10/14/kalshi-sports-contracts/) — `ladbrokes`
+
+### EUR-Lex (législation UE)
+
+- **11/04/2025** — [Commission Decision (EU) 2025/1765 of 11 April 2025 on the measure State aid SA.53630 (2020/C) – (ex 2019/FC) – Belgium Alleged aid granted to Ladbrokes in relation to virtual bett](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:32025D1765&qid=1791973356376&rid=1) — `ladbrokes`
+- **18/09/2024** — [Verbatim report of proceedings of 18 September 2024](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C/2025/03677&qid=1791973362900&rid=6) — `jeux de hasard`
+- _(sans date)_ — [State aid — Denmark — State aid C 35/10 (ex N 302/10) — Duties for Online Gaming in the Danish Gaming Duties Act — Invitation to submit comments pursuant to Article 108(2) of the T](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52011XC0122(05)&qid=1791973356376&rid=4) — `ladbrokes`
+- _(sans date)_ — [State aid — Belgium — Aid C 53/03 (ex NN 62/03) — Restructuring aid for ABX Logistics — Invitation to submit comments pursuant to Article 88(2) of the EC Treaty (Text with EEA rele](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52004XC0114(05)&qid=1791973356376&rid=8) — `ladbrokes`
+- _(sans date)_ — [Invitation to submit comments on alleged state aid granted by the Icelandic State to investment funds and associated fund management companies connected to the three failed Iceland](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:E2010C1028(01)&qid=1791973356376&rid=10) — `ladbrokes`
+- _(sans date)_ — [State aid — Greece — State aid C 16/10 (ex NN 22/10) — Aid to certain Greek casinos — Invitation to submit comments pursuant to Article 108(2) of the Treaty on the Functioning of t](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52010XC0831(01)&qid=1791973360729&rid=1) — `bwin`
+- _(sans date)_ — [State aid — France — State aid C 34/10 (ex N 140/10) — Levy to finance the public service mission of improvement of the equine species and the promotion of horse breeding, training](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:52011XC0114(03)&qid=1791973362900&rid=5) — `jeux de hasard`
+- _(sans date)_ — [Written questions by Members of the European Parliament and their answers given by a European Union institution](https://eur-lex.europa.eu/legal-content/AUTO/?uri=CELEX:C2013/317E/01&qid=1791973362900&rid=7) — `jeux de hasard`
 
 ---
 *Généré automatiquement par GitHub Actions · LANCELLE 2026*
